@@ -13,7 +13,7 @@ Figma file link for workflow: https://www.figma.com/design/7deDsVo0b5PB1o6NoQVY9
 ## Technologies Used
 
 - **Frontend**: Flutter
-- **Backend**: Node.js, Express
+- **Backend**: Node.js, Express, JWT Authentication
 - **Database**: MongoDB
 
 ## Features
