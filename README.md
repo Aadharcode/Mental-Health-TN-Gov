@@ -60,7 +60,7 @@ To get started with the project:
    ```sh
    npm install
    ```
-3. Create a config folder in the home directory and put your .env file containing various sensitive data into it
+3. Create a folder named "config" in the home directory and put your .env file containing various sensitive data into it
 
 4. Start the backend server:
 
