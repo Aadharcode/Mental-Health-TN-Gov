@@ -8,6 +8,8 @@ This project aims to provide a platform for students, teachers, psychiatrists, a
 
 For an overview of the project, please go through the `Mental Health Application.IITM.pdf` file in the repository.
 
+Figma file link for workflow: https://www.figma.com/design/7deDsVo0b5PB1o6NoQVY9u/TNMSS?node-id=64-441&t=qO40qrH0Plsawo9x-1
+
 ## Technologies Used
 
 - **Frontend**: Flutter
