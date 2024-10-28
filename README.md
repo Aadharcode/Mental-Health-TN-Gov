@@ -179,5 +179,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you have any questions or need more information, feel free to open an issue or reach out to the maintainers.
 ```
-
-Now you can copy and paste all of this content directly into your `README.md` file. Let me know if there's anything else you need help with! 😊
