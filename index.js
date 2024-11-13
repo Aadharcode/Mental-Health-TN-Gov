@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(authRouter);
 
-const DB = "mongodb+srv://fiitjeeb02:fBSM4PJq2WXHzsfr@cluster0.0zinx.mongodb.net/auth";
+const DB = process.env.DB_CONNECTION;
 
 mongoose
   .connect(DB)
