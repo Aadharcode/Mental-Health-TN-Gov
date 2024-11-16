@@ -1,2 +1,5 @@
-node_modules
-config/.env
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+.env
