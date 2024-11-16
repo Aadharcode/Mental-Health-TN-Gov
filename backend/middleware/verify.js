@@ -1,1 +1,0 @@
-// authorization and other can be checked from this files
