@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './Components/LoginForm.dart';
+// import '../../../assets/Logo/logo_TNMS.png';
 
 class LoginScreen extends StatelessWidget {
   @override
@@ -11,6 +12,16 @@ class LoginScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+               SizedBox(
+                width: 192,
+                height: 192,
+                child: Image.asset(
+                  "assets/Logo/logo_TNMS.png", // Replace with your asset path
+                  fit: BoxFit.contain,
+                  // height:20,
+                ),
+              ),
+              const SizedBox(height: 17.0),
               Text(
                 'Login',
                 style: TextStyle(
