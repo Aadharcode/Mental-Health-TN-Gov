@@ -1,5 +1,6 @@
 const bcryptjs = require("bcryptjs");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 const signup = async (req, res) => {
   try {
@@ -13,15 +14,19 @@ const signup = async (req, res) => {
     }
 
     const hashedPassword = await bcryptjs.hash(password, 10);
+    const token = jwt.sign({ id: email }, process.env.JWT_SECRET, {
+      expiresIn: "7d", // Token expiration time
+    });
 
     let user = new User({
       email,
       name,
       school,
       password: hashedPassword,
+      token, // Store the JWT token in the database
     });
     user = await user.save();
-    res.json(user);
+    res.json({ user});
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

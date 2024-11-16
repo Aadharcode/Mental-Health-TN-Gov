@@ -12,13 +12,13 @@ const signin = async (req, res) => {
         .status(400)
         .json({ msg: "User with this email does not exist!" });
     }
-
+    // console.log(password);
+    // console.log(user.password);
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ msg: "Incorrect password." });
     }
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    const { token } = user;
     res.json({ token, ...user._doc });
   } catch (e) {
     res.status(500).json({ error: e.message });
