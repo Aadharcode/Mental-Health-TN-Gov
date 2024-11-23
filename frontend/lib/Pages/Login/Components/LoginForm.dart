@@ -3,10 +3,18 @@ import '../../utils/appStyle.dart';
 import '../../utils/appColor.dart';
 import '../../utils/navigation.dart'; 
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
+  @override
+  _LoginFormState createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  String _selectedRole = 'Admin'; // Default role
+
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextField(
           decoration: AppStyles.inputDecoration.copyWith(hintText: 'Email'),
@@ -16,7 +24,64 @@ class LoginForm extends StatelessWidget {
           obscureText: true,
           decoration: AppStyles.inputDecoration.copyWith(hintText: 'Password'),
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 20),
+        Text(
+          'Select Role:',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textColor,
+          ),
+        ),
+        ListTile(
+          title: Text('Admin'),
+          leading: Radio<String>(
+            value: 'Admin',
+            groupValue: _selectedRole,
+            onChanged: (value) {
+              setState(() {
+                _selectedRole = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('Teachers'),
+          leading: Radio<String>(
+            value: 'Teachers',
+            groupValue: _selectedRole,
+            onChanged: (value) {
+              setState(() {
+                _selectedRole = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('HS and MS'),
+          leading: Radio<String>(
+            value: 'HS and MS',
+            groupValue: _selectedRole,
+            onChanged: (value) {
+              setState(() {
+                _selectedRole = value!;
+              });
+            },
+          ),
+        ),
+        ListTile(
+          title: Text('Psychiatrist'),
+          leading: Radio<String>(
+            value: 'Psychiatrist',
+            groupValue: _selectedRole,
+            onChanged: (value) {
+              setState(() {
+                _selectedRole = value!;
+              });
+            },
+          ),
+        ),
+        SizedBox(height: 20),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primaryColor,
@@ -27,7 +92,23 @@ class LoginForm extends StatelessWidget {
             ),
           ),
           onPressed: () {
-           NavigationUtils.showComingSoonDialog(context); 
+            // Navigate based on the selected role
+            switch (_selectedRole) {
+              case 'Admin':
+                Navigator.pushNamed(context, '/admin');
+                break;
+              case 'Teachers':
+                Navigator.pushNamed(context, '/teachers');
+                break;
+              case 'HS and MS':
+                Navigator.pushNamed(context, '/hs-ms');
+                break;
+              case 'Psychiatrist':
+                Navigator.pushNamed(context, '/psychiatrist');
+                break;
+              default:
+                NavigationUtils.showComingSoonDialog(context);
+            }
           },
           child: Text(
             'Login',
@@ -38,16 +119,21 @@ class LoginForm extends StatelessWidget {
           ),
         ),
         SizedBox(height: 15),
-        GestureDetector(
-          onTap: () {
-           NavigationUtils.showComingSoonDialog(context); 
-          },
-          child: Text(
-            'Forget Password?',
-            style: TextStyle(
-              color: AppColors.linkColor,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                NavigationUtils.showComingSoonDialog(context);
+              },
+              child: Text(
+                'Forget Password?',
+                style: TextStyle(
+                  color: AppColors.linkColor,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
         SizedBox(height: 20),
         Row(
@@ -59,7 +145,7 @@ class LoginForm extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-               Navigator.pushNamed(context, '/register');
+                Navigator.pushNamed(context, '/register');
               },
               child: Text(
                 'Register',
