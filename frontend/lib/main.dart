@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import './Pages/Login/Login.dart';
-import './Pages/Register/Register.dart';
+// import './Pages/Register/Register.dart';
 // import './Pages/Admin/Admin.dart';
-// import './Pages/Teachers/TeacherScreen.dart';
-// import './Pages/HSMS/HSMScreen.dart';
+import 'Pages/Teachers/Teachears.dart';
+import './Pages/HS-MS/HSMS.dart';
 import './Pages/Psychiatrist/Psychiatrist.dart';
 
 void main() {
@@ -21,10 +21,10 @@ class MyApp extends StatelessWidget {
       home: LoginScreen(),
       routes: {
         '/login': (context) => LoginScreen(),
-        '/register': (context) => RegisterScreen(),
+        // '/register': (context) => RegisterScreen(),
         // '/admin': (context) => AppNavigator(),
-        // '/teachers': (context) => TeacherScreen(),
-        // '/hs-ms': (context) => HSMScreen(),
+        '/teachers': (context) => TeacherScreen(),
+        '/hs-ms': (context) => HSMSScreen(),
         '/psychiatrist': (context) => PsychiatristScreen(),
       },
     );
