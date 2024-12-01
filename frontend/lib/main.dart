@@ -5,6 +5,7 @@ import './Pages/Admin/admin.dart';
 import 'Pages/Teachers/Teachears.dart';
 import './Pages/HS-MS/HSMS.dart';
 import './Pages/Psychiatrist/Psychiatrist.dart';
+import './Pages/SkipPage/skip.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: LoginScreen(),
+      home: OnboardingScreen(),
       routes: {
         '/login': (context) => LoginScreen(),
         // '/register': (context) => RegisterScreen(),
