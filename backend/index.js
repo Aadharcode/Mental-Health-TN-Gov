@@ -17,7 +17,7 @@ mongoose
     console.log("Connection Successful");
   })
   .catch((e) => {
-    console.log(e);
+    console.log("Error in connecting DB",e);
   });
 
 app.listen(PORT, "0.0.0.0", () => {
