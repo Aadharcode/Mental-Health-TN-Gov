@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../../utils/appStyle.dart';
 import '../../utils/appColor.dart';
 import '../../utils/navigation.dart';
@@ -13,32 +15,67 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordController = TextEditingController();
 
   String _selectedRole = 'Admin'; // Default role
-  final List<String> _roles = ['Admin', 'Teachers', 'HS and MS', 'Psychiatrist', 'Students'];
+  final List<String> _roles = ['Admin', 'Teacher', 'HS and MS', 'psychiatrist', 'Students'];
 
   bool _isLoading = false;
 
-  void _navigateBasedOnRole() {
-    final role = _selectedRole;
+  Future<void> _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
 
-    // Navigate to the appropriate page based on the role
-    switch (role) {
-      case 'Admin':
-        Navigator.pushNamed(context, '/admin');
-        break;
-      case 'Teachers':
-        Navigator.pushNamed(context, '/teachers');
-        break;
-      case 'HS and MS':
-        Navigator.pushNamed(context, '/hs-ms');
-        break;
-      case 'Psychiatrist':
-        Navigator.pushNamed(context, '/psychiatrist');
-        break;
-      case 'Students':
-        Navigator.pushNamed(context, '/students');
-        break;
-      default:
-        NavigationUtils.showComingSoonDialog(context);
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final role = _selectedRole.toLowerCase().replaceAll(' ', '-'); 
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.162.250:3000/api/signin'), 
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'role': role, 'email': email, 'password': password}),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final token = responseData['token'];
+        // final user = responseData['user'];
+
+        if (token != null) {
+          // Store the token if necessary (e.g., shared_preferences)
+          // Navigate based on the role
+          switch (role) {
+            case 'admin':
+              Navigator.pushNamed(context, '/admin');
+              break;
+            case 'teacher':
+              Navigator.pushNamed(context, '/teachers');
+              break;
+            case 'hs-ms':
+              Navigator.pushNamed(context, '/hs-ms');
+              break;
+            case 'psychiatrist':
+              Navigator.pushNamed(context, '/psychiatrist');
+              break;
+            case 'students':
+              Navigator.pushNamed(context, '/students');
+              break;
+            default:
+              NavigationUtils.showSnackBar(context, "Role navigation not configured.");
+          }
+        } else {
+          NavigationUtils.showSnackBar(context, "Token missing in response.");
+        }
+      } else {
+        final errorResponse = jsonDecode(response.body);
+        NavigationUtils.showSnackBar(context, errorResponse['msg'] ?? 'Login failed.');
+      }
+    } catch (error) {
+      NavigationUtils.showSnackBar(context, "An error occurred. Please try again.");
+      print("Error during login: $error");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -49,7 +86,7 @@ class _LoginFormState extends State<LoginForm> {
       children: [
         TextField(
           controller: _emailController,
-          decoration: AppStyles.inputDecoration.copyWith(hintText: 'Email'),
+          decoration: AppStyles.inputDecoration.copyWith(hintText: 'Email / UDISE / EMIS ID'),
         ),
         const SizedBox(height: 10),
         TextField(
@@ -94,7 +131,7 @@ class _LoginFormState extends State<LoginForm> {
               borderRadius: BorderRadius.circular(5),
             ),
           ),
-          onPressed: _isLoading ? null : _navigateBasedOnRole,
+          onPressed: _isLoading ? null : _handleLogin,
           child: _isLoading
               ? const CircularProgressIndicator(color: Colors.white)
               : const Text(
