@@ -10,6 +10,7 @@ const createStudent = require("../controllers/createStudent");
 const createSchool = require("../controllers/createSchool");
 const createPsychiatrist = require("../controllers/createPsychiatrist");
 const updateRedflags = require("../controllers/redflag");
+const handleApproval = require("../controllers/approve");
 require('dotenv').config();
 
 //authRouter.post("/api/signup", signup);   // Sign Up
@@ -20,6 +21,7 @@ authRouter.post("/createStudent", createStudent);  // new Student user
 authRouter.post("/createSchool", createSchool); // new School
 authRouter.post("/createPsychiatrist", createPsychiatrist); // new Psychiatrist user
 authRouter.post("/api/redflags", updateRedflags); //Redflags API
+authRouter.post("/api/approval", handleApproval); //Redflags Approval
 authRouter.post("/tokenIsValid", tokenIsValid);   // Token validation
 authRouter.get("/", auth, getData);  // get user data
 
