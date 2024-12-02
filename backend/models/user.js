@@ -170,6 +170,10 @@ const studentSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  approval: {
+    type: Boolean,
+    default: false,
+  },
 },{ versionKey: false });
 
 const schoolSchema = mongoose.Schema({
