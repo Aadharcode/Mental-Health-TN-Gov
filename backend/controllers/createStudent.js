@@ -30,11 +30,13 @@ const createStudent = async (req, res) => {
       medium,
       password,
     });
+   
 
     // Send a success response
     res.status(201).json({
       msg: "Student created successfully!",
       data: newStudent,
+      //redflagData: newRedflag,
     });
   } catch (err) {
     console.error("Error creating student:", err);

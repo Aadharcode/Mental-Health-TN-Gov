@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import './Screens/home.dart';
-import './Screens/setting.dart';
-import './Screens/attendance.dart';  // Import the Attendance screen
-import './Screens/redflag.dart';    // Import the Redflag screen
+import './Screens/setting.dart';  // Import the Settings screen
 import './component/bottom-nav.dart';
 
 class TeacherScreen extends StatefulWidget {
@@ -14,36 +12,21 @@ class _TeacherScreenState extends State<TeacherScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    HomeScreen(),
+    HomeScreen(), // Directly use HomeScreen without passing the callback
     SettingsScreen(),
   ];
 
+  // Function to change selected tab
   void onTabSelected(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
 
-  void navigateToAttendance() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AttendanceScreen()),
-    );
-  }
-
-  void navigateToRedflag() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RedflagScreen()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _currentIndex == 0
-          ? _screens[_currentIndex]
-          : _screens[_currentIndex],  // Keep logic for Home and Settings screen
+      body: _screens[_currentIndex], // Show the current screen based on tab selection
       bottomNavigationBar: PsychiatristBottomNav(
         currentIndex: _currentIndex,
         onTabSelected: onTabSelected,
