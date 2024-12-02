@@ -17,6 +17,7 @@ const handleApproval = async (req, res) => {
     }
 
     if (!approve) {
+      student.approval = false; 
       const redFlagFields = [
         "anxiety",
         "depression",
