@@ -20,7 +20,7 @@ const signin = async (req, res) => {
       case "teacher":
         userModel = Teacher;
         break;
-      case "hs-ms":
+      case "hs-and-ms":
         userModel = School;
         break;
       case "psychiatrist":

@@ -23,12 +23,7 @@ class _HSMSState extends State<HSMSScreen> {
     });
   }
 
-  void navigateToRedflag() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ApprovalScreen()),
-    );
-  }
+  
 
   @override
   Widget build(BuildContext context) {

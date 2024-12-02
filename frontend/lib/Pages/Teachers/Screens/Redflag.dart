@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class RedflagScreen extends StatefulWidget {
   final String studentName;
@@ -15,34 +17,67 @@ class RedflagScreen extends StatefulWidget {
 }
 
 class _RedflagScreenState extends State<RedflagScreen> {
-  // List of red flags and their states (selected or not)
+  // Updated list of red flags and their states (selected or not)
   final List<Map<String, dynamic>> redFlags = [
-    {'name': 'Anxiety', 'isChecked': false},
-    {'name': 'Depression', 'isChecked': false},
-    {'name': 'Aggression + Violence', 'isChecked': false},
-    {'name': 'Bullying', 'isChecked': false},
-    {'name': 'Substance Abuse', 'isChecked': false},
+    {'name': 'Anxiety', 'key': 'anxiety', 'isChecked': false},
+    {'name': 'Depression', 'key': 'depression', 'isChecked': false},
+    {'name': 'Aggresion + Violence', 'key': 'aggresion_violence', 'isChecked': false},
+    {'name': 'SelfHarm + Suicide', 'key': 'selfharm_suicide', 'isChecked': false},
+    {'name': 'Sexual Abuse', 'key': 'sexual_abuse', 'isChecked': false},
+    {'name': 'Stress', 'key': 'stress', 'isChecked': false},
+    {'name': 'Loss + Grief', 'key': 'loss_grief', 'isChecked': false},
+    {'name': 'Relationship', 'key': 'relationship', 'isChecked': false},
+    {'name': 'Body image + selflisten', 'key': 'bodyimage_selflisten', 'isChecked': false},
+    {'name': 'Sleep', 'key': 'sleep', 'isChecked': false},
+    {'name': 'Conduct + Delinquency', 'key': 'conduct_delinquency', 'isChecked': false},
   ];
 
-  void handleSubmit() {
-  // Collect selected red flags
-  List<String> selectedFlags = redFlags
-      .where((flag) => flag['isChecked'] == true)
-      .map((flag) => flag['name'].toString())  // Ensure it is a String
-      .toList();
+  // Function to handle form submission
+  Future<void> handleSubmit() async {
+    // Collect selected red flags
+    Map<String, bool> updates = {
+      for (var flag in redFlags)
+        if (flag['isChecked'] == true) flag['key']: true,
+    };
 
-  // Handle form submission
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-          'Red flags marked for ${widget.studentName}: ${selectedFlags.join(', ')}'),
-    ),
-  );
+    if (updates.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select at least one red flag.')),
+      );
+      return;
+    }
 
-  // Optionally, navigate back to home or another screen
-  Navigator.pop(context);
-}
+    // API endpoint
+    final url = Uri.parse('http://192.168.162.250:3000/api/redflags');
 
+    try {
+      // Make the POST request
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'student_emis_id': widget.emisId,
+          'updates': updates,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Red flags updated successfully!')),
+        );
+        Navigator.pop(context); // Navigate back on success
+      } else {
+        final message = jsonDecode(response.body)['msg'];
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message ?? 'Failed to update red flags.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -50,7 +50,7 @@ class _LoginFormState extends State<LoginForm> {
             case 'teacher':
               Navigator.pushNamed(context, '/teachers');
               break;
-            case 'hs-ms':
+            case 'hs-and-ms':
               Navigator.pushNamed(context, '/hs-ms');
               break;
             case 'psychiatrist':
