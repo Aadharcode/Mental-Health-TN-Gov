@@ -6,12 +6,12 @@ const psychiatristSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
-  district_psychiatrist_name: {
+  DISTRICT_PSYCHIATRIST_NAME: {
     required: true,
     type: String,
     trim: true,
   },
-  district_psychiatrist_mobile: {
+  Mobile_number: {
     required: true,
     type: String,
     validate: {
@@ -19,12 +19,12 @@ const psychiatristSchema = mongoose.Schema({
       message: "Please enter a valid mobile number",
     },
   },
-  satellite_psychiatrist_name: {
+  SATELLITE_PSYCHIATRIST_NAME: {
     required: true,
     type: String,
     trim: true,
   },
-  satellite_psychiatrist_mobile: {
+  SATELLITE_mobile_number: {
     required: true,
     type: String,
     validate: {
@@ -36,12 +36,12 @@ const psychiatristSchema = mongoose.Schema({
     required: true,
     type: String,
   },
-  role: {
+  Role: {
     type: String,
     enum: ["psychiatrist"],
     default: "psychiatrist",
   },
-});
+},{ versionKey: false });
 
 const teacherSchema = mongoose.Schema({
   district: {
@@ -49,12 +49,12 @@ const teacherSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
-  school_name: {
+  School_name: {
     required: true,
     type: String,
     trim: true,
   },
-  teacher_name: {
+  Teacher_Name: {
     required: true,
     type: String,
     trim: true,
@@ -64,15 +64,15 @@ const teacherSchema = mongoose.Schema({
     type: String,
   },
   password: {
-    required: true,
+    //required: true,
     type: String,
   },
-  role: {
+  Role: {
     type: String,
     enum: ["teacher"],
     default: "teacher",
   },
-});
+},{ versionKey: false });
 
 const studentSchema = mongoose.Schema({
   school_name: {
@@ -104,11 +104,11 @@ const studentSchema = mongoose.Schema({
     type: Number,
   },
   group_code: {
-    required: true,
+    //required: true,
     type: Number,
   },
   group_name: {
-    required: true,
+    //required: true,
     type: String,
     trim: true,
   },
@@ -126,15 +126,15 @@ const studentSchema = mongoose.Schema({
     enum: ["student"],
     default: "student",
   },
-});
+},{ versionKey: false });
 
 const schoolSchema = mongoose.Schema({
-  school_name: {
+  SCHOOL_NAME: {
     required: true,
     type: String,
     trim: true,
   },
-  district: {
+  DISTRICT: {
     required: true,
     type: String,
     trim: true,
@@ -144,7 +144,7 @@ const schoolSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
-  school_mail_id: {
+  SCHOOL_MAIL_ID: {
     required: true,
     type: String,
     trim: true,
@@ -153,12 +153,12 @@ const schoolSchema = mongoose.Schema({
       message: "Please enter a valid email address",
     },
   },
-  hm_name: {
+  HM_NAME: {
     required: true,
     type: String,
     trim: true,
   },
-  hm_mobile_no: {
+  HM_MOBILE_NO: {
     required: true,
     type: String,
     validate: {
@@ -170,12 +170,12 @@ const schoolSchema = mongoose.Schema({
     required: true,
     type: String,
   },
-  role: {
+  Role: {
     type: String,
     enum: ["hs-ms"],
     default: "hs-ms",
   },
-});
+},{ versionKey: false });
 
 const adminSchema = mongoose.Schema({
   email: {
@@ -197,7 +197,7 @@ const adminSchema = mongoose.Schema({
     enum: ["admin"],
     default: "admin",
   },
-});
+},{ versionKey: false });
 
 const Psychiatrist = mongoose.model("Psychiatrist", psychiatristSchema);
 const Teacher = mongoose.model("Teacher", teacherSchema);

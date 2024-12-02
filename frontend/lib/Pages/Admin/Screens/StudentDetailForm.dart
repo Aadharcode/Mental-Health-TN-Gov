@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class UploadStudentForm extends StatefulWidget {
   @override
@@ -7,26 +9,94 @@ class UploadStudentForm extends StatefulWidget {
 
 class _UploadStudentFormState extends State<UploadStudentForm> {
   final Map<String, String> formData = {
-    'name': '',
-    'school': '',
-    'district': '',
-    'emisNo': '',
-    'grade': '',
+    'school_name': '',
+    'student_emis_id': '',
+    'student_name': '',
+    'date_of_birth': '',
     'gender': '',
-    'groupCode': '',
-    'groupName': '',
+    'studentClass': '',
+    'group_code': '',
+    'group_name': '',
     'medium': '',
+    'password': '',
   };
 
-  void handleUpload() {
-    print('Form data: $formData');
-    // Handle upload logic here
+  DateTime? selectedDate;
+
+  Future<void> handleUpload() async {
+    final String apiUrl = 'http://192.168.162.250:3000/createStudent';
+
+    // Create the request body
+    final Map<String, String> requestBody = {
+      'school_name': formData['school_name']!,
+      'student_emis_id': formData['student_emis_id']!,
+      'student_name': formData['student_name']!,
+      'date_of_birth': formData['date_of_birth']!,
+      'gender': formData['gender']!,
+      'class': formData['studentClass']!,
+      'group_code': formData['group_code']!,
+      'group_name': formData['group_name']!,
+      'medium': formData['medium']!,
+      'password': formData['password']!,
+    };
+    print(requestBody);
+
+    try {
+      // Send a POST request to the backend API
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(requestBody),
+      );
+
+      // Directly checking for success message
+      if (response.body.contains('Student created successfully!')) {
+        // If the response contains the success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Student created successfully!')),
+        );
+      } else {
+        // If the response doesn't contain the success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create student: ${response.body}')),
+        );
+      }
+    } catch (e) {
+      // Handle errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
   }
 
+  // Update the formData when the field changes
   void handleChange(String field, String value) {
     setState(() {
+      // Capitalize the first letter of gender
+      if (field == 'gender') {
+        value = value[0].toUpperCase() + value.substring(1);
+      }
       formData[field] = value;
     });
+  }
+
+  // Date picker for selecting the date of birth
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        // Format date to yyyy-mm-dd
+        formData['date_of_birth'] = "${picked.toLocal()}".split(' ')[0];
+      });
+    }
   }
 
   @override
@@ -46,16 +116,29 @@ class _UploadStudentFormState extends State<UploadStudentForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: Text(
+                    'Upload Student details',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFE9967A), // Light orange color
+                    ),
+                  ),
+                ),
+                // Form Fields Section
                 ...[
-                  {'label': 'Name', 'field': 'name'},
-                  {'label': 'School', 'field': 'school'},
-                  {'label': 'District', 'field': 'district'},
-                  {'label': 'EMIS No.', 'field': 'emisNo'},
-                  {'label': 'Grade', 'field': 'grade'},
+                  {'label': 'School Name', 'field': 'school_name'},
+                  {'label': 'Student EMIS ID', 'field': 'student_emis_id'},
+                  {'label': 'Student Name', 'field': 'student_name'},
+                  {'label': 'Date of Birth', 'field': 'date_of_birth'},
                   {'label': 'Gender', 'field': 'gender'},
-                  {'label': 'Group Code', 'field': 'groupCode'},
-                  {'label': 'Group Name', 'field': 'groupName'},
+                  {'label': 'Class', 'field': 'studentClass'},
+                  {'label': 'Group Code', 'field': 'group_code'},
+                  {'label': 'Group Name', 'field': 'group_name'},
                   {'label': 'Medium', 'field': 'medium'},
+                  {'label': 'Password', 'field': 'password'},
                 ].map((fieldData) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -63,32 +146,56 @@ class _UploadStudentFormState extends State<UploadStudentForm> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          fieldData['label']!,
+                          fieldData['label'] as String, // Casting as String
                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                         ),
-                        TextField(
-                          onChanged: (value) =>
-                              handleChange(fieldData['field']!, value),
-                          decoration: InputDecoration(
-                            hintText: fieldData['label'],
-                            filled: true,
-                            fillColor: Colors.grey.shade200,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                              vertical: 12.0,
-                            ),
-                          ),
-                        ),
+                        fieldData['field'] == 'date_of_birth'
+                            ? GestureDetector(
+                                onTap: () => _selectDate(context),
+                                child: AbsorbPointer(
+                                  child: TextField(
+                                    controller: TextEditingController(
+                                        text: formData['date_of_birth']),
+                                    decoration: InputDecoration(
+                                      hintText: 'Select Date of Birth',
+                                      filled: true,
+                                      fillColor: Colors.grey.shade200,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 16.0,
+                                        vertical: 12.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : TextField(
+                                onChanged: (value) =>
+                                    handleChange(fieldData['field'] as String, value),
+                                decoration: InputDecoration(
+                                  hintText: fieldData['label'] as String,
+                                  filled: true,
+                                  fillColor: Colors.grey.shade200,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                    vertical: 12.0,
+                                  ),
+                                ),
+                              ),
                       ],
                     ),
                   );
                 }).toList(),
                 SizedBox(height: 16),
-                 Center(
+                // Upload Button
+                Center(
                   child: ElevatedButton(
                     onPressed: handleUpload,
                     style: ElevatedButton.styleFrom(
