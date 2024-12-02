@@ -126,6 +126,50 @@ const studentSchema = mongoose.Schema({
     enum: ["student"],
     default: "student",
   },
+  anxiety: {
+    type: Boolean,
+    default: false,
+  },
+  depression: {
+    type: Boolean,
+    default: false,
+  },
+  aggresion_violence: {
+    type: Boolean,
+    default: false,
+  },
+  selfharm_suicide: {
+    type: Boolean,
+    default: false,
+  },
+  sexual_abuse: {
+    type: Boolean,
+    default: false,
+  },
+  stress: {
+    type: Boolean,
+    default: false,
+  },
+  loss_grief: {
+    type: Boolean,
+    default: false,
+  },
+  relationship: {
+    type: Boolean,
+    default: false,
+  },
+  bodyimage_selflisten: {
+    type: Boolean,
+    default: false,
+  },
+  sleep: {
+    type: Boolean,
+    default: false,
+  },
+  conduct_delinquency: {
+    type: Boolean,
+    default: false,
+  },
 },{ versionKey: false });
 
 const schoolSchema = mongoose.Schema({
@@ -202,6 +246,7 @@ const adminSchema = mongoose.Schema({
 const Psychiatrist = mongoose.model("Psychiatrist", psychiatristSchema);
 const Teacher = mongoose.model("Teacher", teacherSchema);
 const Student = mongoose.model("Student", studentSchema);
+//const Redflag = mongoose.model("Redfag", redflagSchema);
 const School = mongoose.model("School", schoolSchema);
 const Admin = mongoose.model("Admin", adminSchema);
 
