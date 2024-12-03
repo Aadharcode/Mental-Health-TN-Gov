@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:convert'; // For JSON encoding/decoding
+import 'dart:convert'; 
 import 'package:http/http.dart' as http;
-import 'redflag.dart'; // Import the RedflagScreen
+import 'redflag.dart';
+import '../../../backendUrl.dart'; 
 
 class HomeScreen extends StatelessWidget {
   final TextEditingController emisController = TextEditingController();
@@ -166,7 +167,7 @@ class HomeScreen extends StatelessWidget {
 
   try {
     // Replace with your backend endpoint
-    final url = Uri.parse('http://192.168.162.250:3000/getStudent');
+    final url = Uri.parse('BackendUrl.baseUrl/getStudent');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

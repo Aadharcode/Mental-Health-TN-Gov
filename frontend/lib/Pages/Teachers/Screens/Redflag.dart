@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../../backendUrl.dart';
 
 class RedflagScreen extends StatefulWidget {
   final String studentName;
@@ -48,7 +49,7 @@ class _RedflagScreenState extends State<RedflagScreen> {
     }
 
     // API endpoint
-    final url = Uri.parse('http://192.168.162.250:3000/api/redflags');
+    final url = Uri.parse('BackendUrl.baseUrl/api/redflags');
 
     try {
       // Make the POST request

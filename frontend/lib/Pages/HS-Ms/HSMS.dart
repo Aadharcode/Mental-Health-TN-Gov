@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import './Screens/home.dart';
-import './Screens/setting.dart';
-import './Screens/redflag.dart';   
+import './Screens/setting.dart';  
 import './component/bottom-nav.dart';
 
 class HSMSScreen extends StatefulWidget {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../../backendUrl.dart';
 
 class UploadPsychiatristForm extends StatefulWidget {
   @override
@@ -28,7 +29,7 @@ class _UploadPsychiatristFormState extends State<UploadPsychiatristForm> {
     });
 
     try {
-      const String endpoint = "http://192.168.162.250:3000/createPsychiatrist"; 
+      const String endpoint = "BackendUrl.baseUrl/createPsychiatrist"; 
 
       final response = await http.post(
         Uri.parse(endpoint),

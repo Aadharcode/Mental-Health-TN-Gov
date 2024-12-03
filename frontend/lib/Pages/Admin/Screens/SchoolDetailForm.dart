@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../../backendUrl.dart';
 
 class UploadSchoolForm extends StatefulWidget {
   @override
@@ -35,7 +36,7 @@ class _UploadSchoolFormState extends State<UploadSchoolForm> {
 
     try {
       // Endpoint for your API
-      const String endpoint = "http://192.168.162.250:3000/createSchool"; // Replace with your backend URL
+      const String endpoint = "BackendUrl.baseUrl/createSchool"; // Replace with your backend URL
 
       // Send a POST request
       final response = await http.post(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../../backendUrl.dart';
 
 class UploadTeacherForm extends StatefulWidget {
   @override
@@ -23,8 +24,7 @@ class _UploadTeacherFormState extends State<UploadTeacherForm> {
   late TextEditingController _mobileController;
   late TextEditingController _passwordController;
 
-  // URL of the backend API where data will be sent
-  final String apiUrl = 'http://192.168.162.250:3000/createTeacher';
+  final String apiUrl = 'BackendUrl.baseUrl/createTeacher';
 
   @override
   void initState() {

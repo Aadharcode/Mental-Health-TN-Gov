@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../../backendUrl.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Fetch red-flagged students
   Future<void> fetchRedFlaggedStudents() async {
     try {
-      final url = Uri.parse('http://192.168.162.250:3000/approvedStudents');
+      final url = Uri.parse('BackendUrl.baseUrl/approvedStudents');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Handle curing (canceling) a red-flagged student
   Future<void> handleCure(String emisId) async {
     try {
-      final url = Uri.parse('http://192.168.162.250:3000/api/approval');
+      final url = Uri.parse('BackendUrl.baseUrl/api/approval');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
