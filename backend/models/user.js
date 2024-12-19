@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const psychiatristSchema = mongoose.Schema({
   district: {
@@ -14,10 +15,10 @@ const psychiatristSchema = mongoose.Schema({
   Mobile_number: {
     required: true,
     type: String,
-    validate: {
-      validator: (value) => /^[0-9]{10}$/.test(value),
-      message: "Please enter a valid mobile number",
-    },
+    // validate: {
+    //   validator: (value) => /^[0-9]{10}$/.test(value),
+    //   message: "Please enter a valid mobile number",
+    // },
   },
   SATELLITE_PSYCHIATRIST_NAME: {
     required: true,
@@ -27,10 +28,10 @@ const psychiatristSchema = mongoose.Schema({
   SATELLITE_mobile_number: {
     required: true,
     type: String,
-    validate: {
-      validator: (value) => /^[0-9]{10}$/.test(value),
-      message: "Please enter a valid mobile number",
-    },
+    // validate: {
+    //   validator: (value) => /^[0-9]{10}$/.test(value),
+    //   message: "Please enter a valid mobile number",
+    // },
   },
   password: {
     required: true,
@@ -209,10 +210,10 @@ const schoolSchema = mongoose.Schema({
   HM_MOBILE_NO: {
     required: true,
     type: String,
-    validate: {
-      validator: (value) => /^[0-9]{10}$/.test(value),
-      message: "Please enter a valid mobile number",
-    },
+    // validate: {
+    //   validator: (value) => /^[0-9]{10}$/.test(value),
+    //   message: "Please enter a valid mobile number",
+    // },
   },
   password: {
     required: true,
@@ -247,10 +248,37 @@ const adminSchema = mongoose.Schema({
   },
 },{ versionKey: false });
 
+// Hashing before password saved to db
+psychiatristSchema.pre('save', async function(next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+teacherSchema.pre('save', async function(next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+studentSchema.pre('save', async function(next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+schoolSchema.pre('save', async function(next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+adminSchema.pre('save', async function(next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+
 const Psychiatrist = mongoose.model("Psychiatrist", psychiatristSchema);
 const Teacher = mongoose.model("Teacher", teacherSchema);
 const Student = mongoose.model("Student", studentSchema);
-//const Redflag = mongoose.model("Redfag", redflagSchema);
 const School = mongoose.model("School", schoolSchema);
 const Admin = mongoose.model("Admin", adminSchema);
 
