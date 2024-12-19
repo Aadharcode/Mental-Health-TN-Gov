@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { Psychiatrist, Teacher, Student, School, Admin } = require("../models/user");
+const bcryptjs = require("bcryptjs");
 
 const signin = async (req, res) => {
   try {
@@ -70,10 +71,15 @@ const signin = async (req, res) => {
     // Log the user object to verify the structure
     console.log("User object structure:", user);
 
-    // Check if the password matches
-    if (user.password !== password) { // Use `Password` as it is in the DB
-      return res.status(400).json({ msg: "Wrong password." });
+    const isMatch = await bcryptjs.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: "Incorrect password." });
     }
+
+    // // Check if the password matches
+    // if (user.password !== password) { // Use `Password` as it is in the DB
+    //   return res.status(400).json({ msg: "Wrong password." });
+    // }
 
     // Generate a JWT token
     const token = jwt.sign({ id: user._id, role }, process.env.JWT_SECRET, { expiresIn: "1h" });

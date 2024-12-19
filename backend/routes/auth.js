@@ -1,7 +1,6 @@
 const express = require("express");
 const authRouter = express.Router();
 const auth = require("../middleware/auth");
-//const signup = require("../controllers/signup");
 const createTeacher = require("../controllers/createTeacher");
 const signin = require("../controllers/signin");
 const tokenIsValid = require("../middleware/tokenIsValid");
@@ -16,8 +15,6 @@ const getStudentsBySchoolAndDistrict = require("../controllers/hsmsFetch");
 const getApprovedStudents = require("../controllers/getApprovedStudents");
 require('dotenv').config();
 
-//authRouter.post("/api/signup", signup);   // Sign Up
-//authRouter.post("/create-user", createUser);  //Creating user
 authRouter.post("/api/signin", signin);   // Sign In
 authRouter.post("/createTeacher", createTeacher);  // new Teacher user
 authRouter.post("/createStudent", createStudent);  // new Student user
