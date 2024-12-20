@@ -29,7 +29,7 @@ class _UploadPsychiatristFormState extends State<UploadPsychiatristForm> {
     });
 
     try {
-      const String endpoint = "BackendUrl.baseUrl/createPsychiatrist"; 
+      const String endpoint = "http://13.232.9.135:3000/createPsychiatrist"; 
 
       final response = await http.post(
         Uri.parse(endpoint),

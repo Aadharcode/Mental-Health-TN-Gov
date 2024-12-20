@@ -36,7 +36,7 @@ class _UploadSchoolFormState extends State<UploadSchoolForm> {
 
     try {
       // Endpoint for your API
-      const String endpoint = "BackendUrl.baseUrl/createSchool"; // Replace with your backend URL
+      const String endpoint = "http://13.232.9.135:3000/createSchool"; // Replace with your backend URL
 
       // Send a POST request
       final response = await http.post(

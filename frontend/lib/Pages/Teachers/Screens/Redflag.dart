@@ -49,7 +49,7 @@ class _RedflagScreenState extends State<RedflagScreen> {
     }
 
     // API endpoint
-    final url = Uri.parse('BackendUrl.baseUrl/api/redflags');
+    final url = Uri.parse('http://13.232.9.135:3000/api/redflags');
 
     try {
       // Make the POST request

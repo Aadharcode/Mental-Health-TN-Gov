@@ -25,7 +25,7 @@ class _UploadStudentFormState extends State<UploadStudentForm> {
   DateTime? selectedDate;
 
   Future<void> handleUpload() async {
-    final String apiUrl = 'BackendUrl.baseUrl/createStudent';
+    final String apiUrl = 'http://13.232.9.135:3000/createStudent';
 
     // Create the request body
     final Map<String, String> requestBody = {

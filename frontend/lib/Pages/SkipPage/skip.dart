@@ -10,7 +10,6 @@ class OnboardingScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 250),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40.0),
               child: Column(

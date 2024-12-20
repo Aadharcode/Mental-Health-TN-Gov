@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../../utils/appStyle.dart';
 import '../../utils/appColor.dart';
 import '../../utils/navigation.dart';
-import '../../../backendUrl.dart';
+// import '../../../backendUrl.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -31,7 +31,7 @@ class _LoginFormState extends State<LoginForm> {
 
     try {
       final response = await http.post(
-        Uri.parse('BackendUrl.baseUrl/api/signin'), 
+        Uri.parse('http://13.232.9.135:3000/api/signin'), 
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'role': role, 'email': email, 'password': password}),
       );
@@ -71,7 +71,7 @@ class _LoginFormState extends State<LoginForm> {
         NavigationUtils.showSnackBar(context, errorResponse['msg'] ?? 'Login failed.');
       }
     } catch (error) {
-      NavigationUtils.showSnackBar(context, "An error occurred. Please try again.");
+      NavigationUtils.showSnackBar(context, "An error occurred. Please try again");
       print("Error during login: $error");
     } finally {
       setState(() {

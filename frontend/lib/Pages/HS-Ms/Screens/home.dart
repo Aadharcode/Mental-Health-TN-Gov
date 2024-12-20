@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      final url = Uri.parse('BackendUrl.baseUrl/api/hsmsFetch');
+      final url = Uri.parse('http://13.232.9.135:3000/api/hsmsFetch');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

@@ -24,7 +24,7 @@ class _UploadTeacherFormState extends State<UploadTeacherForm> {
   late TextEditingController _mobileController;
   late TextEditingController _passwordController;
 
-  final String apiUrl = 'BackendUrl.baseUrl/createTeacher';
+  final String apiUrl = 'http://13.232.9.135:3000/createTeacher';
 
   @override
   void initState() {
