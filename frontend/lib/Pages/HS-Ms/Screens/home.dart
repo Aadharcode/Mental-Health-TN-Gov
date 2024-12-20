@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert'; 
 import 'package:http/http.dart' as http;
-import 'Redflag.dart';  
+import 'Redflag.dart';
+import '../../../backendUrl.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -26,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      final url = Uri.parse('http://192.168.162.250:3000/api/hsmsFetch');
+      final url = Uri.parse('http://13.232.9.135:3000/api/hsmsFetch');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

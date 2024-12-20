@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../../backendUrl.dart';
 
 class RedflagScreen extends StatefulWidget {
   final List<dynamic> students; // A list of students (from the backend)
@@ -23,7 +24,7 @@ class _RedflagScreenState extends State<RedflagScreen> {
   // Handle approval or cancellation
   Future<void> handleApproval(String emisId, bool approve) async {
     try {
-      final url = Uri.parse('http://192.168.162.250:3000/api/approval');
+      final url = Uri.parse('http://13.232.9.135:3000/api/approval');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../../backendUrl.dart';
 
 class UploadStudentForm extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _UploadStudentFormState extends State<UploadStudentForm> {
   DateTime? selectedDate;
 
   Future<void> handleUpload() async {
-    final String apiUrl = 'http://192.168.162.250:3000/createStudent';
+    final String apiUrl = 'http://13.232.9.135:3000/createStudent';
 
     // Create the request body
     final Map<String, String> requestBody = {
