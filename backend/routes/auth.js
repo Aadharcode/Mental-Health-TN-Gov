@@ -13,6 +13,7 @@ const handleApproval = require("../controllers/approve");
 const getStudent = require("../controllers/getStudent");
 const getStudentsBySchoolAndDistrict = require("../controllers/hsmsFetch");
 const getApprovedStudents = require("../controllers/getApprovedStudents");
+const fetchAllRedflagStudents = require("../controllers/allfetchMS");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
@@ -26,6 +27,7 @@ authRouter.post("/api/hsmsFetch", getStudentsBySchoolAndDistrict);  //fetching s
 authRouter.post("/api/approval", handleApproval); //Redflags Approval
 authRouter.get("/approvedStudents", getApprovedStudents);  //To fetch the approved students for the psychiatrist
 authRouter.post("/tokenIsValid", tokenIsValid);   // Token validation
+authRouter.get("/api/msFetch", fetchAllRedflagStudents);  // get all red flag student data for MS
 authRouter.get("/", auth, getData);  // get user data
 
 module.exports = authRouter;
