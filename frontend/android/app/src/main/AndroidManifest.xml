@@ -4,7 +4,7 @@
         android:usesCleartextTraffic="true"
         android:label="TNMNS"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/ic_launcher">
         
         <!-- MainActivity: Splash Screen Configuration -->
         <activity
