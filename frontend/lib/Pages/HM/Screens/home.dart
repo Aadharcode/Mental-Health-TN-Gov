@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'dart:convert'; 
 import 'package:http/http.dart' as http;
 import 'Redflag.dart';
-import '../../../backendUrl.dart';
+// import '../../../backendUrl.dart';
 
 class HomeScreen extends StatefulWidget {
+  final String? SCHOOL_NAME;
+  final String? District;
+
+   HomeScreen({required this.SCHOOL_NAME, required this.District});
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -16,25 +20,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Function to search for students based on school name and district
   Future<void> searchStudents() async {
-    final schoolName = schoolNameController.text.trim();
-    final district = districtController.text.trim(); // Get district
-
-    if (schoolName.isEmpty || district.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter both school name and district')),
-      );
-      return;
-    }
+  
 
     try {
       final url = Uri.parse('http://13.232.9.135:3000/api/hsmsFetch');
+      final body = jsonEncode({
+          'school_name': widget.SCHOOL_NAME,  
+          'district': widget.District,
+        });
+        print(body);
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'school_name': schoolName,  // Send both school_name and district to the backend
-          'district': district,
-        }),
+        body: body, 
       );
 
       if (response.statusCode == 200) {
@@ -111,31 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Column(
                   children: [
-                    TextField(
-                      controller: schoolNameController,
-                      decoration: InputDecoration(
-                        hintText: 'School Name',
-                        hintStyle: TextStyle(color: Colors.grey[600]),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
                     SizedBox(height: 12),
-                    TextField(
-                      controller: districtController,  // District input
-                      decoration: InputDecoration(
-                        hintText: 'District Name',
-                        hintStyle: TextStyle(color: Colors.grey[600]),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
+                    
                     SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: searchStudents,  // Trigger the search
@@ -145,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text('Search'),
+                      child: Text('See Red Flag Students'),
                     ),
                   ],
                 ),

@@ -3,7 +3,8 @@ import './Pages/Login/Login.dart';
 // import './Pages/Register/Register.dart';
 import './Pages/Admin/admin.dart';
 import 'Pages/Teachers/Teachears.dart';
-import './Pages/HS-MS/HSMS.dart';
+import 'Pages/HM/HM.dart';
+import 'Pages/MS/MS.dart';
 import './Pages/Psychiatrist/Psychiatrist.dart';
 import './Pages/SkipPage/skip.dart';
 
@@ -25,7 +26,8 @@ class MyApp extends StatelessWidget {
         // '/register': (context) => RegisterScreen(),
         '/admin': (context) =>AdminScreen(),
         '/teachers': (context) => TeacherScreen(),
-        '/hs-ms': (context) => HSMSScreen(),
+        '/hm': (context) => HMScreen(),
+        '/ms': (context) => MSScreen(),
         '/psychiatrist': (context) => PsychiatristScreen(),
       },
     );

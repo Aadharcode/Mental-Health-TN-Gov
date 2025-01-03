@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../../utils/appStyle.dart';
 import '../../utils/appColor.dart';
 import '../../utils/navigation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import '../../../backendUrl.dart';
 
 class LoginForm extends StatefulWidget {
@@ -16,7 +17,7 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordController = TextEditingController();
 
   String _selectedRole = 'Admin'; // Default role
-  final List<String> _roles = ['Admin', 'Teacher', 'HS and MS', 'psychiatrist', 'Students'];
+  final List<String> _roles = ['Admin', 'Teacher', 'HM', 'MS', 'psychiatrist', 'Students'];
 
   bool _isLoading = false;
 
@@ -27,11 +28,11 @@ class _LoginFormState extends State<LoginForm> {
 
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-    final role = _selectedRole.toLowerCase().replaceAll(' ', '-'); 
+    var role = _selectedRole.toLowerCase();
 
     try {
       final response = await http.post(
-        Uri.parse('http://13.232.9.135:3000/api/signin'), 
+        Uri.parse('http://192.168.10.250:3000/api/signin'), 
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'role': role, 'email': email, 'password': password}),
       );
@@ -39,10 +40,20 @@ class _LoginFormState extends State<LoginForm> {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         final token = responseData['token'];
-        // final user = responseData['user'];
+        final user = responseData['user'];
 
         if (token != null) {
-          // Store the token if necessary (e.g., shared_preferences)
+          // Store the token and role in SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', token);
+          await prefs.setString('role', role);
+          if(role=='hm'){
+            await prefs.setString('School_name', user['SCHOOL_NAME']);
+            print(user['SCHOOL_NAME']);
+            await prefs.setString('district', user['DISTRICT']);
+            print(user['DISTRICT']);
+          }
+
           // Navigate based on the role
           switch (role) {
             case 'admin':
@@ -51,8 +62,11 @@ class _LoginFormState extends State<LoginForm> {
             case 'teacher':
               Navigator.pushNamed(context, '/teachers');
               break;
-            case 'hs-and-ms':
-              Navigator.pushNamed(context, '/hs-ms');
+            case 'hm':
+              Navigator.pushNamed(context, '/hm');
+              break;
+            case 'ms':
+              Navigator.pushNamed(context, '/ms');
               break;
             case 'psychiatrist':
               Navigator.pushNamed(context, '/psychiatrist');
