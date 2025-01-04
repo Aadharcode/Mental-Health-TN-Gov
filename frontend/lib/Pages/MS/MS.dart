@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import './Screens/home.dart';
-import './Screens/setting.dart';  
+import 'Screens/home.dart';
+import 'Screens/setting.dart';  
 import './component/bottom-nav.dart';
 
-class HSMSScreen extends StatefulWidget {
+class MSScreen extends StatefulWidget {
   @override
-  _HSMSState createState() => _HSMSState();
+  _MSState createState() => _MSState();
 }
 
-class _HSMSState extends State<HSMSScreen> {
+class _MSState extends State<MSScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
