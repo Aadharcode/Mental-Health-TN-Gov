@@ -32,7 +32,7 @@ class _LoginFormState extends State<LoginForm> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.10.250:3000/api/signin'), 
+        Uri.parse('http://13.232.9.135:3000/api/signin'), 
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'role': role, 'email': email, 'password': password}),
       );

@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Fetch schools and districts from the API
  Future<void> fetchSchoolsAndDistricts() async {
   try {
-    final url = Uri.parse('http://192.168.10.250:3000/api/getSchool');
+    final url = Uri.parse('http://13.232.9.135:3000/api/getSchool');
     print('🌐 Sending GET request to $url');
 
     final response = await http.get(
