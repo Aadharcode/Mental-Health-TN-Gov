@@ -270,6 +270,28 @@ const msSchema = mongoose.Schema({
   },
 },{ versionKey: false });
 
+const feedbackSchema = mongoose.Schema({
+  name: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  feedback: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  role: {
+    type: String,
+    enum: ["ms", "psychiatrist"],
+    default: "ms",
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+},{ versionKey: false });
+
 // Hashing before password saved to db
 psychiatristSchema.pre('save', async function(next) {
   const salt = await bcrypt.genSalt();
@@ -309,5 +331,7 @@ const Student = mongoose.model("Student", studentSchema);
 const School = mongoose.model("School", schoolSchema);
 const Admin = mongoose.model("Admin", adminSchema);
 const Ms = mongoose.model("Ms", msSchema);
+const Feedback = mongoose.model("Feedback", feedbackSchema);
 
-module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms };
+
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback };
