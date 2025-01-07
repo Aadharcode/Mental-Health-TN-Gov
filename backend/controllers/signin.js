@@ -19,8 +19,10 @@ const signin = async (req, res) => {
     } else if (role === "psychiatrist") {
       email = email.toUpperCase();
       console.log("Transformed psychiatrist username:", email);
+    }else if (role === "admin" || role === "ms") {
+      email = email.toLowerCase();
+      console.log("Transformed admin/ms username:", email);
     }
-
     // Select the appropriate model based on the role
     let userModel;
     switch (role) {
