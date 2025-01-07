@@ -283,8 +283,30 @@ const feedbackSchema = mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["ms", "psychiatrist"],
+    enum: ["ms", "psychiatrist","hs-ms"],
     default: "ms",
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+},{ versionKey: false });
+
+const attendanceSchema = mongoose.Schema({
+  psychiatristName: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  latitude: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  longitude: {
+    required: true,
+    type: String,
+    trim: true,
   },
   createdAt: {
     type: Date,
@@ -332,6 +354,6 @@ const School = mongoose.model("School", schoolSchema);
 const Admin = mongoose.model("Admin", adminSchema);
 const Ms = mongoose.model("Ms", msSchema);
 const Feedback = mongoose.model("Feedback", feedbackSchema);
+const Attendance = mongoose.model("Attendance", attendanceSchema);
 
-
-module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback };
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance };

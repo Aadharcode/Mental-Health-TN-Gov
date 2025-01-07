@@ -16,6 +16,10 @@ const getApprovedStudents = require("../controllers/getApprovedStudents");
 const fetchAllRedflagStudents = require("../controllers/allfetchMS");
 const getSchool = require("../controllers/getSchools");
 const feedBack = require("../controllers/feedback");
+const getFeedback = require("../controllers/getFeedback");
+const getAllStudent = require("../controllers/getAllStudents");
+const psychAttendance = require("../controllers/attendance");
+const getAttendance = require("../controllers/getAttendance");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
@@ -24,14 +28,17 @@ authRouter.post("/createStudent", createStudent);  // new Student user
 authRouter.post("/createSchool", createSchool); // new School
 authRouter.post("/createPsychiatrist", createPsychiatrist); // new Psychiatrist user
 authRouter.post("/getStudent", getStudent); //fetch student data
+authRouter.get("/getAllStudent", getAllStudent); //fetch student data
 authRouter.post("/api/redflags", updateRedflags); //Redflags API
 authRouter.post("/api/hsmsFetch", getStudentsBySchoolAndDistrict);  //fetching students based on their school and district with redflags
 authRouter.post("/api/approval", handleApproval); //Redflags Approval
 authRouter.post("/api/feedback", feedBack);  // post the feedback 
+authRouter.post("/api/attendance", psychAttendance);  // post the attendance of Psychiatrist
 authRouter.get("/approvedStudents", getApprovedStudents);  //To fetch the approved students for the psychiatrist
 authRouter.post("/tokenIsValid", tokenIsValid);   // Token validation
 authRouter.get("/api/msFetch", fetchAllRedflagStudents);  // get all red flag student data for MS
-// authRouter.post("/api/feedback", feedBack);  // post the feedback 
+authRouter.get("/api/getFeedback", getFeedback);  // get all the feedbacksorted date wise
+authRouter.get("/api/getAttendance", getAttendance);  // get all the attendance of psychiatrist date wise
 authRouter.get("/api/getSchool", getSchool);  // get all school(name and district) data for MS
 authRouter.get("/", auth, getData);  // get user data
 
