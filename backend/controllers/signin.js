@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { Psychiatrist, Teacher, Student, School, Admin } = require("../models/user");
+const { Psychiatrist, Teacher, Student, School, Admin, Ms } = require("../models/user");
 const bcryptjs = require("bcryptjs");
 
 const signin = async (req, res) => {
@@ -21,11 +21,11 @@ const signin = async (req, res) => {
       case "teacher":
         userModel = Teacher;
         break;
-      case "hm":
+      case "hs-ms":
         userModel = School;
         break;
       case "ms":
-        userModel = School;
+        userModel = Ms;
         break;
       case "psychiatrist":
         userModel = Psychiatrist;
@@ -57,6 +57,9 @@ const signin = async (req, res) => {
         break;
       case "admin":
         query = { email }; // Admins identified by email
+        break;
+      case "ms":
+        query = { email }; // MSs identified by email
         break;
     }
 

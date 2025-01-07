@@ -248,6 +248,28 @@ const adminSchema = mongoose.Schema({
   },
 },{ versionKey: false });
 
+const msSchema = mongoose.Schema({
+  email: {
+    required: true,
+    type: String,
+    trim: true,
+    unique: true,
+    validate: {
+      validator: (value) => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(value),
+      message: "Please enter a valid email address",
+    },
+  },
+  password: {
+    required: true,
+    type: String,
+  },
+  role: {
+    type: String,
+    enum: ["ms"],
+    default: "ms",
+  },
+},{ versionKey: false });
+
 // Hashing before password saved to db
 psychiatristSchema.pre('save', async function(next) {
   const salt = await bcrypt.genSalt();
@@ -274,6 +296,11 @@ adminSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
+msSchema.pre('save', async function(next) {
+  const salt = await bcrypt.genSalt();
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
 
 
 const Psychiatrist = mongoose.model("Psychiatrist", psychiatristSchema);
@@ -281,5 +308,6 @@ const Teacher = mongoose.model("Teacher", teacherSchema);
 const Student = mongoose.model("Student", studentSchema);
 const School = mongoose.model("School", schoolSchema);
 const Admin = mongoose.model("Admin", adminSchema);
+const Ms = mongoose.model("Ms", msSchema);
 
-module.exports = { Psychiatrist, Teacher, Student, School, Admin };
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms };
