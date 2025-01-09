@@ -44,8 +44,8 @@ authRouter.get("/api/getFeedback", getFeedback);  // get all the feedbacksorted 
 authRouter.get("/api/getAttendance", getAttendance);  // get all the attendance of psychiatrist date wise
 authRouter.get("/api/getSchool", getSchool);  // get all school(name and district) data for MS
 authRouter.put("/api/updatePassword", updatePasswords); // Update password route
-authRouter.get("/", auth, getData);  // get user data
 authRouter.post("/api/sendOTP", sendOTP); // Route to send OTP
 authRouter.post("/api/verifyOTP", verifyOTP); // Route to verify OTP
+authRouter.get("/", auth, getData);  // get user data
 
 module.exports = authRouter;

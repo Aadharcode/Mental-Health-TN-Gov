@@ -1,10 +1,10 @@
 require("dotenv").config();
 const apiKey = process.env.API_KEY;
-// const fetch = require("node-fetch");
+// const { Teacher, School, Psychiatrist, Admin, Ms } = require("../models/user");
 
 // Helper function to verify OTP
 const verifyOTPphone = async (number, otp) => {
-    const verifyUrl = `https://2factor.in/API/V1/${apiKey}/SMS/VERIFY/+91${number}/${otp}`;
+    const verifyUrl = `https://2factor.in/API/V1/${apiKey}/SMS/VERIFY3/+91${number}/${otp}`;
     const response = await fetch(verifyUrl);
     const data = await response.json();
     return data;
