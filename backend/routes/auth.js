@@ -20,6 +20,7 @@ const getFeedback = require("../controllers/getFeedback");
 const getAllStudent = require("../controllers/getAllStudents");
 const psychAttendance = require("../controllers/attendance");
 const getAttendance = require("../controllers/getAttendance");
+const updatePasswords = require("../controllers/updatePassword");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
@@ -40,6 +41,7 @@ authRouter.get("/api/msFetch", fetchAllRedflagStudents);  // get all red flag st
 authRouter.get("/api/getFeedback", getFeedback);  // get all the feedbacksorted date wise
 authRouter.get("/api/getAttendance", getAttendance);  // get all the attendance of psychiatrist date wise
 authRouter.get("/api/getSchool", getSchool);  // get all school(name and district) data for MS
+authRouter.put("/api/updatePassword", updatePasswords); // Update password route
 authRouter.get("/", auth, getData);  // get user data
 
 module.exports = authRouter;
