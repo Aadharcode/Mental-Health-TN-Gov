@@ -21,6 +21,8 @@ const getAllStudent = require("../controllers/getAllStudents");
 const psychAttendance = require("../controllers/attendance");
 const getAttendance = require("../controllers/getAttendance");
 const updatePasswords = require("../controllers/updatePassword");
+const sendOTP = require("../controllers/sendOTP");
+const verifyOTP = require("../controllers/verifyOTP");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
@@ -43,5 +45,7 @@ authRouter.get("/api/getAttendance", getAttendance);  // get all the attendance 
 authRouter.get("/api/getSchool", getSchool);  // get all school(name and district) data for MS
 authRouter.put("/api/updatePassword", updatePasswords); // Update password route
 authRouter.get("/", auth, getData);  // get user data
+authRouter.post("/api/sendOTP", sendOTP); // Route to send OTP
+authRouter.post("/api/verifyOTP", verifyOTP); // Route to verify OTP
 
 module.exports = authRouter;
