@@ -93,7 +93,7 @@ const studentSchema = mongoose.Schema({
   },
   date_of_birth: {
     required: true,
-    type: Date,
+    type: String,
   },
   gender: {
     required: true,
@@ -102,11 +102,11 @@ const studentSchema = mongoose.Schema({
   },
   class: {
     required: true,
-    type: Number,
+    type: String,
   },
   group_code: {
     //required: true,
-    type: Number,
+    type: String,
   },
   group_name: {
     //required: true,
@@ -175,6 +175,29 @@ const studentSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  referal_bool: {
+    type: Boolean,
+    default: false,
+  },
+  referal: {
+    type: String,
+    enum: ["null","district","others"],
+    default: "null",
+  },
+  Case_Status:{
+    type: String,
+    enum: ["none","ongoing","completed"],
+    default: "none",
+  },
+  Medicine_bool: {
+    type: Boolean,
+    default: false,
+  },
+  Medicine:{
+    type: String,
+    trim: true,
+    default: "",
+  }
 },{ versionKey: false });
 
 const schoolSchema = mongoose.Schema({
@@ -316,33 +339,50 @@ const attendanceSchema = mongoose.Schema({
 
 // Hashing before password saved to db
 psychiatristSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
+
 teacherSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
+
 studentSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
+
 schoolSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
+
 adminSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
+
 msSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
 

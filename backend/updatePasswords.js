@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-// const { Psychiatrist, Teacher, Student, School, Admin } = require("./models/user");
-const { Ms } = require("./models/user");
+// const { Psychiatrist, Teacher, Student, School, Admin, Ms } = require("./models/user");
+const { Student } = require("./models/user");
 
 // Function to hash and update passwords
 const updatePasswords = async (model, modelName) => {
@@ -29,7 +29,7 @@ const updatePasswords = async (model, modelName) => {
   try {
     // Connect to MongoDB
     await mongoose.connect(
-      process.env.DB_CONNECTION,
+      "process.env.DB_CONNECTION",
       { useNewUrlParser: true, useUnifiedTopology: true }
     );
     console.log("Connected to MongoDB!");
@@ -37,10 +37,10 @@ const updatePasswords = async (model, modelName) => {
     // Update passwords for each model
     // await updatePasswords(Psychiatrist, "Psychiatrist");
     // await updatePasswords(Teacher, "Teacher");
-    // await updatePasswords(Student, "Student");
+    await updatePasswords(Student, "Student");
     // await updatePasswords(School, "School");
     // await updatePasswords(Admin, "Admin");
-    await updatePasswords(Ms, "Ms");
+    // await updatePasswords(Ms, "Ms");
 
     console.log("Password updates completed for all models!");
   } catch (error) {
