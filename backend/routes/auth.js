@@ -23,11 +23,14 @@ const getAttendance = require("../controllers/getAttendance");
 const updatePasswords = require("../controllers/updatePassword");
 const sendOTP = require("../controllers/sendOTP");
 const verifyOTP = require("../controllers/verifyOTP");
+const createMS = require("../controllers/createMS");
+const deleteUser = require("../controllers/deleteUser");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
 authRouter.post("/createTeacher", createTeacher);  // new Teacher user
 authRouter.post("/createStudent", createStudent);  // new Student user
+authRouter.post("/createMS", createMS);  // new MS user
 authRouter.post("/createSchool", createSchool); // new School
 authRouter.post("/createPsychiatrist", createPsychiatrist); // new Psychiatrist user
 authRouter.post("/getStudent", getStudent); //fetch student data
@@ -46,6 +49,7 @@ authRouter.get("/api/getSchool", getSchool);  // get all school(name and distric
 authRouter.put("/api/updatePassword", updatePasswords); // Update password route
 authRouter.post("/api/sendOTP", sendOTP); // Route to send OTP
 authRouter.post("/api/verifyOTP", verifyOTP); // Route to verify OTP
+authRouter.delete("/api/deleteUser", deleteUser); // Route to delete a user
 authRouter.get("/", auth, getData);  // get user data
 
 module.exports = authRouter;

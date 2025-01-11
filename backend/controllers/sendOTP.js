@@ -10,8 +10,9 @@ const sendOTPphone = async (number) => {
     return data;
 };
 const sendOTPemail = async (email) => {
-    const otpUrl = `https://2factor.in/API/V1/${apiKey}/EMAIL/${email}/AUTOGEN/OTP1`;
+    const otpUrl = `https://2factor.in/API/V1/${apiKey}/EMAIL/${email}/AUTOGEN`;
     const response = await fetch(otpUrl);
+    console.log(response);
     const data = await response.json();
     return data;
 };
@@ -21,7 +22,7 @@ const sendOTP = async (req, res) => {
       console.log("Incoming req:", req.body);
       let { role, uniqueField } = req.body;
       if (!role || !uniqueField) {
-        return res.status(400).json({ msg: "Please provide all required fields (role, uniqueField, password)." });
+        return res.status(400).json({ msg: "Please provide all required fields (role, uniqueField)." });
       }
       // Transform uniqueField based on role
       if (role === "teacher") {
@@ -72,6 +73,9 @@ const sendOTP = async (req, res) => {
         contactInfo = "Mobile_number";
         break;
       case "admin":
+        query = { email: uniqueField };
+        contactInfo = "email";
+        break;
       case "ms":
         query = { email: uniqueField };
         contactInfo = "email";
