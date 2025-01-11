@@ -49,7 +49,10 @@ const signin = async (req, res) => {
       case "teacher":
         query = { district: email }; // Teachers identified by mobile number
         break;
-      case "hs-ms":
+      case "hm":
+        query = { udise_no: email }; // Schools identified by udise ID
+        break;
+      case "ms":
         query = { udise_no: email }; // Schools identified by udise ID
         break;
       case "psychiatrist":

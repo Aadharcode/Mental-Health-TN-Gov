@@ -8,6 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import '../../../backendUrl.dart';
 
 class LoginForm extends StatefulWidget {
+   final VoidCallback onForgetPasswordTap;
+
+  LoginForm({required this.onForgetPasswordTap});
   @override
   _LoginFormState createState() => _LoginFormState();
 }
@@ -162,14 +165,10 @@ class _LoginFormState extends State<LoginForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
-              onTap: () {
-                NavigationUtils.showComingSoonDialog(context);
-              },
+              onTap: widget.onForgetPasswordTap,
               child: const Text(
                 'Forget Password?',
-                style: TextStyle(
-                  color: AppColors.linkColor,
-                ),
+                style: TextStyle(color: Colors.blue),
               ),
             ),
           ],
