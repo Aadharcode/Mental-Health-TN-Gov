@@ -1,4 +1,4 @@
-const { Psychiatrist, Teacher, Student, School, Admin } = require("../models/user");
+const { Psychiatrist, Teacher, Student, School, Admin, Ms } = require("../models/user");
 
 const getData = async (req, res) => {
   try {
@@ -21,6 +21,9 @@ const getData = async (req, res) => {
         break;
       case "admin":
         userModel = Admin;
+        break;
+        case "ms":
+        userModel = Ms;
         break;
       default:
         return res.status(400).json({ msg: "Invalid role!" });

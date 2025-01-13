@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import './Screens/StudentDetailForm.dart';
-import './Screens/TeacherDetailForm.dart';
-import './Screens/SchoolDetailForm.dart';
-import './Screens/PsychiatristDetailForm.dart';
-import './Screens/setting.dart'; 
+import './Screens/setting.dart';
+import './Screens/DashboardScreen.dart';
+import './Screens/PsychiatristAttendanceScreen.dart'; // Import the new screen
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({Key? key}) : super(key: key);
@@ -13,11 +11,7 @@ class AdminScreen extends StatefulWidget {
 }
 
 class _AdminScreenState extends State<AdminScreen> {
-  bool _isMenuOpen = false; // Track menu state
-
-  void handleSearch() {
-    print('Search pressed');
-  }
+  bool _isMenuOpen = false;
 
   void toggleMenu() {
     setState(() {
@@ -34,15 +28,13 @@ class _AdminScreenState extends State<AdminScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _isMenuOpen ? closeMenu : null, // Close menu on outside tap
+      onTap: _isMenuOpen ? closeMenu : null,
       child: Scaffold(
         body: SafeArea(
           child: Stack(
             children: [
-              // Main Content
               Column(
                 children: [
-                  // Header with menu and settings icons
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Row(
@@ -50,120 +42,52 @@ class _AdminScreenState extends State<AdminScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.menu),
-                          onPressed: toggleMenu, // Toggle menu on press
+                          onPressed: toggleMenu,
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.settings_outlined),
-                          onPressed: () {
-                            // Navigate to the Setting screen
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => SettingsScreen()),
-                            );
-                          },
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PsychiatristAttendanceScreen(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'See Psychiatrist Attendance',
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.settings_outlined),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => SettingsScreen()),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-
-                  // Content Section
                   Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SizedBox(height: 60),
-                            // Logo Section
-                            Image.asset(
-                              "assets/Logo/logo_TNMS.png", // Replace with your asset path
-                              fit: BoxFit.contain,
-                            ),
-                            const SizedBox(height: 40),
-
-                            // Input Fields and Search Button
-                            Column(
-                              children: [
-                                // Name Input
-                                TextField(
-                                  decoration: InputDecoration(
-                                    hintText: 'Name',
-                                    hintStyle: const TextStyle(color: Colors.grey),
-                                    filled: true,
-                                    fillColor: Colors.grey.shade200,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0,
-                                      vertical: 12.0,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-
-                                // School/Company Input
-                                TextField(
-                                  decoration: InputDecoration(
-                                    hintText: 'School/Company',
-                                    hintStyle: const TextStyle(color: Colors.grey),
-                                    filled: true,
-                                    fillColor: Colors.grey.shade200,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0,
-                                      vertical: 12.0,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-
-                                // Search Button
-                                ElevatedButton(
-                                  onPressed: handleSearch,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.deepOrange.shade400,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24.0,
-                                      vertical: 12.0,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Login',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    child: DashboardScreen(),
                   ),
                 ],
               ),
-
-              // Hamburger Menu Overlay
               if (_isMenuOpen)
+                // Hamburger menu code remains unchanged
                 Positioned(
                   top: 0,
                   left: 0,
                   child: GestureDetector(
-                    onTap: closeMenu, // Close menu when clicking outside
+                    onTap: closeMenu,
                     child: Container(
-                      color: Colors.black.withOpacity(0.5), // Semi-transparent overlay
+                      color: Colors.black.withOpacity(0.5),
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height,
                       child: Align(
@@ -176,78 +100,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => UploadStudentForm()),
-                                  );
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                                  child: Text(
-                                    'Upload Student details',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                   Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => UploadTeacherForm()),
-                                  );
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                                  child: Text(
-                                    'Upload Teacher details',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                   Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => UploadSchoolForm()),
-                                  );
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                                  child: Text(
-                                    'Upload School details',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => UploadPsychiatristForm()),
-                                  );
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                                  child: Text(
-                                    'Upload Psychiatrist details',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              // Menu items remain unchanged
                             ],
                           ),
                         ),

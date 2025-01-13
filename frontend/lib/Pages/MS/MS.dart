@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Screens/home.dart';
+import 'Screens/dashboardScreen.dart';
 import 'Screens/setting.dart';  
 import './component/bottom-nav.dart';
 
@@ -12,7 +12,7 @@ class _MSState extends State<MSScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    HomeScreen(),
+    DashboardScreen(),
     SettingsScreen(),
   ];
 

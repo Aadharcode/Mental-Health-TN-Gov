@@ -93,7 +93,7 @@ const studentSchema = mongoose.Schema({
   },
   date_of_birth: {
     required: true,
-    type: Date,
+    type: String,
   },
   gender: {
     required: true,
@@ -102,11 +102,11 @@ const studentSchema = mongoose.Schema({
   },
   class: {
     required: true,
-    type: Number,
+    type: String,
   },
   group_code: {
     //required: true,
-    type: Number,
+    type: String,
   },
   group_name: {
     //required: true,
@@ -175,6 +175,29 @@ const studentSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  referal_bool: {
+    type: Boolean,
+    default: false,
+  },
+  referal: {
+    type: String,
+    enum: ["null","district","others"],
+    default: "null",
+  },
+  Case_Status:{
+    type: String,
+    enum: ["none","ongoing","completed"],
+    default: "none",
+  },
+  Medicine_bool: {
+    type: Boolean,
+    default: false,
+  },
+  Medicine:{
+    type: String,
+    trim: true,
+    default: "",
+  }
 },{ versionKey: false });
 
 const schoolSchema = mongoose.Schema({
@@ -248,30 +271,118 @@ const adminSchema = mongoose.Schema({
   },
 },{ versionKey: false });
 
+const msSchema = mongoose.Schema({
+  email: {
+    required: true,
+    type: String,
+    trim: true,
+    unique: true,
+    validate: {
+      validator: (value) => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(value),
+      message: "Please enter a valid email address",
+    },
+  },
+  password: {
+    required: true,
+    type: String,
+  },
+  role: {
+    type: String,
+    enum: ["ms"],
+    default: "ms",
+  },
+},{ versionKey: false });
+
+const feedbackSchema = mongoose.Schema({
+  name: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  feedback: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  role: {
+    type: String,
+    enum: ["ms", "psychiatrist","hs-ms"],
+    default: "ms",
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+},{ versionKey: false });
+
+const attendanceSchema = mongoose.Schema({
+  psychiatristName: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  latitude: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  longitude: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+},{ versionKey: false });
+
 // Hashing before password saved to db
 psychiatristSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
+
 teacherSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
+
 studentSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
+
 schoolSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
+
 adminSchema.pre('save', async function(next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
+msSchema.pre('save', async function(next) {
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
   next();
 });
 
@@ -281,5 +392,8 @@ const Teacher = mongoose.model("Teacher", teacherSchema);
 const Student = mongoose.model("Student", studentSchema);
 const School = mongoose.model("School", schoolSchema);
 const Admin = mongoose.model("Admin", adminSchema);
+const Ms = mongoose.model("Ms", msSchema);
+const Feedback = mongoose.model("Feedback", feedbackSchema);
+const Attendance = mongoose.model("Attendance", attendanceSchema);
 
-module.exports = { Psychiatrist, Teacher, Student, School, Admin };
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance };

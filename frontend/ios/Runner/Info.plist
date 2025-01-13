@@ -23,6 +23,12 @@
 	</dict>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to mark attendance.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location to mark attendance even when in the background.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to mark attendance.</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>

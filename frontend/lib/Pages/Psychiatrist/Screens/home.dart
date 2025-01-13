@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../../backendUrl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -17,7 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchRedFlaggedStudents();
   }
 
-  // Fetch red-flagged students
   Future<void> fetchRedFlaggedStudents() async {
     try {
       final url = Uri.parse('http://13.232.9.135:3000/approvedStudents');
@@ -40,36 +40,212 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Handle curing (canceling) a red-flagged student
-  Future<void> handleCure(String emisId) async {
+  Future<void> handleCure(String emisId, Map<String, dynamic> formData) async {
+  try {
+    print("🔄 Sending cure request for student with EMIS ID: $emisId...");
+    print("📤 Request data: ${jsonEncode({
+      'student_emis_id': emisId,
+      'approve': false,
+      'case_status': formData['case_status'],
+      'medicine_bool': formData['medicine_bool'],
+      'medicine': formData['medicine'],
+      'referal_bool': formData['referal_bool'],
+      'referal': formData['referal'],
+    })}");
+
+    if(formData['referal'].isEmpty){
+      formData['referal'] = null;    }
+
+    final url = Uri.parse('http://192.168.10.250:3000/api/cured');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'student_emis_id': emisId,
+        'approve': false,
+        'case_status': formData['case_status'],
+        'medicine_bool': formData['medicine_bool'],
+        'medicine': formData['medicine'],
+        'referal_bool': formData['referal_bool'],
+        'referal': formData['referal'],
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print("✅ Cure request successful for student EMIS ID: $emisId.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Student cured')),
+      );
+      setState(() {
+        redFlaggedStudents.removeWhere((student) => student['student_emis_id'] == emisId);
+      });
+    } else {
+      final message = jsonDecode(response.body)['msg'];
+      print("❌ Cure request failed. Response: ${response.body}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message ?? 'Failed to update student status')),
+      );
+    }
+  } catch (e) {
+    print("⚠️ An error occurred while sending the cure request: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('An error occurred: $e')),
+    );
+  }
+}
+
+
+  Future<Map<String, dynamic>?> showCuredForm(BuildContext context, String emisId) async {
+  final _formKey = GlobalKey<FormState>();
+  String? caseStatus = "completed";
+  bool medicineBool = false;
+  String? medicine;
+  bool referalBool = false;
+  String? referal;
+
+  return await showDialog<Map<String, dynamic>>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('Cure Student'),
+        content: StatefulBuilder(
+          builder: (context, setState) {
+            return Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButtonFormField<String>(
+                      value: caseStatus,
+                      items: ['completed', 'ongoing']
+                          .map((status) => DropdownMenuItem(
+                                value: status,
+                                child: Text(status),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          caseStatus = value;
+                        });
+                      },
+                      decoration: InputDecoration(labelText: 'Case Status'),
+                    ),
+                    SwitchListTile(
+                      title: Text('Medicine Required?'),
+                      value: medicineBool,
+                      onChanged: (value) {
+                        setState(() {
+                          medicineBool = value;
+                          if (!medicineBool) {
+                            medicine = null; // Reset medicine details if unchecked
+                          }
+                        });
+                      },
+                    ),
+                    if (medicineBool)
+                      TextFormField(
+                        decoration: InputDecoration(labelText: 'Medicine Details'),
+                        onChanged: (value) {
+                          medicine = value;
+                        },
+                        validator: (value) {
+                          if (medicineBool && (value == null || value.isEmpty)) {
+                            return 'Please provide medicine details';
+                          }
+                          return null;
+                        },
+                      ),
+                    SwitchListTile(
+                      title: Text('Referral Required?'),
+                      value: referalBool,
+                      onChanged: (value) {
+                        setState(() {
+                          referalBool = value;
+                          if (!referalBool) {
+                            referal = null; // Reset referral details if unchecked
+                          }
+                        });
+                      },
+                    ),
+                    if (referalBool)
+                     DropdownButtonFormField<String>(
+                          value: referal,
+                          items: ["district", "others"]
+                              .map((option) => DropdownMenuItem(
+                                    value: option,
+                                    child: Text(option),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            referal = value;
+                          },
+                          validator: (value) {
+                            if (referalBool && (value == null || value.isEmpty)) {
+                              return 'Please select a referral type';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(labelText: 'Referral Details'),
+                        ),
+
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                Navigator.of(context).pop({
+                  'case_status': caseStatus,
+                  'medicine_bool': medicineBool,
+                  'medicine': medicine ?? "",
+                  'referal_bool': referalBool,
+                  'referal': referal ?? "",
+                });
+              }
+            },
+            child: Text('Submit'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+
+  Future<void> markAttendance() async {
     try {
-      final url = Uri.parse('http://13.232.9.135:3000/api/approval');
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final prefs = await SharedPreferences.getInstance();
+      final name = prefs.getString('DISTRICT_PSYCHIATRIST_NAME');
+
+      final url = Uri.parse('http://192.168.10.250:3000/api/attendance');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'student_emis_id': emisId,
-          'approve': false, 
+          'psychiatristName': name,
+          'latitude': position.latitude,
+          'longitude': position.longitude,
         }),
       );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+      if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('student cured')),
+          SnackBar(content: Text('Attendance marked successfully')),
         );
-
-        // Reload the student list after curing and update the UI
-        setState(() {
-          redFlaggedStudents.removeWhere((student) => student['student_emis_id'] == emisId);
-        });
-
-        // Optionally, call fetchRedFlaggedStudents again to get fresh data from server
-        fetchRedFlaggedStudents();
       } else {
-        final message = jsonDecode(response.body)['msg'];
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message ?? 'Failed to update student status')),
+          SnackBar(content: Text('Failed to mark attendance')),
         );
       }
     } catch (e) {
@@ -84,67 +260,40 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Red-Flagged Students'),
-        leading: IconButton(
-          icon: Icon(Icons.chevron_left),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back
-          },
-        ),
       ),
       body: SafeArea(
-        child: redFlaggedStudents.isEmpty
-            ? Center(
-                child: Text('No red-flagged students found.'),
-              )
-            : ListView.builder(
-                itemCount: redFlaggedStudents.length,
-                itemBuilder: (context, index) {
-                  final student = redFlaggedStudents[index];
-
-                  // Generate redflags based on the boolean fields
-                  List<String> redFlags = [];
-                  if (student['anxiety'] == true) redFlags.add('Anxiety');
-                  if (student['depression'] == true) redFlags.add('Depression');
-                  if (student['aggresion_violence'] == true) redFlags.add('Aggression/Violence');
-                  if (student['selfharm_suicide'] == true) redFlags.add('Self-harm/Suicide');
-                  if (student['sexual_abuse'] == true) redFlags.add('Sexual Abuse');
-                  if (student['stress'] == true) redFlags.add('Stress');
-                  if (student['loss_grief'] == true) redFlags.add('Loss/Grief');
-                  if (student['relationship'] == true) redFlags.add('Relationship Issues');
-                  if (student['bodyimage_selflisten'] == true) redFlags.add('Body Image/Self-listen');
-                  if (student['sleep'] == true) redFlags.add('Sleep Issues');
-                  if (student['conduct_delnquency'] == true) redFlags.add('Conduct/Delinquency');
-
-                  // Join the redflags as a comma-separated string
-                  final redFlagsText = redFlags.isNotEmpty ? redFlags.join(', ') : 'No red flags';
-
-                  return Card(
-                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Name: ${student['student_name']}'),
-                          Text('School: ${student['school_name']}'),
-                          Text('EMIS No: ${student['student_emis_id']}'),
-                          Text('Redflags: $redFlagsText'),
-                          ElevatedButton(
-                            onPressed: () {
-                              handleCure(student['student_emis_id']);
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: markAttendance,
+              child: Text('Mark Attendance'),
+            ),
+            redFlaggedStudents.isEmpty
+                ? Center(child: Text('No red-flagged students found.'))
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: redFlaggedStudents.length,
+                      itemBuilder: (context, index) {
+                        final student = redFlaggedStudents[index];
+                        return ListTile(
+                          title: Text(student['student_name']),
+                          subtitle: Text('School: ${student['school_name']}'),
+                          trailing: ElevatedButton(
+                            onPressed: () async {
+                              final formData = await showCuredForm(context, student['student_emis_id']);
+                              if (formData != null) {
+                                await handleCure(student['student_emis_id'], formData);
+                              }
                             },
                             child: Text('Cured'),
                             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
+                  ),
+          ],
+        ),
       ),
     );
   }
