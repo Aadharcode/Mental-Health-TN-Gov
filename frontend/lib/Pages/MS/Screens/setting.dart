@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
 import '../../utils/navigation.dart';
 
 class SettingsScreen extends StatelessWidget {
+  Future<void> _handleLogout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Clear role and token in SharedPreferences
+    await prefs.setString('role', "null");
+   
+
+    // Navigate to the login page
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,9 +63,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 15),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/login'); // Navigates to the login page
-                },
+                onPressed: () => _handleLogout(context), // Call the logout handler
                 child: const Text('Logout'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red[100],

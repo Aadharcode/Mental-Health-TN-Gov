@@ -1,7 +1,27 @@
 import 'package:flutter/material.dart';
 import './Components/LoginForm.dart';
+import '../OTP/home.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  int _currentIndex = 0; // 0: Login Form, 1: Forget Password Form
+
+  void _switchToForgetPasswordForm() {
+    setState(() {
+      _currentIndex = 1;
+    });
+  }
+
+  void _switchToLoginForm() {
+    setState(() {
+      _currentIndex = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,14 +42,17 @@ class LoginScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 17.0),
                 Text(
-                  'Login',
+                  _currentIndex == 0 ? 'Login' : 'Forget Password',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 20),
-                LoginForm(),
+                if (_currentIndex == 0) 
+                  LoginForm(onForgetPasswordTap: _switchToForgetPasswordForm),
+                if (_currentIndex == 1) 
+                  ForgetPasswordForm(onBackToLoginTap: _switchToLoginForm),
               ],
             ),
           ),

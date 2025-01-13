@@ -1,0 +1,300 @@
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'PsychiatristDetailForm.dart';
+import 'TeacherDetailForm.dart';
+import './updateScreens/psychiatrist.dart';
+import './updateScreens/teacher.dart';
+import './updateScreens/student.dart';
+import 'StudentDetailForm.dart';
+import 'SchoolDetailForm.dart';
+
+class DetailScreen extends StatefulWidget {
+  final String title;
+  final String collectionName;
+
+  const DetailScreen({
+    required this.title,
+    required this.collectionName,
+  });
+
+  @override
+  _DetailScreenState createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  List<dynamic> items = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCollectionData();
+  }
+
+  String getEmail(String collectionName, Map<String, dynamic> item) {
+    switch (collectionName) {
+      case "students":
+        return item['student_emis_id'];
+      case "psychiatrists":
+        return item['DISTRICT_PSYCHIATRIST_NAME'];
+      case "teachers":
+        return item['district'];
+      case "schools":
+        return item['udise_no'];
+      default:
+        return "unknown";
+    }
+  }
+
+  Future<void> fetchCollectionData() async {
+    print("📡 Fetching data from collection: ${widget.collectionName}...");
+    try {
+      final response = await http.post(
+        Uri.parse("http://192.168.10.250:3000/fetch-all"),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'collectionName': widget.collectionName,
+        }),
+      );
+
+      print("📥 Response received with status code: ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print("✅ Data decoded successfully $data");
+
+        if (data['success']) {
+          print("🎉 Data fetch successful. Updating UI...");
+          setState(() {
+            items = data['data'];
+            isLoading = false;
+          });
+        } else {
+          print("❌ Error from API: ${data['error'] ?? 'Unknown error'}");
+          throw Exception(data['error'] ?? "Failed to fetch data");
+        }
+      } else {
+        print("❗ Failed to load data. Status Code: ${response.statusCode}");
+        throw Exception(
+            "Failed to load data. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("🚨 Exception occurred: ${e.toString()}");
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    }
+  }
+
+  void showOptionsDialog(dynamic item) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(" ${item['student_name'] ?? 'User'}"),
+          content: const Text("Choose an action:"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                updateUser(widget.collectionName, item);
+              },
+              child: const Text("Update"),
+            ),
+            TextButton(
+              onPressed: () {
+                String email = getEmail(widget.collectionName, item);
+                Navigator.of(context).pop();
+                deleteUser(widget.collectionName, email);
+              },
+              child: const Text("Delete"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Cancel"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> updateUser(String collectionName, dynamic item) async {
+    try {
+      Widget formScreen;
+
+      switch (collectionName) {
+        case "psychiatrists":
+          formScreen = UpdatePsychiatristForm(
+            initialData: item,
+            isUpdate: true,
+          );
+          break;
+        case "teachers":
+          formScreen = UpdateTeacherForm(
+            initialData: item,
+            isUpdate: true,
+          );
+          break;
+        case "students":
+          formScreen = UpdateStudentForm(
+            initialData: item,
+            isUpdate: true,
+          );
+          break;
+        case "schools":
+          formScreen = UploadSchoolForm();
+          break;
+        default:
+          throw Exception("Invalid collection name: $collectionName");
+      }
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => formScreen),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    }
+  }
+
+  Future<void> deleteUser(String role, String email) async {
+    try {
+      final response = await http.delete(
+        Uri.parse("http://192.168.10.250:3000/api/deleteUser"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "role": role,
+          "email": email,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['msg'] != null) {
+          setState(() {
+            items.removeWhere((item) => item['email'] == email);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(data['msg'])),
+          );
+        } else {
+          throw Exception(data['msg'] ?? "Failed to delete user");
+        }
+      } else {
+        throw Exception(
+            "Failed to delete user. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    }
+  }
+
+  void _navigateToAddScreen() {
+    try {
+      Widget formScreen;
+
+      switch (widget.collectionName) {
+        case "psychiatrists":
+          formScreen = UploadPsychiatristForm();
+          break;
+        case "teachers":
+          formScreen = UploadTeacherForm();
+          break;
+        case "students":
+          formScreen = UploadStudentForm();
+          break;
+        case "schools":
+          formScreen = UploadSchoolForm();
+          break;
+        default:
+          throw Exception("Invalid collection name: ${widget.collectionName}");
+      }
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => formScreen),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => _navigateToAddScreen(),
+          ),
+        ],
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : items.isEmpty
+              ? const Center(child: Text("No data available"))
+              : ListView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    return Card(
+                      margin: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        title: Text(_getTitle(item)),
+                        subtitle: Text(_getSubtitle(item)),
+                        trailing: const Icon(Icons.arrow_forward),
+                        onTap: () => showOptionsDialog(item),
+                      ),
+                    );
+                  },
+                ),
+    );
+  }
+
+  String _getTitle(dynamic item) {
+    switch (widget.collectionName) {
+      case "students":
+        return item['student_name'] ?? "Unnamed Student";
+      case "psychiatrists":
+        return item['DISTRICT_PSYCHIATRIST_NAME'] ?? "Unnamed Psychiatrist";
+      case "teachers":
+        return item['Teacher_Name'] ?? "Unnamed Teacher";
+      case "schools":
+        return item['SCHOOL_NAME'] ?? "Unnamed School";
+      default:
+        return "Unnamed";
+    }
+  }
+
+  String _getSubtitle(dynamic item) {
+    switch (widget.collectionName) {
+      case "students":
+        return "EMIS ID: ${item['student_emis_id'] ?? 'N/A'}";
+      case "psychiatrists":
+        return "District: ${item['district'] ?? 'N/A'}";
+      case "teachers":
+        return "School: ${item['School_name'] ?? 'N/A'}";
+      case "schools":
+        return "UDISE No: ${item['udise_no'] ?? 'N/A'}";
+      default:
+        return "N/A";
+    }
+  }
+}

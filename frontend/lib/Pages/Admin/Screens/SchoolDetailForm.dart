@@ -51,7 +51,7 @@ class _UploadSchoolFormState extends State<UploadSchoolForm> {
           'SCHOOL_MAIL_ID': formData['schoolMailID'],
           'HM_NAME': formData['hmName'],
           'HM_MOBILE_NO': formData['hmMobile'],
-          'password': 'defaultPassword', // You may want to handle password input too
+          'password': formData['password'], // You may want to handle password input too
         }),
       );
 
@@ -128,6 +128,7 @@ class _UploadSchoolFormState extends State<UploadSchoolForm> {
                   {'label': 'School mailID', 'field': 'schoolMailID'},
                   {'label': 'HM Name', 'field': 'hmName'},
                   {'label': 'HM Mobile No', 'field': 'hmMobile'},
+                  {'label': 'password', 'field': 'password'},
                 ].map((fieldData) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

@@ -5,9 +5,12 @@ import '../../utils/appStyle.dart';
 import '../../utils/appColor.dart';
 import '../../utils/navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import '../../../backendUrl.dart';
 
 class LoginForm extends StatefulWidget {
+  final VoidCallback onForgetPasswordTap;
+
+  LoginForm({required this.onForgetPasswordTap});
+
   @override
   _LoginFormState createState() => _LoginFormState();
 }
@@ -21,6 +24,44 @@ class _LoginFormState extends State<LoginForm> {
 
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final role = prefs.getString('role');
+
+    if (token != null && role != null) {
+      // Navigate based on the saved role
+      switch (role) {
+        case 'admin':
+          Navigator.pushReplacementNamed(context, '/admin');
+          break;
+        case 'teacher':
+          Navigator.pushReplacementNamed(context, '/teachers');
+          break;
+        case 'hs-ms':
+          Navigator.pushReplacementNamed(context, '/hm');
+          break;
+        case 'ms':
+          Navigator.pushReplacementNamed(context, '/ms');
+          break;
+        case 'psychiatrist':
+          Navigator.pushReplacementNamed(context, '/psychiatrist');
+          break;
+        case 'students':
+          Navigator.pushReplacementNamed(context, '/students');
+          break;
+        default:
+          NavigationUtils.showSnackBar(context, "Invalid role saved.");
+      }
+    }
+  }
+
   Future<void> _handleLogin() async {
     setState(() {
       _isLoading = true;
@@ -29,10 +70,13 @@ class _LoginFormState extends State<LoginForm> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     var role = _selectedRole.toLowerCase();
+    if (role == 'hm') {
+      role = 'hs-ms';
+    }
 
     try {
       final response = await http.post(
-        Uri.parse('http://13.232.9.135:3000/api/signin'), 
+        Uri.parse('http://192.168.10.250:3000/api/signin'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'role': role, 'email': email, 'password': password}),
       );
@@ -47,11 +91,12 @@ class _LoginFormState extends State<LoginForm> {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', token);
           await prefs.setString('role', role);
-          if(role=='hm'){
+
+          if (role == 'hs-ms') {
             await prefs.setString('School_name', user['SCHOOL_NAME']);
-            print(user['SCHOOL_NAME']);
             await prefs.setString('district', user['DISTRICT']);
-            print(user['DISTRICT']);
+          } else if (role == 'psychiatrist') {
+            await prefs.setString('DISTRICT_PSYCHIATRIST_NAME', user['DISTRICT_PSYCHIATRIST_NAME']);
           }
 
           // Navigate based on the role
@@ -62,7 +107,7 @@ class _LoginFormState extends State<LoginForm> {
             case 'teacher':
               Navigator.pushNamed(context, '/teachers');
               break;
-            case 'hm':
+            case 'hs-ms':
               Navigator.pushNamed(context, '/hm');
               break;
             case 'ms':
@@ -162,14 +207,10 @@ class _LoginFormState extends State<LoginForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
-              onTap: () {
-                NavigationUtils.showComingSoonDialog(context);
-              },
+              onTap: widget.onForgetPasswordTap,
               child: const Text(
                 'Forget Password?',
-                style: TextStyle(
-                  color: AppColors.linkColor,
-                ),
+                style: TextStyle(color: Colors.blue),
               ),
             ),
           ],
