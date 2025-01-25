@@ -1,6 +1,6 @@
 require("dotenv").config();
 const apiKey = process.env.API_KEY;
-// const { Teacher, School, Psychiatrist, Admin, Ms } = require("../models/user");
+// const { Teacher, School, Psychiatrist, Admin, Ms , CIF , ASA } = require("../models/user");
 
 // Helper function to verify OTP
 const verifyOTPphone = async (number, otp) => {

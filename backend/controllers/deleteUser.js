@@ -1,4 +1,4 @@
-const { Psychiatrist, Teacher, Student, School, Admin, Ms } = require("../models/user");
+const { Psychiatrist, Teacher, Student, School, Admin, Ms , CIF , ASA , RC } = require("../models/user");
 
 const deleteUser = async (req, res) => {
   try {
@@ -15,7 +15,7 @@ const deleteUser = async (req, res) => {
     } else if (role === "psychiatrist") {
         email = email.toUpperCase();
         console.log("Transformed psychiatrist username:", email);
-    }else if (role === "admin" || role === "ms") {
+    }else if (role === "admin" || role === "ms"|| role ==="rc") {
         email = email.toLowerCase();
         console.log("Transformed admin/ms username:", email);
     }
@@ -36,6 +36,15 @@ const deleteUser = async (req, res) => {
         break;
       case "ms":
         userModel = Ms;
+        break;
+      case "asa":
+        userModel = ASA;
+        break;
+      case "cif":
+        userModel = CIF;
+        break;
+      case "rc":
+        userModel = RC;
         break;
       default:
         return res.status(400).json({ msg: "Invalid role specified!" });
@@ -58,6 +67,15 @@ const deleteUser = async (req, res) => {
         query = { email }; // Admins identified by email
         break;
       case "ms":
+        query = { email }; // MSs identified by email
+        break;
+      case "asa":
+        query = { mobile_number: email }; // ASAs identified by email
+        break;
+      case "cif":
+        query = { mobile_number: email }; // CIFs identified by email
+        break; 
+      case "rc":
         query = { email }; // MSs identified by email
         break;
     }

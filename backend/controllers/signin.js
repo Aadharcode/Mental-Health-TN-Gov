@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { Psychiatrist, Teacher, Student, School, Admin, Ms } = require("../models/user");
+const { Psychiatrist, Teacher, Student, School, Admin, Ms , CIF , ASA , RC } = require("../models/user");
 const bcryptjs = require("bcryptjs");
 
 const signin = async (req, res) => {
@@ -19,7 +19,7 @@ const signin = async (req, res) => {
     } else if (role === "psychiatrist") {
       email = email.toUpperCase();
       console.log("Transformed psychiatrist username:", email);
-    }else if (role === "admin" || role === "ms") {
+    }else if (role === "admin" || role === "ms"|| role ==="rc") {
       email = email.toLowerCase();
       console.log("Transformed admin/ms username:", email);
     }
@@ -43,6 +43,15 @@ const signin = async (req, res) => {
         break;
       case "admin":
         userModel = Admin;
+        break;
+      case "asa":
+        userModel = ASA;
+        break;
+      case "cif":
+        userModel = CIF;
+        break;
+      case "rc":
+        userModel = RC;
         break;
       default:
         console.log("Invalid role specified:", role); // For debugging role
@@ -72,6 +81,15 @@ const signin = async (req, res) => {
       case "ms":
         query = { email }; // MSs identified by email
         break;
+      case "asa":
+        query = { mobile_number: email }; // ASAs identified by mobile number
+        break;
+      case "cif":
+        query = { mobile_number: email }; // CIFs identified by mobile number
+        break;  
+      case "rc":
+        query = { email }; // CIFs identified by email
+        break;
     }
     console.log("Query being executed:", query); 
     // Find the user in the appropriate collection
@@ -87,6 +105,7 @@ const signin = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ msg: "Incorrect password." });
     }
+    // return res.status(400).json({ msg: "Done Password checking" });
     const token = jwt.sign({ id: user._id, role }, process.env.JWT_SECRET, { expiresIn: "1h" });
     // Send back the user data along with the token
     res.json({

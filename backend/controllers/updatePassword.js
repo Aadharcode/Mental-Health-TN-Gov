@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { Psychiatrist, Teacher, Student, School, Admin, Ms } = require("../models/user");
+const { Psychiatrist, Teacher, Student, School, Admin, Ms , ASA , CIF , RC } = require("../models/user");
 const bcryptjs = require("bcryptjs");
 
 const updatePasswords = async (req, res) => {
@@ -16,7 +16,7 @@ const updatePasswords = async (req, res) => {
     } else if (role === "psychiatrist") {
       uniqueField = uniqueField.toUpperCase();
       console.log("Transformed psychiatrist uniqueField:", uniqueField);
-    } else if (role === "admin" || role === "ms") {
+    } else if (role === "admin" || role === "ms" || role ==="rc") {
       uniqueField = uniqueField.toLowerCase();
       console.log("Transformed admin/ms uniqueField:", uniqueField);
     }
@@ -40,6 +40,15 @@ const updatePasswords = async (req, res) => {
         break;
       case "ms":
         userModel = Ms;
+        break;
+      case "asa":
+        userModel = ASA;
+        break;
+      case "cif":
+        userModel = CIF;
+        break;
+      case "rc":
+        userModel = RC;
         break;
       default:
         console.log("Invalid role specified:", role); // For debugging role
@@ -65,6 +74,15 @@ const updatePasswords = async (req, res) => {
         break;
       case "ms":
         query = { email: uniqueField }; // MSs identified by email
+        break;
+      case "asa":
+        query = { mobile_number: uniqueField };
+        break;
+      case "cif":
+        query = { mobile_number: uniqueField };
+        break;
+      case "rc":
+        query = { email: uniqueField };
         break;
     }
     console.log("Query being executed:", query); 

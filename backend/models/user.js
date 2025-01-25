@@ -249,6 +249,114 @@ const schoolSchema = mongoose.Schema({
   },
 },{ versionKey: false });
 
+const ASASchema = mongoose.Schema({
+  School_Name: {
+    required: true,
+    type: String,
+  },
+  ASA_Mail_id: {
+    required: true,
+    type: String,
+  },
+  ASA_Name: {
+    required: true,
+    type: String,
+  },
+  mobile_number: {
+    required: true,
+    type: String,
+  },
+  Phase: {
+    required: true,
+    type: String,
+  },
+  RC: {
+    required: true,
+    type: String,
+  },
+  Willing_to_join_CUG: {
+    required: true,
+    type: String,
+  },
+  password: {
+    required: true,
+    type: String,
+  },
+  role: {
+    type: String,
+    enum: ["asa"],
+    default: "asa",
+  },
+},{ versionKey: false });
+
+const CIFSchema = mongoose.Schema({
+  School_Name: {
+    required: true,
+    type: String,
+  },
+  CIF_Mail_id: {
+    required: true,
+    type: String,
+  },
+  CIF_Name: {
+    required: true,
+    type: String,
+  },
+  mobile_number: {
+    required: true,
+    type: String,
+  },
+  Phase: {
+    required: true,
+    type: String,
+  },
+  RC: {
+    required: true,
+    type: String,
+  },
+  Willing_to_join_CUG: {
+    required: true,
+    type: String,
+  },
+  password: {
+    required: true,
+    type: String,
+  },
+  role: {
+    type: String,
+    enum: ["cif"],
+    default: "cif",
+  },
+},{ versionKey: false });
+
+const RegionalCoordSchema = mongoose.Schema({
+  Zone: {
+    required: true,
+    type: String,
+  },
+  email: {
+    required: true,
+    type: String,
+  },
+  Name: {
+    required: true,
+    type: String,
+  },
+  mobile_number: {
+    required: true,
+    type: String,
+  },
+  password: {
+    required: true,
+    type: String,
+  },
+  role: {
+    type: String,
+    enum: ["rc"],
+    default: "rc",
+  },
+},{ versionKey: false });
+
 const adminSchema = mongoose.Schema({
   email: {
     required: true,
@@ -370,6 +478,22 @@ schoolSchema.pre('save', async function(next) {
   next();
 });
 
+ASASchema.pre('save', async function(next) {
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
+CIFSchema.pre('save', async function(next) {
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
 adminSchema.pre('save', async function(next) {
   if (this.isModified('password')) { 
     const salt = await bcrypt.genSalt();
@@ -386,6 +510,13 @@ msSchema.pre('save', async function(next) {
   next();
 });
 
+RegionalCoordSchema.pre('save', async function(next) {
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
 
 const Psychiatrist = mongoose.model("Psychiatrist", psychiatristSchema);
 const Teacher = mongoose.model("Teacher", teacherSchema);
@@ -395,5 +526,8 @@ const Admin = mongoose.model("Admin", adminSchema);
 const Ms = mongoose.model("Ms", msSchema);
 const Feedback = mongoose.model("Feedback", feedbackSchema);
 const Attendance = mongoose.model("Attendance", attendanceSchema);
+const ASA = mongoose.model("ASA", ASASchema);
+const CIF = mongoose.model("CIF", CIFSchema);
+const RC = mongoose.model("RC",RegionalCoordSchema);
 
-module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance };
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC };

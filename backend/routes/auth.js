@@ -31,12 +31,18 @@ const updateTeacher = require("../controllers/updateTeacher");
 const updateSchool = require("../controllers/updateSchool");
 const updatePsychiatrist = require("../controllers/updatePsychiatrist");
 const cured = require("../controllers/cured");
+const createASA = require("../controllers/createASA");
+const createCIF = require("../controllers/createCIF");
+const createRC = require("../controllers/createRC");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
 authRouter.post("/createTeacher", createTeacher);  // new Teacher user
 authRouter.post("/createStudent", createStudent);  // new Student user
 authRouter.post("/createMS", createMS);  // new MS user
+authRouter.post("/createRC", createRC);  // new RC user
+authRouter.post("/createASA", createASA);  // new ASA user
+authRouter.post("/createCIF", createCIF);  // new CIF user
 authRouter.post("/createSchool", createSchool); // new School
 authRouter.post("/createPsychiatrist", createPsychiatrist); // new Psychiatrist user
 authRouter.post("/getStudent", getStudent); //fetch student data
@@ -60,8 +66,8 @@ authRouter.get("/api/getAttendance", getAttendance);  // get all the attendance 
 authRouter.get("/api/getSchool", getSchool);  // get all school(name and district) data for MS
 authRouter.get("/getAllStudent", getAllStudent); //fetch student data
 authRouter.get("/approvedStudents", getApprovedStudents);  //To fetch the approved students for the psychiatrist
-authRouter.delete("/api/deleteUser", deleteUser); // Route to delete a user
 authRouter.get("/", auth, getData);  // get user data
+authRouter.delete("/api/deleteUser", deleteUser); // Route to delete a user
 authRouter.post('/fetch-all', fetchDetails) 
 
 
