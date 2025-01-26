@@ -34,6 +34,7 @@ const cured = require("../controllers/cured");
 const createASA = require("../controllers/createASA");
 const createCIF = require("../controllers/createCIF");
 const createRC = require("../controllers/createRC");
+const bookTimeSlot = require("../controllers/bookTimeslot");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
@@ -55,6 +56,7 @@ authRouter.post("/api/cured", cured); // Route to reset student fields for cured
 authRouter.post("/tokenIsValid", tokenIsValid);   // Token validation
 authRouter.post("/api/sendOTP", sendOTP); // Route to send OTP
 authRouter.post("/api/verifyOTP", verifyOTP); // Route to verify OTP
+authRouter.post("/api/bookTimeSlot", bookTimeSlot); // Route to book time slot
 authRouter.put("/api/updatePassword", updatePasswords); // Update password route
 authRouter.put("/api/updateStudent", updateStudent); // Route to update student details
 authRouter.put("/api/updateTeacher", updateTeacher); // Route to update teacher details

@@ -401,6 +401,24 @@ const msSchema = mongoose.Schema({
   },
 },{ versionKey: false });
 
+const timeSlotSchema = mongoose.Schema({
+  timeSlot: {
+    required: true,
+    type: mongoose.Schema.Types.Date,    
+  },
+  timespan:{
+    type: String,
+  },
+  School_Name: {
+    required: true,
+    type: String,
+  },
+  status: {
+    type: Boolean,
+    default: false,
+  },
+},{ versionKey: false });
+
 const feedbackSchema = mongoose.Schema({
   name: {
     required: true,
@@ -529,5 +547,6 @@ const Attendance = mongoose.model("Attendance", attendanceSchema);
 const ASA = mongoose.model("ASA", ASASchema);
 const CIF = mongoose.model("CIF", CIFSchema);
 const RC = mongoose.model("RC",RegionalCoordSchema);
+const timeSlot = mongoose.model("timeSlot",timeSlotSchema);
 
-module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC };
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot };
