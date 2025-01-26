@@ -35,6 +35,8 @@ const createASA = require("../controllers/createASA");
 const createCIF = require("../controllers/createCIF");
 const createRC = require("../controllers/createRC");
 const bookTimeSlot = require("../controllers/bookTimeslot");
+const getTimeSlotsBySchoolName = require("../controllers/getTimeSlot");
+const getAllTimeSlots = require("../controllers/getAllTimeSlots");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
@@ -68,6 +70,9 @@ authRouter.get("/api/getAttendance", getAttendance);  // get all the attendance 
 authRouter.get("/api/getSchool", getSchool);  // get all school(name and district) data for MS
 authRouter.get("/getAllStudent", getAllStudent); //fetch student data
 authRouter.get("/approvedStudents", getApprovedStudents);  //To fetch the approved students for the psychiatrist
+authRouter.get("/getTimeSlotsBySchoolName" , getTimeSlotsBySchoolName); // To fetch timeslot based on school name
+authRouter.get("/getAllTimeSlots" , getAllTimeSlots); // To fetch all time slots
+authRouter.get("/", auth, getData);  // get user data
 authRouter.get("/", auth, getData);  // get user data
 authRouter.delete("/api/deleteUser", deleteUser); // Route to delete a user
 authRouter.post('/fetch-all', fetchDetails) 
