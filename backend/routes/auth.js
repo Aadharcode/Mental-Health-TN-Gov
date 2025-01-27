@@ -37,6 +37,7 @@ const createRC = require("../controllers/createRC");
 const bookTimeSlot = require("../controllers/bookTimeslot");
 const getTimeSlotsBySchoolName = require("../controllers/getTimeSlot");
 const getAllTimeSlots = require("../controllers/getAllTimeSlots");
+const getStudentsByZone = require("../controllers/getStudentbyZone");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
@@ -69,6 +70,7 @@ authRouter.get("/api/getFeedback", getFeedback);  // get all the feedbacksorted 
 authRouter.get("/api/getAttendance", getAttendance);  // get all the attendance of psychiatrist date wise
 authRouter.get("/api/getSchool", getSchool);  // get all school(name and district) data for MS
 authRouter.get("/getAllStudent", getAllStudent); //fetch student data
+authRouter.get("/getStudentsByZone", getStudentsByZone); //fetch student data based on their zone
 authRouter.get("/approvedStudents", getApprovedStudents);  //To fetch the approved students for the psychiatrist
 authRouter.get("/getTimeSlotsBySchoolName" , getTimeSlotsBySchoolName); // To fetch timeslot based on school name
 authRouter.get("/getAllTimeSlots" , getAllTimeSlots); // To fetch all time slots
