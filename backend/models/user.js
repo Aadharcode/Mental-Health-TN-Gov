@@ -357,6 +357,41 @@ const RegionalCoordSchema = mongoose.Schema({
   },
 },{ versionKey: false });
 
+const wardenSchema = mongoose.Schema({
+  DISTRICT: {
+    required: true,
+    type: String,
+  },
+  NAME: {
+    required: true,
+    type: String,
+  },
+  GENDER: {
+    required: true,
+    type: String,
+  },
+  DESIGNATION: {
+    required: true,
+    type: String,
+  },
+  mobile_number: {
+    required: true,
+    type: String,
+  },
+  Email: {
+    type: String,
+  },
+  password: {
+    required: true,
+    type: String,
+  },
+  role: {
+    type: String,
+    enum: ["warden"],
+    default: "warden",
+  },
+},{ versionKey: false });
+
 const adminSchema = mongoose.Schema({
   email: {
     required: true,
@@ -528,6 +563,14 @@ msSchema.pre('save', async function(next) {
   next();
 });
 
+wardenSchema.pre('save', async function(next) {
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
 RegionalCoordSchema.pre('save', async function(next) {
   if (this.isModified('password')) { 
     const salt = await bcrypt.genSalt();
@@ -542,6 +585,7 @@ const Student = mongoose.model("Student", studentSchema);
 const School = mongoose.model("School", schoolSchema);
 const Admin = mongoose.model("Admin", adminSchema);
 const Ms = mongoose.model("Ms", msSchema);
+const Warden = mongoose.model("Warden", wardenSchema);
 const Feedback = mongoose.model("Feedback", feedbackSchema);
 const Attendance = mongoose.model("Attendance", attendanceSchema);
 const ASA = mongoose.model("ASA", ASASchema);
@@ -549,4 +593,4 @@ const CIF = mongoose.model("CIF", CIFSchema);
 const RC = mongoose.model("RC",RegionalCoordSchema);
 const timeSlot = mongoose.model("timeSlot",timeSlotSchema);
 
-module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot };
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot , Warden };

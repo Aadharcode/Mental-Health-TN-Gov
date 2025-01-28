@@ -38,11 +38,13 @@ const bookTimeSlot = require("../controllers/bookTimeslot");
 const getTimeSlotsBySchoolName = require("../controllers/getTimeSlot");
 const getAllTimeSlots = require("../controllers/getAllTimeSlots");
 const getStudentsByZone = require("../controllers/getStudentbyZone");
+const createWarden = require("../controllers/createWarden");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
 authRouter.post("/createTeacher", createTeacher);  // new Teacher user
 authRouter.post("/createStudent", createStudent);  // new Student user
+authRouter.post("/createWarden", createWarden);  // new Warden user
 authRouter.post("/createMS", createMS);  // new MS user
 authRouter.post("/createRC", createRC);  // new RC user
 authRouter.post("/createASA", createASA);  // new ASA user

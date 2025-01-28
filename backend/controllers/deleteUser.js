@@ -46,6 +46,9 @@ const deleteUser = async (req, res) => {
       case "rc":
         userModel = RC;
         break;
+      case "warden":
+        userModel = Warden;
+        break;
       default:
         return res.status(400).json({ msg: "Invalid role specified!" });
     }
@@ -77,6 +80,9 @@ const deleteUser = async (req, res) => {
         break; 
       case "rc":
         query = { email }; // MSs identified by email
+        break;
+      case "warden":
+        query = { mobile_number: email }; // ASAs identified by mobile number
         break;
     }
     // Find the user by uniqueField

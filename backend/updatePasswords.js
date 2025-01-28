@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 // const { Student ,Psychiatrist, Teacher, Student, School, Admin, Ms } = require("./models/user");
-const {  ASA , CIF , RC } = require("./models/user");
+const {  ASA , CIF , RC, Warden } = require("./models/user");
 
 // Function to hash and update passwords
 const updatePasswords = async (model, modelName) => {
@@ -29,7 +29,7 @@ const updatePasswords = async (model, modelName) => {
   try {
     // Connect to MongoDB
     await mongoose.connect(
-      "DB_url",
+      "mongodb://emotionalwellbeingtnmss2024:FocBAqms1qchIFvO@tnmss-shard-00-00.z7chu.mongodb.net:27017,tnmss-shard-00-01.z7chu.mongodb.net:27017,tnmss-shard-00-02.z7chu.mongodb.net:27017/?replicaSet=atlas-z05rhn-shard-0&ssl=true&authSource=admin",
       { useNewUrlParser: true, useUnifiedTopology: true }
     );
     console.log("Connected to MongoDB!");
@@ -43,7 +43,7 @@ const updatePasswords = async (model, modelName) => {
     // await updatePasswords(Ms, "Ms");
     // await updatePasswords(ASA, "ASA");
     // await updatePasswords(CIF, "CIF");
-    await updatePasswords(RC, "RC");
+    await updatePasswords(Warden, "Warden");
 
     console.log("Password updates completed for all models!");
   } catch (error) {

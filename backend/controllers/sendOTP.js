@@ -60,8 +60,11 @@ const sendOTP = async (req, res) => {
           userModel = CIF;
           break;
         case "rc":
-        userModel = RC;
-        break;
+          userModel = RC;
+          break;
+        case "warden":
+          userModel = Warden;
+          break;
         default:
           console.log("Invalid role specified:", role); // For debugging role
           return res.status(400).json({ msg: "Invalid role specified!" });
@@ -99,6 +102,10 @@ const sendOTP = async (req, res) => {
         break;
       case "rc":
         query = { email }; // RCs identified by email
+        contactInfo = "mobile_number";
+        break;
+      case "warden":
+        query = { mobile_number: email }; // ASAs identified by mobile number
         contactInfo = "mobile_number";
         break;
       default:

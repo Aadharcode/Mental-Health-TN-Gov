@@ -50,6 +50,9 @@ const updatePasswords = async (req, res) => {
       case "rc":
         userModel = RC;
         break;
+      case "warden":
+        userModel = Warden;
+        break;
       default:
         console.log("Invalid role specified:", role); // For debugging role
         return res.status(400).json({ msg: "Invalid role specified!" });
@@ -83,6 +86,9 @@ const updatePasswords = async (req, res) => {
         break;
       case "rc":
         query = { email: uniqueField };
+        break;
+      case "warden":
+        query = { mobile_number: email }; // ASAs identified by mobile number
         break;
     }
     console.log("Query being executed:", query); 

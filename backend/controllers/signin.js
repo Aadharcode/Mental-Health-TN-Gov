@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { Psychiatrist, Teacher, Student, School, Admin, Ms , CIF , ASA , RC } = require("../models/user");
+const { Psychiatrist, Teacher, Student, School, Admin, Ms , CIF , ASA , RC , Warden } = require("../models/user");
 const bcryptjs = require("bcryptjs");
 
 const signin = async (req, res) => {
@@ -53,6 +53,9 @@ const signin = async (req, res) => {
       case "rc":
         userModel = RC;
         break;
+      case "warden":
+        userModel = Warden;
+        break;
       default:
         console.log("Invalid role specified:", role); // For debugging role
         return res.status(400).json({ msg: "Invalid role specified!" });
@@ -89,6 +92,9 @@ const signin = async (req, res) => {
         break;  
       case "rc":
         query = { email }; // CIFs identified by email
+        break;
+      case "warden":
+        query = { mobile_number: email }; // ASAs identified by mobile number
         break;
     }
     console.log("Query being executed:", query); 
