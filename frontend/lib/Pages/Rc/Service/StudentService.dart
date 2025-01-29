@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/student.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../Rc/models/student.dart';
 
 class StudentService {
-  static const String _baseUrl = "http://13.232.9.135:3000";
+  static const String _baseUrl = "http://192.168.10.250:3000";
 
   /// Fetch student statistics with an optional district filter.
     static Future<Map<String, dynamic>> fetchStudentData(String district) async {
-    final uri = Uri.parse("http://13.232.9.135:3000/getAllStudent?district=$district");
+    final uri = Uri.parse("http://192.168.10.250:3000/getAllStudent?district=$district");
     print("🌐 Sending GET request to: $uri");
 
     final response = await http.get(uri);
@@ -71,36 +72,49 @@ class StudentService {
 
 
   static Future<List<String>> fetchDistricts() async {
-    final uri = Uri.parse("$_baseUrl/api/getSchool");
-    print("🌐 Sending GET request to: $uri");
+    try {
+      // Retrieve the stored zone from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final String? zone = prefs.getString("Zone");
 
-    final response = await http.get(uri);
+      print("🔍 Retrieved Zone from SharedPreferences: $zone");
 
-    print("📥 Response received with status code: ${response.statusCode}");
+      // Construct API URL based on whether the zone is available
+      final uri = zone != null
+          ? Uri.parse("$_baseUrl/api/getSchool?zone=$zone")
+          : Uri.parse("$_baseUrl/api/getSchool");
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      print("✅ Successfully fetched data: $data");
+      print("🌐 Sending GET request to: $uri");
 
-      // Check the structure of the response and handle accordingly
-      if (data['data'] is List) {
-        // Extract the 'SCHOOL_NAME' field from each item in the list
-        final districts = (data['data'] as List)
-            .map((item) => item['SCHOOL_NAME'] as String)  // Ensure it is cast to String
-            .toList();
+      final response = await http.get(uri);
+      print("📥 Response received with status code: ${response.statusCode}");
 
-        // Add "All" as the first option in the list
-        districts.insert(0, "All");
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print("✅ Successfully fetched data: $data");
 
-        print("📋 Extracted districts: $districts");
-        return districts;
+        if (data['data'] is List) {
+          // Extract the 'SCHOOL_NAME' field from each item in the list
+          final districts = (data['data'] as List)
+              .map((item) => item['SCHOOL_NAME'] as String) // Ensure it is cast to String
+              .toList();
+
+          // Add "All" as the first option
+          districts.insert(0, "All");
+
+          print("📋 Extracted districts: $districts");
+          return districts;
+        } else {
+          print("❌ Invalid format: Expected a list under 'data'");
+          throw Exception("Invalid format in response data");
+        }
       } else {
-        print("❌ Invalid format: Expected a list under 'data['data']'");
-        throw Exception("Invalid format in response data");
+        print("❌ Failed to fetch districts with status code: ${response.statusCode}");
+        throw Exception("Failed to fetch districts: ${response.statusCode}");
       }
-    } else {
-      print("❌ Failed to fetch districts with status code: ${response.statusCode}");
-      throw Exception("Failed to fetch districts: ${response.statusCode}");
+    } catch (e) {
+      print("❌ Error fetching districts: $e");
+      throw Exception("Error fetching districts: $e");
     }
   }
 

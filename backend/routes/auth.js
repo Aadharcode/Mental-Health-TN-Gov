@@ -37,6 +37,7 @@ const createRC = require("../controllers/createRC");
 const bookTimeSlot = require("../controllers/bookTimeslot");
 const getTimeSlotsBySchoolName = require("../controllers/getTimeSlot");
 const getAllTimeSlots = require("../controllers/getAllTimeSlots");
+const filterAndUpdateTimeSlot = require("../controllers/filterAndUpdateTimeSlot");
 const getStudentsByZone = require("../controllers/getStudentbyZone");
 const createWarden = require("../controllers/createWarden");
 require('dotenv').config();
@@ -74,8 +75,9 @@ authRouter.get("/api/getSchool", getSchool);  // get all school(name and distric
 authRouter.get("/getAllStudent", getAllStudent); //fetch student data
 authRouter.get("/getStudentsByZone", getStudentsByZone); //fetch student data based on their zone
 authRouter.get("/approvedStudents", getApprovedStudents);  //To fetch the approved students for the psychiatrist
-authRouter.get("/getTimeSlotsBySchoolName" , getTimeSlotsBySchoolName); // To fetch timeslot based on school name
+authRouter.post("/getTimeSlotsBySchoolName" , getTimeSlotsBySchoolName); // To fetch timeslot based on school name
 authRouter.get("/getAllTimeSlots" , getAllTimeSlots); // To fetch all time slots
+authRouter.post("/updateTimeSlot" , filterAndUpdateTimeSlot); // To update time slots by _id
 authRouter.get("/", auth, getData);  // get user data
 authRouter.get("/", auth, getData);  // get user data
 authRouter.delete("/api/deleteUser", deleteUser); // Route to delete a user

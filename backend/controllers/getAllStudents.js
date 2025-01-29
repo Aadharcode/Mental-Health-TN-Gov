@@ -1,16 +1,79 @@
 const { Student } = require("../models/user");
 
+const zoneSchoolMapping = {
+  "NORTHERN ZONE": [
+    "Center Of Academic Excellence Chennai",
+    "CHENALPATTU DISTRICT GOVERNMENT MODEL SCHOOL",
+    "KANCHEEPURAM DISTRICT GOVERNMENT MODEL SCHOOL",
+    "THIRUVALLUR DISTRICT GOVERNMENT MODEL SCHOOL",
+    "KALLAKURICHI DISTRICT GOVERNMENT MODEL SCHOOL",
+    "VILLUPURAM DISTRICT GOVERNMENT MODEL SCHOOL",
+    "CUDDALORE DISTRICT GOVERNMENT MODEL SCHOOL",
+    "CHENNAI DISTRICT GOVERNMENT MODEL SCHOOL"
+  ],
+  "NORTH WESTERN ZONE": [
+    "DHARMAPURI DISTRICT GOVERNMENT MODEL SCHOOL",
+    "KRISHNAGIRI DISTRICT GOVERNMENT MODEL SCHOOL",
+    "RANIPET DISTRICT GOVERNMENT MODEL SCHOOL",
+    "THIRUVANNAMALAI DISTRICT GOVERNMENT MODEL SCHOOL",
+    "TIRUPATHUR DISTRICT GOVERNMENT MODEL SCHOOL",
+    "VELLORE DISTRICT GOVERNMENT MODEL SCHOOL"
+  ],
+  "WESTERN ZONE": [
+    "SALEM DISTRICT GOVERNMENT MODEL SCHOOL",
+    "ERODE DISTRICT GOVERNMENT MODEL SCHOOL",
+    "COIMBATORE DISTRICT GOVERNMENT MODEL SCHOOL",
+    "TIRUPPUR DISTRICT GOVERNMENT MODEL SCHOOL",
+    "NAMAKKAL DISTRICT GOVERNMENT MODEL SCHOOL",
+    "THE NILGIRIS DISTRICT GOVERNMENT MODEL SCHOOL"
+  ],
+  "EASTERN ZONE": [
+    "ARIYALUR DISTRICT GOVERNMENT MODEL SCHOOL",
+    "MAYILADUDURAI DISTRICT GOVERNMENT MODEL SCHOOL",
+    "NAGAPATTINAM DISTRICT GOVERNMENT MODEL SCHOOL",
+    "PERAMBALUR DISTRICT GOVERNMENT MODEL SCHOOL",
+    "THANJAVUR DISTRICT GOVERNMENT MODEL SCHOOL",
+    "TIRUCHIRAPPALLI DISTRICT GOVERNMENT MODEL SCHOOL",
+    "TIRUVARUR DISTRICT GOVERNMENT MODEL SCHOOL"
+  ],
+  "CENTRAL ZONE": [
+    "KARUR DISTRICT GOVERNMENT MODEL SCHOOL",
+    "DINDIGUL DISTRICT GOVERNMENT MODEL SCHOOL",
+    "MADURAI DISTRICT GOVERNMENT MODEL SCHOOL",
+    "SIVAGANGAI DISTRICT GOVERNMENT MODEL SCHOOL",
+    "PUDUKKOTTAI DISTRICT GOVERNMENT MODEL SCHOOL",
+    "THENI DISTRICT GOVERNMENT MODEL SCHOOL"
+  ],
+  "SOUTHERN ZONE": [
+    "KANNIYAKUMARI GOVERNMENT MODEL SCHOOL",
+    "TIRUNELVELI GOVERNMENT MODEL SCHOOL",
+    "THOOTHUKUDI GOVERNMENT MODEL SCHOOL",
+    "VIRUTHUNAGER GOVERNMENT MODEL SCHOOL",
+    "TENKASI GOVERNMENT MODEL SCHOOL",
+    "RAMANATHAPURAM GOVERNMENT MODEL SCHOOL"
+  ]
+};
+
 const getAllStudent = async (req, res) => {
   try {
-    const { district } = req.query; // Get district from the query parameters
+    const { district } = req.query;
 
-    // Fetch students, filtered by district if specified and not "All"
-    const students =
-      district && district !== "All"
-        ? await Student.find({ school_name: district })
-        : await Student.find();
+    let students = [];
 
-    // Initialize counters and lists
+    if (district && district !== "All") {
+      if (zoneSchoolMapping[district.toUpperCase()]) {
+        // If district is a zone, fetch all students from the schools in that zone
+        const zoneSchools = zoneSchoolMapping[district.toUpperCase()];
+        students = await Student.find({ school_name: { $in: zoneSchools } });
+      } else {
+        // Otherwise, fetch students for a specific district
+        students = await Student.find({ school_name: district });
+      }
+    } else {
+      // If no district is specified, fetch all students
+      students = await Student.find();
+    }
+
     const totalStudents = students.length;
     let totalRedFlags = 0;
     let recoveredByDMHP = 0;
@@ -24,7 +87,6 @@ const getAllStudent = async (req, res) => {
     const completedStudents = [];
     const referralStudents = [];
 
-    // Process students to calculate statistics and build lists
     students.forEach((student) => {
       if (student.Case_Status !== "none") {
         totalRedFlags++;
@@ -48,19 +110,18 @@ const getAllStudent = async (req, res) => {
       }
     });
 
-    // Ensure the numeric fields are returned as integers
     res.status(200).json({
       msg: "Student statistics fetched successfully.",
-      totalStudents: totalStudents, // already an integer
-      totalRedFlags: totalRedFlags, // already an integer
+      totalStudents,
+      totalRedFlags,
       redFlagStudents,
-      recoveredByDMHP: recoveredByDMHP, // already an integer
+      recoveredByDMHP,
       recoveredStudents,
-      ongoingCases: ongoingCases, // already an integer
+      ongoingCases,
       ongoingStudents,
-      completedCases: completedCases, // already an integer
+      completedCases,
       completedStudents,
-      referrals: referrals, // already an integer
+      referrals,
       referralStudents,
     });
   } catch (err) {

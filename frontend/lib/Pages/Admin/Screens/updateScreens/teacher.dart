@@ -42,8 +42,8 @@ class _UploadTeacherFormState extends State<UpdateTeacherForm> {
 
     try {
       String endpoint = widget.isUpdate
-          ? "http://192.168.10.250:3000/api/updateTeacher"
-          : "http://192.168.10.250:3000/api/createTeacher";
+          ? "http://13.232.9.135:3000/api/updateTeacher"
+          : "http://13.232.9.135:3000/api/createTeacher";
 
       print("🌐 API Endpoint: $endpoint");
       print("📤 Sending data: ${json.encode({

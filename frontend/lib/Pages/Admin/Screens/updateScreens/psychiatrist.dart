@@ -43,8 +43,8 @@ class _UploadPsychiatristFormState extends State<UpdatePsychiatristForm> {
 
     try {
       String endpoint = widget.isUpdate
-          ? "http://192.168.10.250:3000/api/updatePsychiatrist"
-          : "http://192.168.10.250:3000/api/createPsychiatrist";
+          ? "http://13.232.9.135:3000/api/updatePsychiatrist"
+          : "http://13.232.9.135:3000/api/createPsychiatrist";
 
       print("🌐 API Endpoint: $endpoint");
       print("📤 Sending data: ${json.encode({

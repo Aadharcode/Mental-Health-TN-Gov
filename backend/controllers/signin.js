@@ -85,10 +85,10 @@ const signin = async (req, res) => {
         query = { email }; // MSs identified by email
         break;
       case "asa":
-        query = { mobile_number: email }; // ASAs identified by mobile number
+        query = { ASA_Mail_id: email }; // ASAs identified by mobile number
         break;
       case "cif":
-        query = { mobile_number: email }; // CIFs identified by mobile number
+        query = { CIF_Mail_id: email }; // CIFs identified by mobile number
         break;  
       case "rc":
         query = { email }; // CIFs identified by email
