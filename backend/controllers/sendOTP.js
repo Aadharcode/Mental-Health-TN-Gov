@@ -1,6 +1,6 @@
 require("dotenv").config();
 const apiKey = process.env.API_KEY;
-const { Teacher, School, Psychiatrist, Admin, Ms , ASA , CIF , RC} = require("../models/user");
+const { Teacher, School, Psychiatrist, Admin, Ms , ASA , CIF , RC , Warden} = require("../models/user");
 
 // Helper function to send OTP
 const sendOTPphone = async (number) => {

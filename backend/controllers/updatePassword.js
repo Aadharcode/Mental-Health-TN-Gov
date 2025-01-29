@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { Psychiatrist, Teacher, Student, School, Admin, Ms , ASA , CIF , RC } = require("../models/user");
+const { Psychiatrist, Teacher, Student, School, Admin, Ms , ASA , CIF , RC , Warden } = require("../models/user");
 const bcryptjs = require("bcryptjs");
 
 const updatePasswords = async (req, res) => {

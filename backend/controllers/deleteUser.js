@@ -1,4 +1,4 @@
-const { Psychiatrist, Teacher, Student, School, Admin, Ms , CIF , ASA , RC } = require("../models/user");
+const { Psychiatrist, Teacher, Student, School, Admin, Ms , CIF , ASA , RC , Warden } = require("../models/user");
 
 const deleteUser = async (req, res) => {
   try {
@@ -73,10 +73,10 @@ const deleteUser = async (req, res) => {
         query = { email }; // MSs identified by email
         break;
       case "asa":
-        query = { mobile_number: email }; // ASAs identified by email
+        query = { ASA_Mail_id: email  }; // ASAs identified by email
         break;
       case "cif":
-        query = { mobile_number: email }; // CIFs identified by email
+        query = { CIF_Mail_id: email  }; // CIFs identified by email
         break; 
       case "rc":
         query = { email }; // MSs identified by email
