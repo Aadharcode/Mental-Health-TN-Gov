@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 Future<void> sendOtp(String role, String uniqueField) async {
-  const String apiUrl = "http://10.42.187.145:3000/api/sendOTP"; // Replace with your actual API URL
+  const String apiUrl = "http://13.232.9.135:3000/api/sendOTP"; // Replace with your actual API URL
   print(jsonEncode({'role': role, 'uniqueField': uniqueField}));
 
   try {

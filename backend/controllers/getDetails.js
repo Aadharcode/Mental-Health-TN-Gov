@@ -27,6 +27,18 @@ const fetchDetails = async (req, res) => {
         } else if (collectionName === "students") {
             console.log("Querying students...");
             data = await Student.find({});
+        } else if (collectionName === "asa") {
+            console.log("Querying students...");
+            data = await Student.find({});
+        } else if (collectionName === "cif") {
+            console.log("Querying students...");
+            data = await Student.find({});
+        } else if (collectionName === "rc") {
+            console.log("Querying students...");
+            data = await Student.find({});
+        } else if (collectionName === "warden") {
+            console.log("Querying students...");
+            data = await Student.find({});
         } else {
             console.log(`Invalid collection name: ${collectionName}`);
             return res.status(400).json({

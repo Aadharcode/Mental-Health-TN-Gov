@@ -18,7 +18,7 @@ class ResetPasswordForm extends StatelessWidget {
   final TextEditingController _confirmPasswordController = TextEditingController();
 
   Future<bool> updatePassword(String password) async {
-    const String apiUrl = "http://10.42.187.145:3000/api/updatePassword"; // Replace with your actual API URL
+    const String apiUrl = "http://13.232.9.135:3000/api/updatePassword"; // Replace with your actual API URL
     print(jsonEncode({
           'role': role,
           'uniqueField': uniqueField,

@@ -51,7 +51,7 @@ class _DetailScreenState extends State<DetailScreen> {
     print("📡 Fetching data from collection: ${widget.collectionName}...");
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.10.250:3000/fetch-all"),
+        Uri.parse("http://13.232.9.135:3000/fetch-all"),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -171,7 +171,7 @@ class _DetailScreenState extends State<DetailScreen> {
   Future<void> deleteUser(String role, String email) async {
     try {
       final response = await http.delete(
-        Uri.parse("http://192.168.10.250:3000/api/deleteUser"),
+        Uri.parse("http://13.232.9.135:3000/api/deleteUser"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "role": role,

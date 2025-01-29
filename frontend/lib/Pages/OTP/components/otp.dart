@@ -6,7 +6,7 @@ import '../../utils/appColor.dart';
 import '../../Utils/appTextStyle.dart';
 
 Future<bool> verifyOtp(String otp, String number, String role) async {
-  const String apiUrl = "http://10.42.187.145:3000/api/verifyOTP"; // Replace with your actual API URL
+  const String apiUrl = "http://13.232.9.135:3000/api/verifyOTP"; // Replace with your actual API URL
   if (otp == '123456') {
     return true;
   }

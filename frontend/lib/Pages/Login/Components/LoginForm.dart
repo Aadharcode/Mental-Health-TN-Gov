@@ -20,7 +20,7 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordController = TextEditingController();
 
   String _selectedRole = 'Admin'; // Default role
-  final List<String> _roles = ['Admin', 'Teacher', 'HM', 'MS', 'psychiatrist', 'Students'];
+  final List<String> _roles = ['Admin', 'Teacher', 'HM', 'MS', 'psychiatrist', 'Students', 'ASA', 'CIF', 'RC', 'warden'];
 
   bool _isLoading = false;
 
@@ -44,11 +44,23 @@ class _LoginFormState extends State<LoginForm> {
         case 'teacher':
           Navigator.pushReplacementNamed(context, '/teachers');
           break;
+        case 'warden':
+          Navigator.pushReplacementNamed(context, '/teachers');
+          break;
+        case 'asa':
+          Navigator.pushReplacementNamed(context, '/teachers');
+          break;
+        case 'cif':
+          Navigator.pushReplacementNamed(context, '/teachers');
+          break;
         case 'hs-ms':
           Navigator.pushReplacementNamed(context, '/hm');
           break;
         case 'ms':
           Navigator.pushReplacementNamed(context, '/ms');
+          break;
+        case 'rc':
+          Navigator.pushReplacementNamed(context, '/rc');
           break;
         case 'psychiatrist':
           Navigator.pushReplacementNamed(context, '/psychiatrist');
@@ -97,6 +109,8 @@ class _LoginFormState extends State<LoginForm> {
             await prefs.setString('district', user['DISTRICT']);
           } else if (role == 'psychiatrist') {
             await prefs.setString('DISTRICT_PSYCHIATRIST_NAME', user['DISTRICT_PSYCHIATRIST_NAME']);
+          }else if( role == 'rc'){
+            await prefs.setString('Zone', user['Zone']);
           }
 
           // Navigate based on the role
@@ -107,11 +121,20 @@ class _LoginFormState extends State<LoginForm> {
             case 'teacher':
               Navigator.pushNamed(context, '/teachers');
               break;
+            case 'asa':
+              Navigator.pushNamed(context, '/teachers');
+              break;
+            case 'cif':
+              Navigator.pushNamed(context, '/teachers');
+              break;
             case 'hs-ms':
               Navigator.pushNamed(context, '/hm');
               break;
             case 'ms':
               Navigator.pushNamed(context, '/ms');
+              break;
+            case 'rc':
+              Navigator.pushNamed(context, '/rc');
               break;
             case 'psychiatrist':
               Navigator.pushNamed(context, '/psychiatrist');

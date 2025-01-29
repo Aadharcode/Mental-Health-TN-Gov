@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if(formData['referal'].isEmpty){
       formData['referal'] = null;    }
 
-    final url = Uri.parse('http://192.168.10.250:3000/api/cured');
+    final url = Uri.parse('http://13.232.9.135:3000/api/cured');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -138,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         setState(() {
                           medicineBool = value;
                           if (!medicineBool) {
-                            medicine = null; // Reset medicine details if unchecked
+                            medicine = null; 
                           }
                         });
                       },
@@ -163,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         setState(() {
                           referalBool = value;
                           if (!referalBool) {
-                            referal = null; // Reset referral details if unchecked
+                            referal = null; 
                           }
                         });
                       },
@@ -188,7 +188,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           decoration: InputDecoration(labelText: 'Referral Details'),
                         ),
-
                   ],
                 ),
               ),
@@ -228,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final prefs = await SharedPreferences.getInstance();
       final name = prefs.getString('DISTRICT_PSYCHIATRIST_NAME');
 
-      final url = Uri.parse('http://192.168.10.250:3000/api/attendance');
+      final url = Uri.parse('http://13.232.9.135:3000/api/attendance');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
