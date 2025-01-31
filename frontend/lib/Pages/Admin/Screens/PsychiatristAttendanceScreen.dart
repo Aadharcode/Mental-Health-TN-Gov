@@ -20,7 +20,7 @@ class _PsychiatristAttendanceScreenState extends State<PsychiatristAttendanceScr
   }
 
   Future<void> fetchAttendance() async {
-    const apiUrl = 'http://192.168.10.250:3000/api/getAttendance'; // Replace with your API URL
+    const apiUrl = 'http://13.232.9.135:3000/api/getAttendance'; // Replace with your API URL
     try {
       final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {

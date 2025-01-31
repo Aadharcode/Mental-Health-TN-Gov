@@ -56,7 +56,7 @@ class _RedflagScreenState extends State<RedflagScreen> {
 
   Future<void> handleEmergency(String emisId, Map<String, dynamic> formData) async {
     try {
-      final url = Uri.parse('http://192.168.10.250:3000/api/cured');
+      final url = Uri.parse('http://13.232.9.135:3000/api/cured');
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

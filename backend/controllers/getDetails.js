@@ -1,4 +1,4 @@
-const { Psychiatrist, Teacher, Student, School } = require("../models/user");
+const { Psychiatrist, Teacher, Student, School, Admin, Ms , CIF , ASA , RC , Warden } = require("../models/user");
 
 const fetchDetails = async (req, res) => {
     const { collectionName } = req.body;
@@ -27,6 +27,18 @@ const fetchDetails = async (req, res) => {
         } else if (collectionName === "students") {
             console.log("Querying students...");
             data = await Student.find({});
+        } else if (collectionName === "asa") {
+            console.log("Querying asa...");
+            data = await ASA.find({});
+        } else if (collectionName === "cif") {
+            console.log("Querying cifs...");
+            data = await CIF.find({});
+        } else if (collectionName === "rc") {
+            console.log("Querying rcs...");
+            data = await RC.find({});
+        } else if (collectionName === "warden") {
+            console.log("Querying wardens...");
+            data = await Warden.find({});
         } else {
             console.log(`Invalid collection name: ${collectionName}`);
             return res.status(400).json({

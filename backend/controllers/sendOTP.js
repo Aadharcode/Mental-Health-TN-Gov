@@ -1,6 +1,6 @@
 require("dotenv").config();
 const apiKey = process.env.API_KEY;
-const { Teacher, School, Psychiatrist, Admin, Ms } = require("../models/user");
+const { Teacher, School, Psychiatrist, Admin, Ms , ASA , CIF , RC , Warden} = require("../models/user");
 
 // Helper function to send OTP
 const sendOTPphone = async (number) => {
@@ -31,7 +31,7 @@ const sendOTP = async (req, res) => {
       } else if (role === "psychiatrist") {
         uniqueField = uniqueField.toUpperCase();
         console.log("Transformed psychiatrist uniqueField:", uniqueField);
-      } else if (role === "admin" || role === "ms") {
+      } else if (role === "admin" || role === "ms"|| role ==="rc") {
         uniqueField = uniqueField.toLowerCase();
         console.log("Transformed admin/ms uniqueField:", uniqueField);
       }
@@ -52,6 +52,18 @@ const sendOTP = async (req, res) => {
           break;
         case "ms":
           userModel = Ms;
+          break;
+        case "asa":
+          userModel = ASA;
+          break;
+        case "cif":
+          userModel = CIF;
+          break;
+        case "rc":
+          userModel = RC;
+          break;
+        case "warden":
+          userModel = Warden;
           break;
         default:
           console.log("Invalid role specified:", role); // For debugging role
@@ -79,6 +91,22 @@ const sendOTP = async (req, res) => {
       case "ms":
         query = { email: uniqueField };
         contactInfo = "email";
+        break;
+      case "asa":
+        query = { mobile_number: email }; // ASAs identified by email
+        contactInfo = "mobile_number";
+        break;
+      case "cif":
+        query = { mobile_number: email }; // CIFs identified by email
+        contactInfo = "mobile_number";
+        break;
+      case "rc":
+        query = { email }; // RCs identified by email
+        contactInfo = "mobile_number";
+        break;
+      case "warden":
+        query = { mobile_number: email }; // ASAs identified by mobile number
+        contactInfo = "mobile_number";
         break;
       default:
         return res.status(400).json({ msg: "Invalid role specified!" });

@@ -1,8 +1,7 @@
-const { Teacher } = require("../models/user"); // Ensure the correct path to your schema file
+const { Teacher } = require("../models/user"); 
 
 const createTeacher = async (req, res) => {
   try {
-    // Extract teacher details from the request body
     const { district, School_name, Teacher_Name, mobile_number, password } = req.body;
 
     // Validate the required fields
@@ -36,4 +35,4 @@ const createTeacher = async (req, res) => {
   }
 };
 
-module.exports = createTeacher;  // Export the function instead of router
+module.exports = createTeacher;  

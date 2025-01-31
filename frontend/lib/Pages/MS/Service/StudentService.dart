@@ -3,11 +3,11 @@ import 'package:http/http.dart' as http;
 import '../models/student.dart';
 
 class StudentService {
-  static const String _baseUrl = "http://192.168.10.250:3000";
+  static const String _baseUrl = "http://13.232.9.135:3000";
 
   /// Fetch student statistics with an optional district filter.
     static Future<Map<String, dynamic>> fetchStudentData(String district) async {
-    final uri = Uri.parse("http://192.168.10.250:3000/getAllStudent?district=$district");
+    final uri = Uri.parse("http://13.232.9.135:3000/getAllStudent?district=$district");
     print("🌐 Sending GET request to: $uri");
 
     final response = await http.get(uri);
