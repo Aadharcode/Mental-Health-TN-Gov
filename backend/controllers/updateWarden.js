@@ -32,6 +32,7 @@ const updateWarden = async (req, res) => {
     // Check which fields are provided and are allowed
     if (DISTRICT) updates.DISTRICT = DISTRICT;
     if (NAME) updates.NAME = NAME;
+    if (DESIGNATION) updates.DESIGNATION = DESIGNAMTION;
     if (GENDER) updates.GENDER = GENDER;
     if (mobile_number) updates.mobile_number = mobile_number;
     if (Email) updates.Email = Email;

@@ -8,6 +8,10 @@ import './updateScreens/teacher.dart';
 import './updateScreens/student.dart';
 import 'StudentDetailForm.dart';
 import 'SchoolDetailForm.dart';
+import './updateScreens/rc.dart';
+import './updateScreens/warden.dart';
+import './updateScreens/asa.dart';
+import './updateScreens/cif.dart';
 
 class DetailScreen extends StatefulWidget {
   final String title;
@@ -42,6 +46,14 @@ class _DetailScreenState extends State<DetailScreen> {
         return item['district'];
       case "schools":
         return item['udise_no'];
+      case "asa":
+        return item['ASA_Mail_id'];
+      case "cif":
+        return item['CIF_Mail_id'];
+      case "rc":
+        return item['email'];
+      case "warden":
+        return item['mobile_number'];
       default:
         return "unknown";
     }
@@ -51,7 +63,7 @@ class _DetailScreenState extends State<DetailScreen> {
     print("📡 Fetching data from collection: ${widget.collectionName}...");
     try {
       final response = await http.post(
-        Uri.parse("http://13.232.9.135:3000/fetch-all"),
+        Uri.parse("http://192.168.10.250:3000/fetch-all"),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -153,6 +165,28 @@ class _DetailScreenState extends State<DetailScreen> {
         case "schools":
           formScreen = UploadSchoolForm();
           break;
+        case "rc":
+          formScreen = UpdateRCForm(
+            initialData: item,
+            isUpdate: true,
+          );
+        case "warden":
+          formScreen = UpdateWardenForm(
+            initialData: item,
+            isUpdate: true,
+          );
+        case "asa":
+          formScreen = UpdateASAForm(
+            initialData: item,
+            isUpdate: true,
+          );
+          break;
+        case "cif":
+          formScreen = UpdateCIFForm(
+            initialData: item,
+            isUpdate: true,
+          );
+          break;
         default:
           throw Exception("Invalid collection name: $collectionName");
       }
@@ -219,6 +253,18 @@ class _DetailScreenState extends State<DetailScreen> {
         case "schools":
           formScreen = UploadSchoolForm();
           break;
+        case "rc":
+          formScreen = UpdateRCForm();
+          break;
+        case "warden":
+          formScreen = UpdateWardenForm();
+          break;
+        case "asa":
+          formScreen = UpdateASAForm();
+          break;
+        case "cif":
+          formScreen = UpdateCIFForm();
+          break;
         default:
           throw Exception("Invalid collection name: ${widget.collectionName}");
       }
@@ -278,6 +324,14 @@ class _DetailScreenState extends State<DetailScreen> {
         return item['Teacher_Name'] ?? "Unnamed Teacher";
       case "schools":
         return item['SCHOOL_NAME'] ?? "Unnamed School";
+      case "asa":
+        return item['ASA_Name'] ?? "Unnamed";
+      case "cif":
+        return item['CIF_Name'] ?? "Unnamed";
+      case "rc":
+        return item['Name'] ?? "Unnamed";
+      case "warden":
+        return item['NAME'] ?? "Unnamed";
       default:
         return "Unnamed";
     }
@@ -293,6 +347,14 @@ class _DetailScreenState extends State<DetailScreen> {
         return "School: ${item['School_name'] ?? 'N/A'}";
       case "schools":
         return "UDISE No: ${item['udise_no'] ?? 'N/A'}";
+      case "asa":
+        return "ASA Mailid: ${item['ASA_Mail_id'] ?? 'N/A'}";
+      case "cif":
+        return "CIF Mailid: ${item['CIF_Mail_id'] ?? 'N/A'}";
+      case "rc":
+        return "Zone: ${item['Zone'] ?? 'N/A'}";
+      case "warden":
+        return "District: ${item['DISTRICT'] ?? 'N/A'}";
       default:
         return "N/A";
     }

@@ -59,7 +59,7 @@ class _AdminScreenState extends State<AdminScreen> {
       case 'Students':
         return 'students';
       case 'HM':
-        return 'hms';
+        return 'schools';
       case 'MS':
         return 'ms';
       case 'ASA':
@@ -69,7 +69,7 @@ class _AdminScreenState extends State<AdminScreen> {
       case 'RC':
         return 'rc';
       case 'Warden':
-        return 'wardens';
+        return 'warden';
       default:
         return 'unknown';
     }

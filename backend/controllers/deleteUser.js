@@ -79,10 +79,10 @@ const deleteUser = async (req, res) => {
         query = { CIF_Mail_id: email  }; // CIFs identified by email
         break; 
       case "rc":
-        query = { email }; // MSs identified by email
+        query = { email }; // rc identified by email
         break;
       case "warden":
-        query = { mobile_number: email }; // ASAs identified by mobile number
+        query = { mobile_number: email }; // wardens identified by mobile number
         break;
     }
     // Find the user by uniqueField
