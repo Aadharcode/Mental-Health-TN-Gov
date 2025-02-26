@@ -29,15 +29,15 @@ const updatePasswords = async (model, modelName) => {
   try {
     // Connect to MongoDB
     await mongoose.connect(
-      "mongodb://emotionalwellbeingtnmss2024:FocBAqms1qchIFvO@tnmss-shard-00-00.z7chu.mongodb.net:27017,tnmss-shard-00-01.z7chu.mongodb.net:27017,tnmss-shard-00-02.z7chu.mongodb.net:27017/?replicaSet=atlas-z05rhn-shard-0&ssl=true&authSource=admin",
+      // process.env.DB_CONNECTION,
       { useNewUrlParser: true, useUnifiedTopology: true }
     );
     console.log("Connected to MongoDB!");
 
     // Update passwords for each model
-    // await updatePasswords(Psychiatrist, "Psychiatrist");
+    await updatePasswords(Psychiatrist, "Psychiatrist");
     // await updatePasswords(Teacher, "Teacher");
-    await updatePasswords(Student, "Student");
+    // await updatePasswords(Student, "Student");
     // await updatePasswords(School, "School");
     // await updatePasswords(Admin, "Admin");
     // await updatePasswords(Ms, "Ms");

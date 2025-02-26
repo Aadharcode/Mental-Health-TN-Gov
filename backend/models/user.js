@@ -33,6 +33,20 @@ const psychiatristSchema = mongoose.Schema({
     //   message: "Please enter a valid mobile number",
     // },
   },
+  entryTime: {
+    type: Date,
+  },
+  exitTime: {
+    type: Date,
+  },
+  averageTime: {
+    type: Number,
+    default: 0,
+  },
+  NoOfVisits: {
+    type: Number,
+    default: 0,
+  },
   password: {
     required: true,
     type: String,

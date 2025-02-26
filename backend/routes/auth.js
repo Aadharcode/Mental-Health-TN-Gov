@@ -44,6 +44,7 @@ const updateWarden = require("../controllers/updateWarden");
 const updateASA = require("../controllers/updateASA");
 const updateCIF = require("../controllers/updateCIF");
 const updateRC = require("../controllers/updateRC");
+const visitedPsych = require("../controllers/visitedPsych");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
@@ -89,7 +90,8 @@ authRouter.post("/updateTimeSlot" , filterAndUpdateTimeSlot); // To update time 
 authRouter.get("/", auth, getData);  // get user data
 authRouter.get("/", auth, getData);  // get user data
 authRouter.delete("/api/deleteUser", deleteUser); // Route to delete a user
-authRouter.post('/fetch-all', fetchDetails) 
+authRouter.post('/fetch-all', fetchDetails);
+authRouter.post("/markVisit",visitedPsych); //to add number of visits by 1
 
 
 module.exports = authRouter;
