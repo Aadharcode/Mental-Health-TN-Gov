@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-// const { Student ,Psychiatrist, Teacher, Student, School, Admin, Ms } = require("./models/user");
-const {  ASA , CIF , RC, Warden } = require("./models/user");
+const { Student ,Psychiatrist, Teacher,  School, Admin, Ms } = require("./models/user");
+const {  ASA , CIF , RC, Warden , stateCoord } = require("./models/user");
 
 // Function to hash and update passwords
 const updatePasswords = async (model, modelName) => {
@@ -37,13 +37,13 @@ const updatePasswords = async (model, modelName) => {
     // Update passwords for each model
     // await updatePasswords(Psychiatrist, "Psychiatrist");
     // await updatePasswords(Teacher, "Teacher");
-    // await updatePasswords(Student, "Student");
+    await updatePasswords(Student, "Student");
     // await updatePasswords(School, "School");
     // await updatePasswords(Admin, "Admin");
     // await updatePasswords(Ms, "Ms");
     // await updatePasswords(ASA, "ASA");
     // await updatePasswords(CIF, "CIF");
-    await updatePasswords(Warden, "Warden");
+    // await updatePasswords(stateCoord, "stateCoord");
 
     console.log("Password updates completed for all models!");
   } catch (error) {
