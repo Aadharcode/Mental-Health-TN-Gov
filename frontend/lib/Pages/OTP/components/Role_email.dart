@@ -35,7 +35,7 @@ class RoleAndUdiseForm extends StatelessWidget {
   RoleAndUdiseForm({required this.onNext});
 
   final TextEditingController _emailController = TextEditingController();
-  final List<String> _roles = ['Teacher', 'HM', 'Psychiatrist'];
+  final List<String> _roles = ['Teacher', 'HM', 'Psychiatrist', 'asa', 'cif', 'rc', 'warden'];
   String _selectedRole = 'Teacher';
 
   @override
