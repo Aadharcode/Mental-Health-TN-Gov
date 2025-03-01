@@ -31,6 +31,8 @@ class StudentService {
       "completedStudents": data["completedStudents"] ?? [],
       "referrals": data["referrals"] ?? 0,
       "referralStudents": data["referralStudents"] ?? [],
+      "rejectedCases": data["rejected"] ?? [],
+      "rejectedStudents": data["rejectedStudents"] ?? []
     };
   } else {
     print("❌ Failed to fetch student data with status code: ${response.statusCode}");

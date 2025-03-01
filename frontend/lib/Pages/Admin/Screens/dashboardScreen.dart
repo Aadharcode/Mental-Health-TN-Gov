@@ -76,6 +76,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     onTap: () => _navigateToCategoryList("Referrals", dashboardData!["referralStudents"] ?? []),
                     child: DashboardCard(title: "Referrals", value: dashboardData!["referrals"] ?? 0),
                   ),
+                  GestureDetector(
+                    onTap: () => _navigateToCategoryList("Referrals", dashboardData!["rejectedStudents"] ?? []),
+                    child: DashboardCard(title: "Rejected", value: dashboardData!["rejected"] ?? 0),
+                  ),
                 ]),
     );
   }

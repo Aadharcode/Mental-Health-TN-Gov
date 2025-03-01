@@ -200,11 +200,7 @@ const studentSchema = mongoose.Schema({
   },
   Case_Status:{
     type: String,
-<<<<<<< HEAD
-    enum: ["none","ongoing","completed","Reject"],
-=======
     enum: ["none","ongoing","completed","reject"],
->>>>>>> 033b6c1a8d99c62b52ba0d9cf6a5c1cdc9148f39
     default: "none",
   },
   Medicine_bool: {
@@ -543,7 +539,7 @@ const attendanceSchema = mongoose.Schema({
   },
   entryExit: {
     enum:["entry","exit"],
-    require: true,
+    // required: true,
   },
 },{ versionKey: false });
 
