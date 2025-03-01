@@ -22,7 +22,7 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'This application is intended for school students, educators, '
+                    'This application is intended for school academicians, educators, '
                     'and teachers looking to enhance mental well-being in educational settings.',
                     style: TextStyle(
                       fontSize: 18,

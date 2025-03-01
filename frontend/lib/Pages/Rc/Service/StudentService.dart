@@ -4,11 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Rc/models/student.dart';
 
 class StudentService {
-  static const String _baseUrl = "http://192.168.10.250:3000";
+  static const String _baseUrl = "http://13.232.9.135:3000";
 
   /// Fetch student statistics with an optional district filter.
     static Future<Map<String, dynamic>> fetchStudentData(String district) async {
-    final uri = Uri.parse("http://192.168.10.250:3000/getAllStudent?district=$district");
+    final uri = Uri.parse("$_baseUrl/getAllStudent?district=$district");
     print("🌐 Sending GET request to: $uri");
 
     final response = await http.get(uri);
@@ -61,7 +61,7 @@ class StudentService {
                 .toList()
             : [],  // Empty list if null
       };
-       print(' ❌❌❌❌ $totalStudents, $totalRedFlags, $recoveredByDMHP, ');
+       
     } else {
       print("❌ Failed to fetch student data with status code: ${response.statusCode}");
       throw Exception("Failed to fetch student data: ${response.statusCode}");

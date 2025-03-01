@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text('Cure Student'),
+        title: Text('Supprot given'),
         content: StatefulBuilder(
           builder: (context, setState) {
             return Form(

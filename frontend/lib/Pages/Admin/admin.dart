@@ -14,10 +14,8 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   final List<String> menuItems = [
-    'Admin',
     'Teacher',
     'HM',
-    'MS',
     'Psychiatrist',
     'Students',
     'ASA',
