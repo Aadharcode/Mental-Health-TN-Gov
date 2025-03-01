@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 
 class StudentService {
-  static const String _baseUrl = "http://192.168.10.250:3000";
+  static const String _baseUrl = "http://13.232.9.135:3000";
 
   /// Fetch student statistics with an optional district filter.
    static Future<Map<String, dynamic>> bookTimeSlot({

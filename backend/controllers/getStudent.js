@@ -2,7 +2,7 @@ const { Student } = require("../models/user");
 
 const getStudent = async (req, res) => {
   try {
-    const { student_emis_id} = req.body;
+    const {student_emis_id} = req.body;
 
     // Validate required fields
     if (!student_emis_id) {

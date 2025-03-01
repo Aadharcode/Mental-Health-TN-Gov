@@ -28,7 +28,8 @@ const updateStudent = async (req, res) => {
       referal,
       Case_Status,
       Medicine_bool,
-      Medicine
+      Medicine,
+      Reject
     } = req.body;
 
     if (!student_emis_id) {
@@ -68,6 +69,7 @@ const updateStudent = async (req, res) => {
       "Case_Status",
       "Medicine_bool",
       "Medicine",
+      "Reject",
     ];
 
     const updates = {};
