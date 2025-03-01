@@ -45,6 +45,8 @@ const updateASA = require("../controllers/updateASA");
 const updateCIF = require("../controllers/updateCIF");
 const updateRC = require("../controllers/updateRC");
 const visitedPsych = require("../controllers/visitedPsych");
+const getSchoolsByZone = require("../controllers/getSchoolsbyZone");
+const getStudentsBySchool = require("../controllers/getStudentsbySchool");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
@@ -82,7 +84,9 @@ authRouter.get("/api/getFeedback", getFeedback);  // get all the feedbacksorted 
 authRouter.get("/api/getAttendance", getAttendance);  // get all the attendance of psychiatrist date wise
 authRouter.get("/api/getSchool", getSchool);  // get all school(name and district) data for MS
 authRouter.get("/getAllStudent", getAllStudent); //fetch student data
+authRouter.get("/getStudentsBySchool", getStudentsBySchool); //fetch student data based on their school
 authRouter.get("/getStudentsByZone", getStudentsByZone); //fetch student data based on their zone
+authRouter.get("/getSchoolsByZone", getSchoolsByZone); //fetch school name based on their zone
 authRouter.get("/approvedStudents", getApprovedStudents);  //To fetch the approved students for the psychiatrist
 authRouter.post("/getTimeSlotsBySchoolName" , getTimeSlotsBySchoolName); // To fetch timeslot based on school name
 authRouter.get("/getAllTimeSlots" , getAllTimeSlots); // To fetch all time slots

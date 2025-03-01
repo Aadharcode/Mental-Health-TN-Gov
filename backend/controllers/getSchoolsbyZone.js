@@ -1,5 +1,3 @@
-const { Student } = require("../models/user");
-
 const zoneSchoolMapping = {
   "NORTHERN ZONE": [
     "Center Of Academic Excellence Chennai",
@@ -54,31 +52,20 @@ const zoneSchoolMapping = {
   ]
 };
 
-const getStudentsByZone = async (req, res) => {
+const getSchoolsByZone = async (req, res) => {
   try {
     // Trim and case-insensitive comparison
     const zone = req.body.zone ? req.body.zone.trim().toUpperCase() : null;
-    // Zone check
     if (!zone || !zoneSchoolMapping[zone]) {
       return res.status(400).json({ msg: "Invalid zone provided." });
     }
-    // Get the list of schools for the given zone
     const schools = zoneSchoolMapping[zone];
-    // Create a case-insensitive regex for the school names
-    const regexSchools = schools.map(school => new RegExp(`^${school}$`, 'i'));
-    const students = await Student.find({
-      school_name: { $in: regexSchools }
-    });
-    if (!students || students.length === 0) {
-      return res.status(404).json({ msg: "No students found for the specified zone." });
-    }
-
     res.status(200).json({
-      msg: "Students fetched successfully.",
-      data: students,
+      msg: "Schools fetched successfully.",
+      data: schools,
     });
   } catch (err) {
-    console.error("Error fetching students by zone:", err);
+    console.error("Error fetching schools by zone:", err);
     res.status(500).json({
       msg: "An error occurred while fetching students.",
       error: err.message,
@@ -86,4 +73,4 @@ const getStudentsByZone = async (req, res) => {
   }
 };
 
-module.exports = getStudentsByZone;
+module.exports = getSchoolsByZone;

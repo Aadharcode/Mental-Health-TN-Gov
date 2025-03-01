@@ -200,7 +200,7 @@ const studentSchema = mongoose.Schema({
   },
   Case_Status:{
     type: String,
-    enum: ["none","ongoing","completed"],
+    enum: ["none","ongoing","completed","reject"],
     default: "none",
   },
   Medicine_bool: {

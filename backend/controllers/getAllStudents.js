@@ -45,7 +45,7 @@ const zoneSchoolMapping = {
     "THENI DISTRICT GOVERNMENT MODEL SCHOOL"
   ],
   "SOUTHERN ZONE": [
-    "KANNIYAKUMARI GOVERNMENT MODEL SCHOOL",
+    "KANNIYAKUMARI DISTRICT GOVERNMENT MODEL SCHOOL",
     "TIRUNELVELI GOVERNMENT MODEL SCHOOL",
     "THOOTHUKUDI GOVERNMENT MODEL SCHOOL",
     "VIRUTHUNAGER GOVERNMENT MODEL SCHOOL",
@@ -80,12 +80,14 @@ const getAllStudent = async (req, res) => {
     let ongoingCases = 0;
     let completedCases = 0;
     let referrals = 0;
+    let rejected = 0;
 
     const redFlagStudents = [];
     const recoveredStudents = [];
     const ongoingStudents = [];
     const completedStudents = [];
     const referralStudents = [];
+    const rejectedStudents = [];
 
     students.forEach((student) => {
       if (student.Case_Status !== "none") {
@@ -103,6 +105,10 @@ const getAllStudent = async (req, res) => {
       if (student.Case_Status === "completed") {
         completedCases++;
         completedStudents.push(student);
+      }
+      if (student.Case_Status === "reject") {
+        rejected++;
+        rejectedStudents.push(student);
       }
       if (student.referal_bool === true) {
         referrals++;
@@ -123,6 +129,8 @@ const getAllStudent = async (req, res) => {
       completedStudents,
       referrals,
       referralStudents,
+      rejected,
+      rejectedStudents,
     });
   } catch (err) {
     console.error("Error fetching student details:", err);
