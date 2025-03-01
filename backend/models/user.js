@@ -33,12 +33,12 @@ const psychiatristSchema = mongoose.Schema({
     //   message: "Please enter a valid mobile number",
     // },
   },
-  entryTime: {
-    type: Date,
-  },
-  exitTime: {
-    type: Date,
-  },
+  // entryTime: {
+  //   type: Date,
+  // },
+  // exitTime: {
+  //   type: Date,
+  // },
   averageTime: {
     type: Number,
     default: 0,
@@ -200,7 +200,7 @@ const studentSchema = mongoose.Schema({
   },
   Case_Status:{
     type: String,
-    enum: ["none","ongoing","completed"],
+    enum: ["none","ongoing","completed","Reject"],
     default: "none",
   },
   Medicine_bool: {
@@ -536,6 +536,10 @@ const attendanceSchema = mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  entryExit: {
+    enum:["entry","exit"],
+    require: true,
   },
 },{ versionKey: false });
 

@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => isLoading = true);
     try {
       final response = await http.post(
-        Uri.parse("http://13.232.9.135:3000/fetch-all"),
+        Uri.parse("http://13.232.9.135:3000//getAllStudent"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'collectionName': 'students'}),
       );

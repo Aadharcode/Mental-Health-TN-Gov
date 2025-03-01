@@ -88,6 +88,50 @@ class _RedflagScreenState extends State<RedflagScreen> {
     }
   }
 
+  Future<String?> showDeclineReasonForm(BuildContext context) async {
+    final _formKey = GlobalKey<FormState>();
+    String reason = "";
+
+    return await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Decline Reason'),
+          content: Form(
+            key: _formKey,
+            child: TextFormField(
+              decoration: InputDecoration(labelText: 'Enter reason for decline'),
+              onChanged: (value) {
+                reason = value;
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Reason is required';
+                }
+                return null;
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  Navigator.of(context).pop(reason);
+                }
+              },
+              child: Text('Submit'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   Widget buildRow(String label, dynamic value) {
     String displayValue = value != null ? value.toString() : 'N/A';
 
@@ -291,11 +335,18 @@ class _RedflagScreenState extends State<RedflagScreen> {
     SizedBox(width: 8), // Adds spacing between buttons
     Flexible(
       child: ElevatedButton(
-        onPressed: () {
-          handleApproval(student['student_emis_id'], false);
+        onPressed: () async {
+          final rejectReason = await showDeclineReasonForm(context);
+          if (rejectReason != null && rejectReason.isNotEmpty) {
+            handleEmergency(student['student_emis_id'], {
+              'case_status': 'Reject',
+              'Reject': rejectReason,
+            });
+            handleApproval(student['student_emis_id'], false);
+          }
         },
         child: FittedBox(
-          child: Text('Cancel'),
+          child: Text('Decline'),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red,
@@ -303,6 +354,7 @@ class _RedflagScreenState extends State<RedflagScreen> {
         ),
       ),
     ),
+
     SizedBox(width: 8), // Adds spacing between buttons
     Flexible(
       child: ElevatedButton(

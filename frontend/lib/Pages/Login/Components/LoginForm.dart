@@ -116,6 +116,8 @@ class _LoginFormState extends State<LoginForm> {
             await prefs.setString('Zone', user['Zone']);
           }else if(role == 'teachers'){
             await prefs.setString('district', user['district']);
+          }else if(role == 'psychiatrist'){
+            await prefs.setString('district', user['district']);
           }
 
           // Navigate based on the role
