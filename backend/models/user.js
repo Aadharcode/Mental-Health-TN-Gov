@@ -33,6 +33,20 @@ const psychiatristSchema = mongoose.Schema({
     //   message: "Please enter a valid mobile number",
     // },
   },
+  entryTime: {
+    type: Date,
+  },
+  exitTime: {
+    type: Date,
+  },
+  averageTime: {
+    type: Number,
+    default: 0,
+  },
+  NoOfVisits: {
+    type: Number,
+    default: 0,
+  },
   password: {
     required: true,
     type: String,
@@ -194,6 +208,11 @@ const studentSchema = mongoose.Schema({
     default: false,
   },
   Medicine:{
+    type: String,
+    trim: true,
+    default: "",
+  },
+  Reject:{
     type: String,
     trim: true,
     default: "",
@@ -436,6 +455,28 @@ const msSchema = mongoose.Schema({
   },
 },{ versionKey: false });
 
+const stateCoordSchema = mongoose.Schema({
+  email: {
+    required: true,
+    type: String,
+    trim: true,
+    unique: true,
+    validate: {
+      validator: (value) => /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(value),
+      message: "Please enter a valid email address",
+    },
+  },
+  password: {
+    required: true,
+    type: String,
+  },
+  role: {
+    type: String,
+    enum: ["sc"],
+    default: "sc",
+  },
+},{ versionKey: false });
+
 const timeSlotSchema = mongoose.Schema({
   timeSlot: {
     required: true,
@@ -563,6 +604,14 @@ msSchema.pre('save', async function(next) {
   next();
 });
 
+stateCoordSchema.pre('save', async function(next) {
+  if (this.isModified('password')) { 
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
 wardenSchema.pre('save', async function(next) {
   if (this.isModified('password')) { 
     const salt = await bcrypt.genSalt();
@@ -592,5 +641,6 @@ const ASA = mongoose.model("ASA", ASASchema);
 const CIF = mongoose.model("CIF", CIFSchema);
 const RC = mongoose.model("RC",RegionalCoordSchema);
 const timeSlot = mongoose.model("timeSlot",timeSlotSchema);
+const stateCoord = mongoose.model("stateCoord", stateCoordSchema);
 
-module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot , Warden };
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot , Warden ,stateCoord};

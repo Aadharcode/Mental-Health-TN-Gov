@@ -2,7 +2,7 @@ const { Psychiatrist } = require("../models/user");
 
 const updatePsychiatrist = async (req, res) => {
   try {
-    const { district, DISTRICT_PSYCHIATRIST_NAME, Mobile_number, SATELLITE_PSYCHIATRIST_NAME, SATELLITE_mobile_number } = req.body;
+    const { district, DISTRICT_PSYCHIATRIST_NAME, Mobile_number, SATELLITE_PSYCHIATRIST_NAME, SATELLITE_mobile_number,entryTime,exitTime,averageTime,NoOfVisits} = req.body;
 
     // Validate required fields
     if (!district) {
@@ -23,6 +23,10 @@ const updatePsychiatrist = async (req, res) => {
       "Mobile_number",
       "SATELLITE_PSYCHIATRIST_NAME",
       "SATELLITE_mobile_number",
+      "entryTime",
+      "exitTime",
+      "averageTime",
+      "NoOfVisits",
     ];
 
     // Create an object to hold the updates
@@ -33,6 +37,10 @@ const updatePsychiatrist = async (req, res) => {
     if (Mobile_number) updates.Mobile_number = Mobile_number;
     if (SATELLITE_PSYCHIATRIST_NAME) updates.SATELLITE_PSYCHIATRIST_NAME = SATELLITE_PSYCHIATRIST_NAME;
     if (SATELLITE_mobile_number) updates.SATELLITE_mobile_number = SATELLITE_mobile_number;
+    if(entryTime) updates.entryTime = entryTime;
+    if(exitTime) updates.exitTime = exitTime;
+    if(averageTime) updates.averageTime = averageTime;
+    if(NoOfVisits) updates.NoOfVisits = NoOfVisits;
 
     // Update the fields in the psychiatrist document
     Object.keys(updates).forEach((key) => {
