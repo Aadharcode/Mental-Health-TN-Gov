@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'redflag.dart';
-import '../../../backendUrl.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -52,12 +50,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchStudents() async {
     if (selectedDistrict == null) return;
+
     setState(() => isLoading = true);
+
     try {
+      final url = Uri.parse("http://13.232.9.135:3000/getStudentsBySchool");
+      final body = json.encode({'school_name': selectedDistrict});
+
       final response = await http.post(
-        Uri.parse("http://13.232.9.135:3000//getAllStudent"),
+        url,
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'collectionName': 'students'}),
+        body: body,
       );
 
       if (response.statusCode == 200) {
@@ -65,12 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
         if (data['success']) {
           setState(() {
             studentsList = (data['data'] as List)
-                .where((item) => selectedDistrict == "All" ||
-                    item['school_name'].trim().toLowerCase() ==
-                        selectedDistrict!.trim().toLowerCase())
                 .map((item) => {
                       'emis': item['student_emis_id'].toString(),
-                      'name': item['student_name'].toString()
+                      'name': item['student_name'].toString(),
                     })
                 .toList();
             filterStudents();
@@ -136,10 +136,14 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Redflag Identification',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                'Red Flag Identification',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(1, 69, 68, 1.0),
+                ),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               _buildDropdownSection(),
             ],
           ),
@@ -150,22 +154,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildDropdownSection() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          "Select School",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 6),
         DropdownButtonFormField<String>(
-          decoration: InputDecoration(border: OutlineInputBorder()),
-          hint: Text("Select School"),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          ),
+          hint: Text("Choose a school"),
           value: selectedDistrict,
+          isExpanded: true,
           items: districtList.map((district) {
             return DropdownMenuItem(
               value: district,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.7,
-                child: Text(
-                  district,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 14),
-                ),
+              child: Text(
+                district,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             );
           }).toList(),
@@ -180,12 +190,18 @@ class _HomeScreenState extends State<HomeScreen> {
             fetchStudents();
           },
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 15),
+
+        Text(
+          "Search Student by Name",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 6),
         TextField(
           decoration: InputDecoration(
-            labelText: "Enter Student Name",
-            border: OutlineInputBorder(),
-            isDense: true,
+            hintText: "Enter student's name",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
           ),
           onChanged: (value) {
             setState(() {
@@ -194,40 +210,49 @@ class _HomeScreenState extends State<HomeScreen> {
             });
           },
         ),
-        SizedBox(height: 10),
-        isFiltering
-            ? SizedBox(height: 50, child: Center(child: CircularProgressIndicator()))
-            : filteredStudents.isEmpty
-                ? Text("No student in database")
-                : DropdownButtonFormField<String>(
-  decoration: InputDecoration(border: OutlineInputBorder()),
-  hint: Text("Select EMIS ID"),
-  value: selectedEmis,
-  isExpanded: true,  // Prevents horizontal overflow
-  items: filteredStudents.map((student) {
-    return DropdownMenuItem(
-      value: student['emis'],
-      child: Text(
-        '${student['name']} (${student['emis']})',
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-        style: TextStyle(fontSize: 14),
-      ),
-    );
-  }).toList(),
-  onChanged: (value) {
-    setState(() => selectedEmis = value);
-  },
-),
+        const SizedBox(height: 15),
 
-        SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: selectedEmis != null
-              ? () => fetchStudentDetails(context, selectedEmis!)
-              : null,
-          child: isLoading
-              ? CircularProgressIndicator(color: Colors.white)
-              : Text('Search'),
+        isFiltering
+            ? Center(child: CircularProgressIndicator())
+            : filteredStudents.isEmpty
+                ? Text("No students found.", style: TextStyle(color: Colors.grey))
+                : DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    hint: Text("Select EMIS ID"),
+                    value: selectedEmis,
+                    isExpanded: true,
+                    items: filteredStudents.map((student) {
+                      return DropdownMenuItem(
+                        value: student['emis'],
+                        child: Text(
+                          '${student['name']} (${student['emis']})',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() => selectedEmis = value);
+                    },
+                  ),
+
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromRGBO(1, 69, 68, 1.0),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: selectedEmis != null
+                ? () => fetchStudentDetails(context, selectedEmis!)
+                : null,
+            child: isLoading
+                ? CircularProgressIndicator(color: Colors.white)
+                : Text("Search", style: TextStyle(fontSize: 16)),
+          ),
         ),
       ],
     );

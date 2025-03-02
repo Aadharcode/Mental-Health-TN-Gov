@@ -84,7 +84,7 @@ authRouter.get("/api/getFeedback", getFeedback);  // get all the feedbacksorted 
 authRouter.get("/api/getAttendance", getAttendance);  // get all the attendance of psychiatrist date wise
 authRouter.get("/api/getSchool", getSchool);  // get all school(name and district) data for MS
 authRouter.get("/getAllStudent", getAllStudent); //fetch student data
-authRouter.get("/getStudentsBySchool", getStudentsBySchool); //fetch student data based on their school
+authRouter.post("/getStudentsBySchool", getStudentsBySchool); //fetch student data based on their school
 authRouter.get("/getStudentsByZone", getStudentsByZone); //fetch student data based on their zone
 authRouter.get("/getSchoolsByZone", getSchoolsByZone); //fetch school name based on their zone
 authRouter.get("/approvedStudents", getApprovedStudents);  //To fetch the approved students for the psychiatrist

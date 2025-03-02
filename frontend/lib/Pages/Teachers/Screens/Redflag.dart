@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../../backendUrl.dart';
 
 class RedflagScreen extends StatefulWidget {
   final String studentName;
@@ -18,24 +17,23 @@ class RedflagScreen extends StatefulWidget {
 }
 
 class _RedflagScreenState extends State<RedflagScreen> {
-  // Updated list of red flags and their states (selected or not)
+  // List of red flags
   final List<Map<String, dynamic>> redFlags = [
     {'name': 'Anxiety', 'key': 'anxiety', 'isChecked': false},
     {'name': 'Depression', 'key': 'depression', 'isChecked': false},
-    {'name': 'Aggresion + Violence', 'key': 'aggresion_violence', 'isChecked': false},
-    {'name': 'SelfHarm + Suicide', 'key': 'selfharm_suicide', 'isChecked': false},
+    {'name': 'Aggression & Violence', 'key': 'aggresion_violence', 'isChecked': false},
+    {'name': 'Self-Harm & Suicide', 'key': 'selfharm_suicide', 'isChecked': false},
     {'name': 'Sexual Abuse', 'key': 'sexual_abuse', 'isChecked': false},
     {'name': 'Stress', 'key': 'stress', 'isChecked': false},
-    {'name': 'Loss + Grief', 'key': 'loss_grief', 'isChecked': false},
-    {'name': 'Relationship', 'key': 'relationship', 'isChecked': false},
-    {'name': 'Body image + selflisten', 'key': 'bodyimage_selflisten', 'isChecked': false},
-    {'name': 'Sleep', 'key': 'sleep', 'isChecked': false},
-    {'name': 'Conduct + Delinquency', 'key': 'conduct_delinquency', 'isChecked': false},
+    {'name': 'Loss & Grief', 'key': 'loss_grief', 'isChecked': false},
+    {'name': 'Relationship Issues', 'key': 'relationship', 'isChecked': false},
+    {'name': 'Body Image & Self-Esteem', 'key': 'bodyimage_selflisten', 'isChecked': false},
+    {'name': 'Sleep Issues', 'key': 'sleep', 'isChecked': false},
+    {'name': 'Conduct & Delinquency', 'key': 'conduct_delinquency', 'isChecked': false},
   ];
 
   // Function to handle form submission
   Future<void> handleSubmit() async {
-    // Collect selected red flags
     Map<String, bool> updates = {
       for (var flag in redFlags)
         if (flag['isChecked'] == true) flag['key']: true,
@@ -48,11 +46,9 @@ class _RedflagScreenState extends State<RedflagScreen> {
       return;
     }
 
-    // API endpoint
     final url = Uri.parse('http://13.232.9.135:3000/api/redflags');
 
     try {
-      // Make the POST request
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -66,7 +62,7 @@ class _RedflagScreenState extends State<RedflagScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Red flags updated successfully!')),
         );
-        Navigator.pop(context); // Navigate back on success
+        Navigator.pop(context);
       } else {
         final message = jsonDecode(response.body)['msg'];
         ScaffoldMessenger.of(context).showSnackBar(
@@ -83,61 +79,103 @@ class _RedflagScreenState extends State<RedflagScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Clean background
       appBar: AppBar(
-        title: Text('Redflag Details'),
+        title: const Text(
+          'Red Flag Details',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: const Color.fromRGBO(1, 69, 68, 1.0),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '${widget.studentName} - ${widget.emisId}',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
+            // Student Name & EMIS ID
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color.fromRGBO(1, 69, 68, 0.1),
+                borderRadius: BorderRadius.circular(8),
               ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Select Redflags:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                children: redFlags.map((flag) {
-                  return CheckboxListTile(
-                    title: Text(flag['name']),
-                    value: flag['isChecked'],
-                    onChanged: (bool? value) {
-                      setState(() {
-                        flag['isChecked'] = value!;
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
-            ),
-            SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: handleSubmit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orangeAccent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+              child: Text(
+                '${widget.studentName} - ${widget.emisId}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color.fromRGBO(1, 69, 68, 1.0),
                 ),
               ),
-              child: Center(
-                child: Text('Submit'),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Title
+            const Text(
+              'Select Red Flags:',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // Checkbox Container
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100], // Light background for separation
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListView(
+                  children: redFlags.map((flag) {
+                    return CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        flag['name'],
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      activeColor: const Color.fromRGBO(1, 69, 68, 1.0),
+                      value: flag['isChecked'],
+                      onChanged: (bool? value) {
+                        setState(() {
+                          flag['isChecked'] = value!;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Submit Button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: handleSubmit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(1, 69, 68, 1.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Submit',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
               ),
             ),
           ],

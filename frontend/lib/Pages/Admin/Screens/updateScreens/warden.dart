@@ -99,7 +99,7 @@ class _UpdateWardenFormState extends State<UpdateWardenForm> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFFE9967A),
+                      color: Color.fromRGBO(1, 69, 68, 1.0),
                     ),
                   ),
                   ...[ 
@@ -153,7 +153,7 @@ class _UpdateWardenFormState extends State<UpdateWardenForm> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : handleSubmit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFE9967A),
+                        backgroundColor: Color.fromRGBO(1, 69, 68, 1.0),
                         padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 16.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
