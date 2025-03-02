@@ -4,7 +4,7 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent, // Peach/coral color
+      backgroundColor: Color.fromRGBO(1, 69, 68, 1.0), // Peach/coral color
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -54,7 +54,7 @@ class OnboardingScreen extends StatelessWidget {
                   child: Text(
                     'Skip',
                     style: TextStyle(
-                      color: Colors.deepOrangeAccent,
+                      color: Color.fromRGBO(1, 69, 68, 1.0),
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),

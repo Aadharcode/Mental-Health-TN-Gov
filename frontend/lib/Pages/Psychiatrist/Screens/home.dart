@@ -12,15 +12,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> redFlaggedStudents = [];
   bool isEntryMarked = false;
+  bool isLoading = false; // General loading state
+  bool isButtonLoading = false; // Loading state for Entry/Exit button
 
   @override
   void initState() {
     super.initState();
-    checkEntryStatus(); // Check if entry data exists
+    checkEntryStatus();
     fetchRedFlaggedStudents();
   }
 
-  /// Check if entry lat & long exist in SharedPreferences
   Future<void> checkEntryStatus() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -28,8 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  /// Fetch red-flagged students from the backend
   Future<void> fetchRedFlaggedStudents() async {
+    setState(() => isLoading = true);
     try {
       final url = Uri.parse('http://13.232.9.135:3000/approvedStudents');
       final response = await http.get(url);
@@ -48,11 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('An error occurred: $e')),
       );
+    } finally {
+      setState(() => isLoading = false);
     }
   }
 
-  /// Mark entry time, store lat & long in SharedPreferences
   Future<void> markEntryTime() async {
+    setState(() => isButtonLoading = true); // Start loading
     try {
       Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       final prefs = await SharedPreferences.getInstance();
@@ -91,17 +94,18 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('An error occurred: $e')),
       );
+    } finally {
+      setState(() => isButtonLoading = false); // Stop loading
     }
   }
 
-  /// Mark exit time, check within 10km, then call markVisit()
   Future<void> markExitTime() async {
+    setState(() => isButtonLoading = true); // Start loading
     try {
       Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       final prefs = await SharedPreferences.getInstance();
       final name = prefs.getString('DISTRICT_PSYCHIATRIST_NAME');
 
-      // Fetch stored entry coordinates
       double? entryLat = prefs.getDouble('entry_latitude');
       double? entryLong = prefs.getDouble('entry_longitude');
 
@@ -112,7 +116,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return;
       }
 
-      // Check if exit location is within 10 km of entry
       double distanceInMeters = Geolocator.distanceBetween(entryLat, entryLong, position.latitude, position.longitude);
       double distanceInKm = distanceInMeters / 1000;
 
@@ -140,9 +143,6 @@ class _HomeScreenState extends State<HomeScreen> {
           SnackBar(content: Text('Exit marked successfully')),
         );
 
-        await markVisit(); // Call markVisit function after exit
-
-        // ✅ Remove entry data from SharedPreferences
         await prefs.remove('entry_latitude');
         await prefs.remove('entry_longitude');
         await prefs.remove('entry_time');
@@ -150,7 +150,6 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           isEntryMarked = false;
         });
-
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to mark exit time')),
@@ -160,73 +159,83 @@ class _HomeScreenState extends State<HomeScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('An error occurred: $e')),
       );
-    }
-  }
-
-  /// Calls `visitedPsych` API to increment visit count.
-  Future<void> markVisit() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final district = prefs.getString('district'); // Fetch stored district
-
-      if (district == null || district.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('District information not found')),
-        );
-        return;
-      }
-
-      final url = Uri.parse('http://13.232.9.135:3000/markVisit');
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'district': district}),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Visit recorded successfully')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to record visit')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred: $e')),
-      );
+    } finally {
+      setState(() => isButtonLoading = false); // Stop loading
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Clean background
       appBar: AppBar(
-        title: Text('Red-Flagged Students'),
+        title: const Text(
+          'Red-Flagged Students',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: const Color.fromRGBO(1, 69, 68, 1.0),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: isEntryMarked ? markExitTime : markEntryTime,
-              child: Text(isEntryMarked ? 'Mark Exit Time' : 'Mark Entry Time'),
-            ),
-            redFlaggedStudents.isEmpty
-                ? Center(child: Text('No red-flagged students found.'))
-                : Expanded(
-                    child: ListView.builder(
-                      itemCount: redFlaggedStudents.length,
-                      itemBuilder: (context, index) {
-                        final student = redFlaggedStudents[index];
-                        return ListTile(
-                          title: Text(student['student_name']),
-                          subtitle: Text('School: ${student['school_name']}'),
-                        );
-                      },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Mark Entry/Exit Button with Loading Indicator
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: isButtonLoading ? null : (isEntryMarked ? markExitTime : markEntryTime),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isEntryMarked ? Colors.red : Colors.green,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: isButtonLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          isEntryMarked ? 'Mark Exit Time' : 'Mark Entry Time',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Section Title
+              const Text(
+                'List of Red-Flagged Students',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromRGBO(1, 69, 68, 1.0)),
+              ),
+              const SizedBox(height: 10),
+
+              // Loading Indicator for Student List
+              if (isLoading)
+                const Expanded(child: Center(child: CircularProgressIndicator()))
+              else if (redFlaggedStudents.isEmpty)
+                const Expanded(
+                  child: Center(
+                    child: Text(
+                      'No red-flagged students found.',
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
                     ),
                   ),
-          ],
+                )
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: redFlaggedStudents.length,
+                    itemBuilder: (context, index) {
+                      final student = redFlaggedStudents[index];
+                      return Card(
+                        child: ListTile(
+                          title: Text(student['student_name']),
+                          subtitle: Text('School: ${student['school_name']}'),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

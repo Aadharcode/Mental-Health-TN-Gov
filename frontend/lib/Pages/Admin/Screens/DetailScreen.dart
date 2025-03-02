@@ -109,7 +109,7 @@ class _DetailScreenState extends State<DetailScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(" ${item['student_name'] ?? 'User'}"),
+          title: Text(_getTitle(item)),
           content: const Text("Choose an action:"),
           actions: [
             TextButton(
