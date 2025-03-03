@@ -13,32 +13,52 @@ class HamburgerMenu extends StatelessWidget {
   static void show(BuildContext context, List<String> menuItems, Function(int) onItemSelected) {
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        insetPadding: EdgeInsets.zero,
-        backgroundColor: Colors.transparent,
-        child: Align(
+      barrierDismissible: true, // Close when tapping outside
+      builder: (context) => GestureDetector(
+        onTap: () => Navigator.of(context).pop(), // Close menu on background tap
+        child: Container(
+          color: Colors.transparent,
+          padding: const EdgeInsets.only(top: 50.0, left: 10.0), // Padding for positioning
           alignment: Alignment.topLeft,
-          child: Container(
-            width: 250,
-            padding: const EdgeInsets.all(8.0),
-            color: Colors.deepOrange.shade300,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(
-                menuItems.length,
-                (index) => GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop(); // Close menu
-                    onItemSelected(index); // Trigger callback
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: Text(
-                      menuItems[index],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
+          child: Material(
+            color: Colors.transparent,
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 200),
+              curve: Curves.easeOut,
+              width: 260,
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(1, 69, 68, 1.0),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(2, 4),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                  menuItems.length,
+                  (index) => InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop(); // Close menu
+                      onItemSelected(index); // Trigger callback
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                      child: Text(
+                        menuItems[index],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Roboto',
+                        ),
                       ),
                     ),
                   ),
@@ -53,7 +73,6 @@ class HamburgerMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // No widget rendering here, menu is triggered via `show` method
     return SizedBox.shrink();
   }
 }

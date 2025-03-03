@@ -1,11 +1,129 @@
 import 'package:flutter/material.dart';
-import 'dart:convert'; 
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'redflag.dart';
-import '../../../backendUrl.dart'; 
 
-class HomeScreen extends StatelessWidget {
-  final TextEditingController emisController = TextEditingController();
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String? selectedDistrict;
+  String studentNameQuery = "";
+  String? selectedEmis;
+  List<String> districtList = [];
+  List<Map<String, String>> studentsList = [];
+  List<Map<String, String>> filteredStudents = [];
+  bool isLoading = false;
+  bool isFiltering = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDistricts();
+  }
+
+  Future<void> fetchDistricts() async {
+    setState(() => isLoading = true);
+    try {
+      final uri = Uri.parse("http://13.232.9.135:3000/api/getSchool");
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['data'] is List) {
+          setState(() {
+            districtList = (data['data'] as List)
+                .map((item) => item['SCHOOL_NAME'] as String)
+                .toList();
+            districtList.insert(0, "All");
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching districts: $e");
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> fetchStudents() async {
+    if (selectedDistrict == null) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      final url = Uri.parse("http://13.232.9.135:3000/getStudentsBySchool");
+      final body = json.encode({'school_name': selectedDistrict});
+
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['success']) {
+          setState(() {
+            studentsList = (data['data'] as List)
+                .map((item) => {
+                      'emis': item['student_emis_id'].toString(),
+                      'name': item['student_name'].toString(),
+                    })
+                .toList();
+            filterStudents();
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching students: $e");
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  void filterStudents() {
+    setState(() => isFiltering = true);
+    Future.delayed(Duration(milliseconds: 500), () {
+      setState(() {
+        filteredStudents = studentsList
+            .where((student) => student['name']!
+                .toLowerCase()
+                .contains(studentNameQuery.toLowerCase()))
+            .toList();
+        isFiltering = false;
+      });
+    });
+  }
+
+  Future<void> fetchStudentDetails(BuildContext context, String emisId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://13.232.9.135:3000/getStudent'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'student_emis_id': emisId}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RedflagScreen(
+              studentName: data['data']['student_name'],
+              emisId: data['data']['student_emis_id'],
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,199 +132,129 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         body: Padding(
           padding: const EdgeInsets.all(20.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Redflag Identification',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Red Flag Identification',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(1, 69, 68, 1.0),
                 ),
-                SizedBox(height: 15),
-                _buildRedflagSection(context),
-              ],
-            ),
+              ),
+              const SizedBox(height: 15),
+              _buildDropdownSection(),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSection(String? field1, String? field2, String? field3, String? field4) {
-    return Container(
-      padding: EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Color(0xFFF0F0F0),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          _buildInputField(field1),
-          if (field2 != null) _buildInputField(field2),
-          if (field3 != null) _buildInputField(field3),
-          if (field4 != null) _buildInputField(field4),
-          SizedBox(height: 10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFE9967A),
-              padding: EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () {
-              // Add search functionality here
-            },
-            child: Text(
-              'Search',
-              style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
- Widget _buildRedflagSection(BuildContext context) {
-  final TextEditingController nameController = TextEditingController();
-
-  return Container(
-    padding: EdgeInsets.all(15),
-    decoration: BoxDecoration(
-      color: Color(0xFFF0F0F0),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Column(
+  Widget _buildDropdownSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: TextField(
-            controller: nameController,
-            decoration: InputDecoration(
-              hintText: 'Enter Name',
-              hintStyle: TextStyle(color: Colors.black),
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            ),
-          ),
+        Text(
+          "Select School",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: TextField(
-            controller: emisController,
-            decoration: InputDecoration(
-              hintText: 'Enter EMIS ID',
-              hintStyle: TextStyle(color: Colors.black),
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none,
+        const SizedBox(height: 6),
+        DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          ),
+          hint: Text("Choose a school"),
+          value: selectedDistrict,
+          isExpanded: true,
+          items: districtList.map((district) {
+            return DropdownMenuItem(
+              value: district,
+              child: Text(
+                district,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orangeAccent,
-            padding: EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          onPressed: () {
-            final name = nameController.text.trim();
-            final emisId = emisController.text.trim();
-
-            if (emisId.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Please enter a valid EMIS ID')),
-              );
-              return;
-            }
-
-            fetchStudentDetails(context, emisId);
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              selectedDistrict = value;
+              studentNameQuery = "";
+              selectedEmis = null;
+              studentsList.clear();
+              filteredStudents.clear();
+            });
+            fetchStudents();
           },
-          child: Text(
-            'Search',
-            style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 15),
+
+        Text(
+          "Search Student by Name",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          decoration: InputDecoration(
+            hintText: "Enter student's name",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          ),
+          onChanged: (value) {
+            setState(() {
+              studentNameQuery = value;
+              filterStudents();
+            });
+          },
+        ),
+        const SizedBox(height: 15),
+
+        isFiltering
+            ? Center(child: CircularProgressIndicator())
+            : filteredStudents.isEmpty
+                ? Text("No students found.", style: TextStyle(color: Colors.grey))
+                : DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    hint: Text("Select EMIS ID"),
+                    value: selectedEmis,
+                    isExpanded: true,
+                    items: filteredStudents.map((student) {
+                      return DropdownMenuItem(
+                        value: student['emis'],
+                        child: Text(
+                          '${student['name']} (${student['emis']})',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() => selectedEmis = value);
+                    },
+                  ),
+
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromRGBO(1, 69, 68, 1.0),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: selectedEmis != null
+                ? () => fetchStudentDetails(context, selectedEmis!)
+                : null,
+            child: isLoading
+                ? CircularProgressIndicator(color: Colors.white)
+                : Text("Search", style: TextStyle(fontSize: 16)),
           ),
         ),
       ],
-    ),
-  );
-}
-
-
- Future<void> fetchStudentDetails(BuildContext context, String emisId) async {
-  if (emisId.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please enter a valid EMIS ID')),
-    );
-    return;
-  }
-
-  try {
-    // Replace with your backend endpoint
-    final url = Uri.parse('http://13.232.9.135:3000/getStudent');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'student_emis_id': emisId}),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final studentName = data['data']['student_name'];
-      final emisId = data['data']['student_emis_id'];
-
-      //Navigate to the RedflagScreen with the fetched details
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RedflagScreen(
-            studentName: studentName,
-            emisId: emisId,
-          ),
-        ),
-      );
-    } else {
-      final message = jsonDecode(response.body)['msg'];
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message ?? 'Failed to fetch student details')),
-      );
-    }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('An error occurred: $e')),
-    );
-  }
-}
-
-
-  Widget _buildInputField(String? placeholder) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: placeholder,
-          hintStyle: TextStyle(color: Colors.black),
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        ),
-      ),
     );
   }
 }

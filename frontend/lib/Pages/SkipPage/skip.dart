@@ -4,7 +4,7 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent, // Peach/coral color
+      backgroundColor: Color.fromRGBO(1, 69, 68, 1.0), // Peach/coral color
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -22,7 +22,7 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'This application is intended for school students, educators, '
+                    'This application is intended for school academicians, educators, '
                     'and teachers looking to enhance mental well-being in educational settings.',
                     style: TextStyle(
                       fontSize: 18,
@@ -54,7 +54,7 @@ class OnboardingScreen extends StatelessWidget {
                   child: Text(
                     'Skip',
                     style: TextStyle(
-                      color: Colors.deepOrangeAccent,
+                      color: Color.fromRGBO(1, 69, 68, 1.0),
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),

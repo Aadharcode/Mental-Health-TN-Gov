@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import '../Service/StudentService.dart';
-import 'refreallistscreen.dart';
+import 'package:fl_chart/fl_chart.dart';
+import '../service/studentservice.dart';
+import '../Component/Dashboardcard.dart';
+// import '../Component/RedFlagChart.dart';
+// import '../Component/MentalHealthChart.dart';
+import 'category_list_screen.dart';
+// import 'student_list_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -9,198 +14,181 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   Map<String, dynamic>? dashboardData;
-  String? selectedDistrict;
-  List<String> districts = [];
-  bool isLoading = false; // Track loading state
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadDistricts();
     _loadDashboardData();
   }
 
-  Future<void> _loadDistricts() async {
+  Future<void> _loadDashboardData() async {
+    setState(() => isLoading = true);
     try {
-      final response = await StudentService.fetchDistricts(); // Fetch district names
+      final rawData = await StudentService.fetchStudentData("All");
       setState(() {
-        districts = response.cast<String>();
+        dashboardData = Map<String, dynamic>.from(rawData);
+        isLoading = false;
       });
+      print('dhashboard data is $dashboardData?["redFlagStudents"]');
     } catch (e) {
-      print("Error loading districts: $e");
+      setState(() => isLoading = false);
+      print("Error loading dashboard data: $e");
     }
   }
 
-  Future<void> _loadDashboardData({String? district}) async {
-    setState(() {
-      isLoading = true; // Set loading state to true
-    });
-
-    try {
-      print("🌐 Fetching student data for district: ${district ?? 'All'}...");
-      final rawData = await StudentService.fetchStudentData(district ?? 'All');
-      print("📥 Raw data received: $rawData");
-
-      setState(() {
-        dashboardData = Map<String, dynamic>.from(rawData);
-        isLoading = false; // Set loading state to false
-      });
-
-      print("✅ Dashboard data successfully loaded!");
-    } catch (e) {
-      setState(() {
-        isLoading = false; // Set loading state to false if an error occurs
-      });
-      print("❌ Error loading dashboard data: $e");
-    }
+  void _navigateToCategoryList(String category, List<dynamic> students) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CategoryListScreen(category: category, students: students),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              width: double.infinity,
-              child: DropdownButtonFormField<String>(
-                value: selectedDistrict,
-                hint: const Text("All"),
-                isExpanded: true,
-                items: districts.map((district) {
-                  return DropdownMenuItem(
-                    value: district,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(
-                        district,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedDistrict = value;
-                    _loadDashboardData(district: value);
-                  });
-                },
-              ),
-            ),
-          ),
-          Expanded(
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : dashboardData == null
-                    ? const Center(child: Text("No data available"))
-                    : ListView(
-                        padding: const EdgeInsets.all(16.0),
-                        children: [
-                          DashboardCard(
-                            title: "Students Identified with Red Flags",
-                            value: dashboardData!['totalRedFlags'] ?? 0,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReferralListScreen(
-                                    title: "Red Flag Students",
-                                    students: dashboardData!['redFlagStudents'] ?? [],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          DashboardCard(
-                            title: "Students Received Care (DMHP Team)",
-                            value: dashboardData!['recoveredByDMHP'] ?? 0,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReferralListScreen(
-                                    title: "Recovered Students",
-                                    students: dashboardData!['recoveredStudents'] ?? [],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          DashboardCard(
-                            title: "Ongoing Cases",
-                            value: dashboardData!['ongoingCases'] ?? 0,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReferralListScreen(
-                                    title: "Ongoing Cases",
-                                    students: dashboardData!['ongoingStudents'] ?? [],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          DashboardCard(
-                            title: "Completed Cases",
-                            value: dashboardData!['completedCases'] ?? 0,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReferralListScreen(
-                                    title: "Completed Cases",
-                                    students: dashboardData!['completedStudents'] ?? [],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          DashboardCard(
-                            title: "Referrals",
-                            value: dashboardData!['referrals'] ?? 0,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReferralListScreen(
-                                    title: "Referrals",
-                                    students: dashboardData!['referralStudents'] ?? [],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-          ),
-        ],
-      ),
+      // appBar: AppBar(title: const Text("Dashboard")),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : dashboardData == null
+              ? const Center(child: Text("No data available"))
+              : ListView(padding: const EdgeInsets.all(16.0), children: [
+                  DashboardCard(title: "Total Students", value: dashboardData!["totalStudents"] ?? 0),
+                  GestureDetector(
+                    onTap: () => _navigateToCategoryList("Red Flag Cases", dashboardData!["redFlagStudents"] ?? []),
+                    child: DashboardCard(title: "Red Flags", value: dashboardData!["totalRedFlags"] ?? 0),
+                  ),
+                  GestureDetector(
+                    onTap: () => _navigateToCategoryList("Recovered by DMHP", dashboardData!["recoveredStudents"] ?? []),
+                    child: DashboardCard(title: "Recovered by DMHP", value: dashboardData!["recoveredByDMHP"] ?? 0),
+                  ),
+                  GestureDetector(
+                    onTap: () => _navigateToCategoryList("Ongoing Cases", dashboardData!["ongoingStudents"] ?? []),
+                    child: DashboardCard(title: "Ongoing Cases", value: dashboardData!["ongoingCases"] ?? 0),
+                  ),
+                  GestureDetector(
+                    onTap: () => _navigateToCategoryList("Completed Cases", dashboardData!["completedStudents"] ?? []),
+                    child: DashboardCard(title: "Completed Cases", value: dashboardData!["completedCases"] ?? 0),
+                  ),
+                  GestureDetector(
+                    onTap: () => _navigateToCategoryList("Referrals", dashboardData!["referralStudents"] ?? []),
+                    child: DashboardCard(title: "Referrals", value: dashboardData!["referrals"] ?? 0),
+                  ),
+                  GestureDetector(
+                    onTap: () => _navigateToCategoryList("Referrals", dashboardData!["rejectedStudents"] ?? []),
+                    child: DashboardCard(title: "Rejected", value: dashboardData!["rejected"] ?? 0),
+                  ),
+                ]),
     );
   }
 }
 
-class DashboardCard extends StatelessWidget {
-  final String title;
-  final int value;
-  final VoidCallback onTap;
 
-  const DashboardCard({
-    required this.title,
-    required this.value,
-    required this.onTap,
-  });
+class StudentListScreen extends StatelessWidget {
+  final List<dynamic> students;
+
+  StudentListScreen({required this.students});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        title: Text(title),
-        subtitle: Text(value.toString()),
-        onTap: onTap,
+    return Scaffold(
+      appBar: AppBar(title: const Text("Student List")),
+      body: ListView.builder(
+        itemCount: students.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(students[index]["student_name"] ?? "Unknown"),
+            subtitle: Text("School: ${students[index]["school_name"] ?? "Unknown"}"),
+          );
+        },
       ),
     );
   }
 }
+
+
+
+
+
+class GraphScreen extends StatelessWidget {
+  final List<dynamic> students;
+
+  GraphScreen({required this.students});
+
+  @override
+  Widget build(BuildContext context) {
+    Map<String, int> schoolData = {};
+    for (var student in students) {
+      String schoolName = student["school_name"] ?? "Unknown";
+      schoolData[schoolName] = (schoolData[schoolName] ?? 0) + 1;
+    }
+
+    List<BarChartGroupData> barGroups = schoolData.entries.map((entry) {
+      return BarChartGroupData(
+        x: schoolData.keys.toList().indexOf(entry.key),
+        barRods: [BarChartRodData(toY: entry.value.toDouble(), color: Colors.blue)],
+      );
+    }).toList();
+
+    int maxY = schoolData.values.isNotEmpty ? schoolData.values.reduce((a, b) => a > b ? a : b) : 1;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("School-wise Student Count")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: BarChart(
+          BarChartData(
+            alignment: BarChartAlignment.spaceAround,
+            barGroups: barGroups,
+            titlesData: FlTitlesData(
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  interval: 1, // Ensures only integer values on Y-axis
+                  getTitlesWidget: (value, meta) {
+                    return Text(value.toInt().toString(), style: const TextStyle(fontSize: 12));
+                  },
+                  reservedSize: 40,
+                ),
+              ),
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false), // Remove right side count
+              ),
+              topTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false), // Optional: Remove top labels
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, meta) {
+                    int index = value.toInt();
+                    if (index >= 0 && index < schoolData.keys.length) {
+                      return Text(schoolData.keys.elementAt(index), style: const TextStyle(fontSize: 10));
+                    }
+                    return Container();
+                  },
+                  reservedSize: 40,
+                ),
+              ),
+            ),
+            gridData: FlGridData(
+              show: true,
+              drawVerticalLine: false,
+              horizontalInterval: 1, // Only integer grid lines
+            ),
+            borderData: FlBorderData(show: false),
+            barTouchData: BarTouchData(enabled: false),
+            maxY: (maxY + 1).toDouble(), // Ensure enough space
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+

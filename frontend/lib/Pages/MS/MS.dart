@@ -22,14 +22,20 @@ class _MSState extends State<MSScreen> {
     });
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _currentIndex == 0
-          ? _screens[_currentIndex]
-          : _screens[_currentIndex],  
+      body: Column(
+        children: [
+          const SizedBox(height: 80), // Margin from top
+          Expanded(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: _screens[_currentIndex], 
+            ),
+          ),
+        ],
+      ),
       bottomNavigationBar: PsychiatristBottomNav(
         currentIndex: _currentIndex,
         onTabSelected: onTabSelected,

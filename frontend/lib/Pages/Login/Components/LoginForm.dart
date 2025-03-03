@@ -20,7 +20,7 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordController = TextEditingController();
 
   String _selectedRole = 'Admin'; // Default role
-  final List<String> _roles = ['Admin', 'Teacher', 'HM', 'MS', 'psychiatrist', 'Students', 'ASA', 'CIF', 'RC', 'warden'];
+  final List<String> _roles = ['Admin', 'Teacher', 'SC','HM', 'MS', 'Psychiatrist', 'Students', 'ASA', 'CIF', 'RC', 'Warden'];
 
   bool _isLoading = false;
 
@@ -59,6 +59,9 @@ class _LoginFormState extends State<LoginForm> {
         case 'ms':
           Navigator.pushReplacementNamed(context, '/ms');
           break;
+        case 'sc':
+          Navigator.pushReplacementNamed(context, '/ms');
+          break;
         case 'rc':
           Navigator.pushReplacementNamed(context, '/rc');
           break;
@@ -88,7 +91,7 @@ class _LoginFormState extends State<LoginForm> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.10.250:3000/api/signin'),
+        Uri.parse('http://13.232.9.135:3000/api/signin'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'role': role, 'email': email, 'password': password}),
       );
@@ -111,6 +114,10 @@ class _LoginFormState extends State<LoginForm> {
             await prefs.setString('DISTRICT_PSYCHIATRIST_NAME', user['DISTRICT_PSYCHIATRIST_NAME']);
           }else if( role == 'rc'){
             await prefs.setString('Zone', user['Zone']);
+          }else if(role == 'teachers'){
+            await prefs.setString('district', user['district']);
+          }else if(role == 'psychiatrist'){
+            await prefs.setString('district', user['district']);
           }
 
           // Navigate based on the role

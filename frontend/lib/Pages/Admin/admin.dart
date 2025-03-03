@@ -14,10 +14,8 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   final List<String> menuItems = [
-    'Admin',
     'Teacher',
     'HM',
-    'MS',
     'Psychiatrist',
     'Students',
     'ASA',
@@ -81,7 +79,7 @@ class _AdminScreenState extends State<AdminScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
+           Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -92,7 +90,9 @@ class _AdminScreenState extends State<AdminScreen> {
                   ),
                   Row(
                     children: [
-                      TextButton(
+                      IconButton(
+                        icon: const Icon(Icons.person_search, color: Colors.blue),
+                        tooltip: 'Psychiatrist Attendance',
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -101,13 +101,11 @@ class _AdminScreenState extends State<AdminScreen> {
                             ),
                           );
                         },
-                        child: const Text(
-                          'See Psychiatrist Attendance',
-                          style: TextStyle(color: Colors.blue),
-                        ),
                       ),
+                      const SizedBox(width: 8), // Space between icons
                       IconButton(
                         icon: const Icon(Icons.settings_outlined),
+                        tooltip: 'Settings',
                         onPressed: () {
                           Navigator.push(
                             context,
