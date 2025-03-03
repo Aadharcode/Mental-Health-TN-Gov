@@ -713,5 +713,6 @@ const CIF = mongoose.model("CIF", CIFSchema);
 const RC = mongoose.model("RC",RegionalCoordSchema);
 const timeSlot = mongoose.model("timeSlot",timeSlotSchema);
 const stateCoord = mongoose.model("stateCoord", stateCoordSchema);
+const victim = mongoose.model("victim", victimSchema);
 
-module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot , Warden ,stateCoord};
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot , Warden ,stateCoord , victim};
