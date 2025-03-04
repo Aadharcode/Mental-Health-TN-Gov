@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'redflag.dart';
+import 'victim_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -174,6 +175,20 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  void navigateToMarkVictimScreen(BuildContext context) {
+    
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MarkVictimScreen(
+            // studentName: selectedEmis!,
+            // emisId: selectedEmis!,
+          ),
+        ),
+      );
+   
+  }
+
 
   Widget _buildDropdownSection() {
     return Column(
@@ -277,6 +292,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 : Text("Search", style: TextStyle(fontSize: 16)),
           ),
         ),
+        const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: () => navigateToMarkVictimScreen(context),
+                  child: Text("Mark as Victim", style: TextStyle(fontSize: 16)),
+                ),
+              ),
       ],
     );
   }
