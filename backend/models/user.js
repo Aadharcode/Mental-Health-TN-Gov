@@ -285,7 +285,7 @@ const victimSchema = mongoose.Schema({
     default: "",
   },
   level: {
-    enum: ["emergency","non-emergency"],
+    enum: ["Emergency","NON-Emergency"],
     default: "",
   }
 },{ versionKey: false });

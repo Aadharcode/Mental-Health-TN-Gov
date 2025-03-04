@@ -1,4 +1,4 @@
-const { Student } = require("../models/user");
+const { Student , victim } = require("../models/user");
 
 const zoneSchoolMapping = {
   "NORTHERN ZONE": [
@@ -115,7 +115,8 @@ const getAllStudent = async (req, res) => {
         referralStudents.push(student);
       }
     });
-
+    const Victim = await victim.find()
+    const victimCount = Victim.length;
     res.status(200).json({
       msg: "Student statistics fetched successfully.",
       totalStudents,
@@ -131,6 +132,8 @@ const getAllStudent = async (req, res) => {
       referralStudents,
       rejected,
       rejectedStudents,
+      Victim: Victim || null,
+      victimCount
     });
   } catch (err) {
     console.error("Error fetching student details:", err);
