@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'Redflag.dart';
+import '../../Teachers/Screens/victim_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String? SCHOOL_NAME;
@@ -73,6 +74,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void navigateToMarkVictimScreen(BuildContext context) {
+    
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MarkVictimScreen(
+            // studentName: selectedEmis!,
+            // emisId: selectedEmis!,
+          ),
+        ),
+      );
+   
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,6 +155,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
+                      SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: () => navigateToMarkVictimScreen(context),
+                  child: Text("Mark as Victim", style: TextStyle(fontSize: 16)),
+                ),
+              ),
                     ],
                   ),
                 ),

@@ -47,6 +47,8 @@ const updateRC = require("../controllers/updateRC");
 const visitedPsych = require("../controllers/visitedPsych");
 const getSchoolsByZone = require("../controllers/getSchoolsbyZone");
 const getStudentsBySchool = require("../controllers/getStudentsbySchool");
+const createVictim = require("../controllers/createVictim");
+const getAllVictims = require("../controllers/allVictims");
 require('dotenv').config();
 
 authRouter.post("/api/signin", signin);   // Sign In
@@ -59,6 +61,7 @@ authRouter.post("/createASA", createASA);  // new ASA user
 authRouter.post("/createCIF", createCIF);  // new CIF user
 authRouter.post("/createSchool", createSchool); // new School
 authRouter.post("/createPsychiatrist", createPsychiatrist); // new Psychiatrist user
+authRouter.post("/createVictim", createVictim); //new victim case
 authRouter.post("/getStudent", getStudent); //fetch student data
 authRouter.post("/api/redflags", updateRedflags); //Redflags API
 authRouter.post("/api/hsmsFetch", getStudentsBySchoolAndDistrict);  //fetching students based on their school and district with redflags
@@ -90,8 +93,8 @@ authRouter.get("/getSchoolsByZone", getSchoolsByZone); //fetch school name based
 authRouter.get("/approvedStudents", getApprovedStudents);  //To fetch the approved students for the psychiatrist
 authRouter.post("/getTimeSlotsBySchoolName" , getTimeSlotsBySchoolName); // To fetch timeslot based on school name
 authRouter.get("/getAllTimeSlots" , getAllTimeSlots); // To fetch all time slots
+authRouter.get("/getAllVictims" , getAllVictims); // To fetch all victims
 authRouter.post("/updateTimeSlot" , filterAndUpdateTimeSlot); // To update time slots by _id
-authRouter.get("/", auth, getData);  // get user data
 authRouter.get("/", auth, getData);  // get user data
 authRouter.delete("/api/deleteUser", deleteUser); // Route to delete a user
 authRouter.post('/fetch-all', fetchDetails);

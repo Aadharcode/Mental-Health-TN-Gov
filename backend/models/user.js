@@ -259,29 +259,33 @@ const victimSchema = mongoose.Schema({
     trim: true,
     default: "",
   },
-  inappropriateTouching: {
-    type: Boolean,
-    default: false,
-  },
-  sexualAdvances: {
-    type: Boolean,
-    default: false,
-  },
-  physicalAbuse: {
-    type: Boolean,
-    default: false,
-  },
-  onlineHarassment: {
-    type: Boolean,
-    default: false,
-  },
-  showingInappropriateContent: {
-    type: Boolean,
-    default: false,
-  },
-  others: {
+  // inappropriateTouching: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // sexualAdvances: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // physicalAbuse: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // onlineHarassment: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // showingInappropriateContent: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  type: {
     type: String,
     trim: true,
+    default: "",
+  },
+  level: {
+    enum: ["emergency","non-emergency"],
     default: "",
   }
 },{ versionKey: false });
@@ -713,5 +717,6 @@ const CIF = mongoose.model("CIF", CIFSchema);
 const RC = mongoose.model("RC",RegionalCoordSchema);
 const timeSlot = mongoose.model("timeSlot",timeSlotSchema);
 const stateCoord = mongoose.model("stateCoord", stateCoordSchema);
+const victim = mongoose.model("victim", victimSchema);
 
-module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot , Warden ,stateCoord};
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot , Warden ,stateCoord , victim};

@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../Teachers/Screens/victim_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -27,6 +28,20 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isEntryMarked = prefs.containsKey('entry_latitude') && prefs.containsKey('entry_longitude');
     });
+  }
+
+  void navigateToMarkVictimScreen(BuildContext context) {
+    
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MarkVictimScreen(
+            // studentName: selectedEmis!,
+            // emisId: selectedEmis!,
+          ),
+        ),
+      );
+   
   }
 
   Future<void> fetchRedFlaggedStudents() async {
@@ -199,7 +214,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: () => navigateToMarkVictimScreen(context),
+                  child: Text("Mark as Victim", style: TextStyle(fontSize: 16)),
+                ),
+              ),
               // Section Title
               const Text(
                 'List of Red-Flagged Students',

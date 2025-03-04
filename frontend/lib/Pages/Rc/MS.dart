@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'Screens/dashboardScreen.dart';
 import 'Screens/setting.dart';  
 import './component/bottom-nav.dart';
+import '../Teachers/Screens/victim_screen.dart';
 
-class RCScreen extends StatefulWidget {
+class MSScreen extends StatefulWidget {
   @override
   _MSState createState() => _MSState();
 }
 
-class _MSState extends State<RCScreen> {
+class _MSState extends State<MSScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
@@ -20,6 +21,20 @@ class _MSState extends State<RCScreen> {
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  void navigateToMarkVictimScreen(BuildContext context) {
+    
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MarkVictimScreen(
+            // studentName: selectedEmis!,
+            // emisId: selectedEmis!,
+          ),
+        ),
+      );
+   
   }
 
   @override
@@ -34,6 +49,18 @@ class _MSState extends State<RCScreen> {
               child: _screens[_currentIndex], 
             ),
           ),
+          SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: () => navigateToMarkVictimScreen(context),
+                  child: Text("Mark as Victim", style: TextStyle(fontSize: 16)),
+                ),
+              ),
         ],
       ),
       bottomNavigationBar: PsychiatristBottomNav(

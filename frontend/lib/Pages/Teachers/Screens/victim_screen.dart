@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
-import 'redflag.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 
 class MarkVictimScreen extends StatefulWidget {
   // final String studentName;
@@ -14,6 +15,7 @@ class MarkVictimScreen extends StatefulWidget {
   @override
   _MarkVictimScreenState createState() => _MarkVictimScreenState();
 }
+
 
 
 class _MarkVictimScreenState extends State<MarkVictimScreen> {
@@ -28,10 +30,10 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
   String? _severityLevel;
   String? _victimAge;
   String? _victimSex;
-  String? _victimPhone;
+  // String? _victimPhone;
   String? _incidentDetails;
   bool _keepAnonymous = false;
-    String? selectedDistrict;
+  String? selectedDistrict;
   String studentNameQuery = "";
   String? selectedEmis;
   List<String> districtList = [];
@@ -45,6 +47,105 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
     super.initState();
     fetchDistricts();
   }
+  void alertPolice() async {
+  const String policeNumber = "+919626916789";
+  final Uri phoneUri = Uri.parse('tel:$policeNumber');
+  
+  if (await canLaunchUrl(phoneUri)) {
+    await launchUrl(phoneUri);
+  } else {
+    print("🚨 Could not launch $phoneUri");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error: Unable to make the call")),
+    );
+  }
+}
+
+
+  Future<void> createVictim() async {
+    final url = Uri.parse("http://13.232.9.135:3000/createVictim");
+    print("$_studentName, $selectedEmis, $_incidentDate, $_incidentTime,$_victimAge, $_victimSex");
+
+    if (_studentName == null || selectedEmis == null || _incidentDate == null || _incidentTime == null || _victimAge == null || _victimSex == null) {
+      print("⚠️ Missing required fields");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please fill in all required fields")),
+      );
+      return;
+    }
+
+    final Map<String, dynamic> requestBody = {
+      "name": _studentName,
+      "age": _victimAge,
+      "sex": _victimSex,
+      "emis_id": selectedEmis,
+      "Date": _incidentDate,
+      "Time": _incidentTime,
+      "Location": _incidentLocation ?? "",
+      "Details": _incidentDetails ?? "",
+      "type": _abuseType != "Others (specify)" ? _abuseType : _otherAbuseType,
+      "level": _severityLevel?.toLowerCase() ?? "emergency",
+    };
+
+    print("📤 Sending request to: $url");
+    print("📨 Request Body: ${jsonEncode(requestBody)}");
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(requestBody),
+      );
+
+      final responseData = jsonDecode(response.body);
+      print("📬 Response Status Code: ${response.statusCode}");
+      print("📥 Response Body: $responseData");
+
+      if (response.statusCode == 200) {
+        print("✅ Victim reported successfully.");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Victim reported successfully.")),
+        );
+      } else {
+        print("❌ Error: ${responseData['msg']}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error: ${responseData['msg']}")),
+        );
+      }
+    } catch (error) {
+      print("🔥 Error submitting report: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error submitting report: $error")),
+      );
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        _incidentDate = DateFormat('dd/MM/yyyy').format(picked);
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _incidentTime = picked.format(context);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,7 +201,7 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
         const SizedBox(height: 6),
         TextField(
           decoration: InputDecoration(
-            hintText: "Enter student's name",
+            hintText: _studentName?? "Enter student's name",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
           ),
@@ -133,39 +234,44 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
                         ),
                       );
                     }).toList(),
-                    onChanged: (value) {
-                      setState(() => selectedEmis = value);
+                   onChanged: (value) {
+                      setState(() {
+                        selectedEmis = value;
+                        _studentName = filteredStudents.firstWhere(
+                          (student) => student['emis'] == value,
+                          orElse: () => {'name': ''}, // Provide a default value to prevent errors
+                        )['name'];
+                      });
                     },
                   ),
 
         const SizedBox(height: 20),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(1, 69, 68, 1.0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            onPressed: selectedEmis != null
-                ? () => fetchStudentDetails(context, selectedEmis!)
-                : null,
-            child: isLoading
-                ? CircularProgressIndicator(color: Colors.white)
-                : Text("Search", style: TextStyle(fontSize: 16)),
-          ),
-        ),
+        
                 SizedBox(height: 10),
                 Text("Incident Date"),
                 TextFormField(
-                  decoration: InputDecoration(hintText: "DD/MM/YYYY"),
-                  onChanged: (value) => _incidentDate = value,
+                  readOnly: true,
+                  controller: TextEditingController(text: _incidentDate),
+                  decoration: InputDecoration(
+                    hintText: "Select Date",
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () => _selectDate(context),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 10),
                 Text("Incident Time"),
                 TextFormField(
-                  decoration: InputDecoration(hintText: "HH:MM"),
-                  onChanged: (value) => _incidentTime = value,
+                  readOnly: true,
+                  controller: TextEditingController(text: _incidentTime),
+                  decoration: InputDecoration(
+                    hintText: "Select Time",
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.access_time),
+                      onPressed: () => _selectTime(context),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 10),
                 Text("Incident Location"),
@@ -187,10 +293,20 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
                 ),
                 SizedBox(height: 10),
                 Text("Sex"),
-                TextFormField(
-                  decoration: InputDecoration(hintText: "Enter Victim's Sex"),
+               DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    hintText: "Select Victim's Sex",
+                    border: OutlineInputBorder(), // Optional: Adds a border
+                  ),
+                  items: ["Male", "Female", "Other"].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                   onChanged: (value) => _victimSex = value,
                 ),
+
                 SizedBox(height: 10),
                 
                 SizedBox(height: 10),
@@ -199,12 +315,12 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),),
-                // TextFormField(
-                //   decoration: InputDecoration(hintText: "Describe the Incident"),
-                //   maxLines: 3,
-                //   onChanged: (value) => _incidentDetails = value,
-                // ),
-                // SizedBox(height: 10),
+                TextFormField(
+                  decoration: InputDecoration(hintText: "Describe the Incident"),
+                  
+                  onChanged: (value) => _incidentDetails = value,
+                ),
+                SizedBox(height: 10),
                 Text("Type of Sexual Abuse"),
                 DropdownButtonFormField(
                   items: [
@@ -253,7 +369,7 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
                             child: Text(level),
                           ))
                       .toList(),
-                  onChanged: (value) => _severityLevel = value as String?,
+                  onChanged: (value) => _severityLevel = value,
                   decoration: InputDecoration(hintText: "Select severity level"),
                 ),
                 SizedBox(height: 10),
@@ -266,10 +382,20 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // Submit logic
+                       createVictim();
                     }
                   },
                   child: Text("Submit Report"),
+                ),
+                SizedBox(height: 10), // Space between buttons
+                ElevatedButton.icon(
+                  onPressed: alertPolice, // Call the police function
+                  icon: Icon(Icons.call, color: Colors.white),
+                  label: Text("Alert Police"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, // Red for emergency
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  ),
                 ),
               ],
             ),
@@ -377,31 +503,5 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
     });
   }
 
-  Future<void> fetchStudentDetails(BuildContext context, String emisId) async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://13.232.9.135:3000/getStudent'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'student_emis_id': emisId}),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RedflagScreen(
-              studentName: data['data']['student_name'],
-              emisId: data['data']['student_emis_id'],
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred: $e')),
-      );
-    }
-  }
-
+  
 }

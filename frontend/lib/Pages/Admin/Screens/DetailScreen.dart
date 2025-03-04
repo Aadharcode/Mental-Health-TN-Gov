@@ -63,7 +63,7 @@ class _DetailScreenState extends State<DetailScreen> {
     print("📡 Fetching data from collection: ${widget.collectionName}...");
     try {
       final response = await http.post(
-        Uri.parse("http://13.232.9.135:3000/fetch-all"),
+        Uri.parse("http://192.168.10.250:3000/fetch-all"),
         headers: {
           'Content-Type': 'application/json',
         },
