@@ -16,7 +16,6 @@ const getStudent = async (req, res) => {
       return res.status(404).json({ msg: "Student not found." });
     }
     const Victim = await victim.findOne({ emis_id: student_emis_id });
-    // Return the student details
     res.status(200).json({
         msg: "Student fetched successfully.",
         data: {

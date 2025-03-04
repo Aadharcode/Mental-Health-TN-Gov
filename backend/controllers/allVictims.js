@@ -1,5 +1,5 @@
 const { victim } = require("../models/user"); 
-
+//API to get all victims
 const getAllVictims = async (req, res) => {
   try {
     const Victims = await victim.find({});

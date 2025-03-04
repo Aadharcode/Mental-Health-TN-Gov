@@ -96,7 +96,6 @@ authRouter.get("/getAllTimeSlots" , getAllTimeSlots); // To fetch all time slots
 authRouter.get("/getAllVictims" , getAllVictims); // To fetch all victims
 authRouter.post("/updateTimeSlot" , filterAndUpdateTimeSlot); // To update time slots by _id
 authRouter.get("/", auth, getData);  // get user data
-authRouter.get("/", auth, getData);  // get user data
 authRouter.delete("/api/deleteUser", deleteUser); // Route to delete a user
 authRouter.post('/fetch-all', fetchDetails);
 authRouter.post("/markVisit",visitedPsych); //to add number of visits by 1
