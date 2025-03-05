@@ -18,6 +18,8 @@ dependencies:
   geolocator: ^13.0.2
   permission_handler: ^11.3.1
   fl_chart: ^0.70.2
+  google_fonts: ^6.2.1
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:

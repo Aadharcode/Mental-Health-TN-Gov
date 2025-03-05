@@ -7,66 +7,41 @@ class StudentService {
   static const String _baseUrl = "http://13.232.9.135:3000";
 
   /// Fetch student statistics with an optional district filter.
-    static Future<Map<String, dynamic>> fetchStudentData(String district) async {
-    final uri = Uri.parse("$_baseUrl/getAllStudent?district=$district");
-    print("🌐 Sending GET request to: $uri");
+   static Future<Map<String, dynamic>> fetchStudentData(String district) async {
+  final uri = Uri.parse("$_baseUrl/getAllStudent?district=$district");
+  print("🌐 Sending GET request to: $uri");
 
-    final response = await http.get(uri);
+  final response = await http.get(uri);
 
-    print("📥 Response received with status code: ${response.statusCode}");
+  print("📥 Response received with status code: ${response.statusCode}");
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      print("✅ Successfully fetched data: $data");
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    print("✅ Successfully fetched data: $data");
 
-      int totalStudents = int.tryParse(data["totalStudents"].toString()) ?? 0;
-      int totalRedFlags = int.tryParse(data["totalRedFlags"].toString()) ?? 0;
-      int recoveredByDMHP = int.tryParse(data["recoveredByDMHP"].toString()) ?? 0;
-      int ongoingCases = int.tryParse(data["ongoingCases"].toString()) ?? 0;
-      int completedCases = int.tryParse(data["completedCases"].toString()) ?? 0;
-      int referrals = int.tryParse(data["referrals"].toString()) ?? 0;
-      print('$totalStudents, $totalRedFlags, $recoveredByDMHP, ');
-
-      // Return a map with student data
-      return {
-        "totalStudents": totalStudents,
-        "totalRedFlags": totalRedFlags,
-        "redFlagStudents": data["redFlagStudents"] != null
-            ? (data["redFlagStudents"] as List)
-                .map((json) => Student.fromJson(json))
-                .toList()
-            : [],  // Empty list if null
-        "recoveredByDMHP": recoveredByDMHP,
-        "recoveredStudents": data["recoveredStudents"] != null
-            ? (data["recoveredStudents"] as List)
-                .map((json) => Student.fromJson(json))
-                .toList()
-            : [],  // Empty list if null
-        "ongoingCases": ongoingCases,
-        "ongoingStudents": data["ongoingStudents"] != null
-            ? (data["ongoingStudents"] as List)
-                .map((json) => Student.fromJson(json))
-                .toList()
-            : [],  // Empty list if null
-        "completedCases": completedCases,
-        "completedStudents": data["completedStudents"] != null
-            ? (data["completedStudents"] as List)
-                .map((json) => Student.fromJson(json))
-                .toList()
-            : [],  // Empty list if null
-        "referrals": referrals,
-        "referralStudents": data["referralStudents"] != null
-            ? (data["referralStudents"] as List)
-                .map((json) => Student.fromJson(json))
-                .toList()
-            : [],  // Empty list if null
-      };
-       
-    } else {
-      print("❌ Failed to fetch student data with status code: ${response.statusCode}");
-      throw Exception("Failed to fetch student data: ${response.statusCode}");
-    }
+    return {
+      "totalStudents": data["totalStudents"] ?? 0,
+      "totalRedFlags": data["totalRedFlags"] ?? 0,
+      "victimCount": data["victimCount"] ?? 0,
+      "redFlagStudents": data["redFlagStudents"] ?? [], 
+      "recoveredByDMHP": data["recoveredByDMHP"] ?? 0,
+      "recoveredStudents": data["recoveredStudents"] ?? [],
+      "ongoingCases": data["ongoingCases"] ?? 0,
+      "ongoingStudents": data["ongoingStudents"] ?? [],
+      "completedCases": data["completedCases"] ?? 0,
+      "completedStudents": data["completedStudents"] ?? [],
+      "referrals": data["referrals"] ?? 0,
+      "referralStudents": data["referralStudents"] ?? [],
+      "rejectedCases": data["rejected"] ?? [],
+      "rejectedStudents": data["rejectedStudents"] ?? [],
+      "VictimStudents": data["Victim"] ?? []
+    };
+  } else {
+    print("❌ Failed to fetch student data with status code: ${response.statusCode}");
+    throw Exception("Failed to fetch student data: ${response.statusCode}");
   }
+}
+
 
 
 

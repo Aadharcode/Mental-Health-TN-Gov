@@ -219,6 +219,77 @@ const studentSchema = mongoose.Schema({
   }
 },{ versionKey: false });
 
+const victimSchema = mongoose.Schema({
+  name: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  age: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  sex: {
+    required: true,
+    type: String,
+    enum: ["Male", "Female", "Other"],
+  },
+  emis_id: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  Location:{
+    type: String,
+    trim: true,
+    default: "",
+  },
+  Time:{
+    type: String,
+    trim: true,
+    default: "",
+  },
+  Date:{
+    type: Date,
+    default: null,
+  },
+  Details:{
+    type: String,
+    trim: true,
+    default: "",
+  },
+  // inappropriateTouching: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // sexualAdvances: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // physicalAbuse: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // onlineHarassment: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  // showingInappropriateContent: {
+  //   type: Boolean,
+  //   default: false,
+  // },
+  type: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+  level: {
+    enum: ["Emergency","NON-Emergency"],
+    default: "",
+  }
+},{ versionKey: false });
+
 const schoolSchema = mongoose.Schema({
   SCHOOL_NAME: {
     required: true,
@@ -646,5 +717,6 @@ const CIF = mongoose.model("CIF", CIFSchema);
 const RC = mongoose.model("RC",RegionalCoordSchema);
 const timeSlot = mongoose.model("timeSlot",timeSlotSchema);
 const stateCoord = mongoose.model("stateCoord", stateCoordSchema);
+const victim = mongoose.model("victim", victimSchema);
 
-module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot , Warden ,stateCoord};
+module.exports = { Psychiatrist, Teacher, Student, School, Admin, Ms, Feedback, Attendance, ASA, CIF , RC , timeSlot , Warden ,stateCoord , victim};

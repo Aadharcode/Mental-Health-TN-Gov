@@ -22,6 +22,7 @@ class StudentService {
     return {
       "totalStudents": data["totalStudents"] ?? 0,
       "totalRedFlags": data["totalRedFlags"] ?? 0,
+      "victimCount": data["victimCount"] ?? 0,
       "redFlagStudents": data["redFlagStudents"] ?? [], 
       "recoveredByDMHP": data["recoveredByDMHP"] ?? 0,
       "recoveredStudents": data["recoveredStudents"] ?? [],
@@ -32,7 +33,8 @@ class StudentService {
       "referrals": data["referrals"] ?? 0,
       "referralStudents": data["referralStudents"] ?? [],
       "rejectedCases": data["rejected"] ?? [],
-      "rejectedStudents": data["rejectedStudents"] ?? []
+      "rejectedStudents": data["rejectedStudents"] ?? [],
+      "VictimStudents": data["Victim"] ?? []
     };
   } else {
     print("❌ Failed to fetch student data with status code: ${response.statusCode}");

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'Screens/dashboardScreen.dart';
 import 'Screens/setting.dart';  
 import './component/bottom-nav.dart';
+import '../Teachers/Screens/victim_screen.dart';
 
 class MSScreen extends StatefulWidget {
   @override
@@ -22,6 +23,20 @@ class _MSState extends State<MSScreen> {
     });
   }
 
+  void navigateToMarkVictimScreen(BuildContext context) {
+    
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MarkVictimScreen(
+            // studentName: selectedEmis!,
+            // emisId: selectedEmis!,
+          ),
+        ),
+      );
+   
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,6 +49,18 @@ class _MSState extends State<MSScreen> {
               child: _screens[_currentIndex], 
             ),
           ),
+          SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: () => navigateToMarkVictimScreen(context),
+                  child: Text("Mark as Victim", style: TextStyle(fontSize: 16)),
+                ),
+              ),
         ],
       ),
       bottomNavigationBar: PsychiatristBottomNav(

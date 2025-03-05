@@ -128,6 +128,9 @@ class _LoginFormState extends State<LoginForm> {
             case 'teacher':
               Navigator.pushNamed(context, '/teachers');
               break;
+            case 'warden':
+              Navigator.pushNamed(context, '/teachers');
+              break;
             case 'asa':
               Navigator.pushNamed(context, '/teachers');
               break;

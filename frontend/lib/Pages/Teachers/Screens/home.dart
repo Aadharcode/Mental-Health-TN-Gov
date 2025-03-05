@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'redflag.dart';
+import 'victim_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -48,41 +49,64 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> fetchStudents() async {
-    if (selectedDistrict == null) return;
-
-    setState(() => isLoading = true);
-
-    try {
-      final url = Uri.parse("http://13.232.9.135:3000/getStudentsBySchool");
-      final body = json.encode({'school_name': selectedDistrict});
-
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: body,
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['success']) {
-          setState(() {
-            studentsList = (data['data'] as List)
-                .map((item) => {
-                      'emis': item['student_emis_id'].toString(),
-                      'name': item['student_name'].toString(),
-                    })
-                .toList();
-            filterStudents();
-          });
-        }
-      }
-    } catch (e) {
-      print("Error fetching students: $e");
-    } finally {
-      setState(() => isLoading = false);
-    }
+ Future<void> fetchStudents() async {
+  if (selectedDistrict == null) {
+    print("⚠️ No district selected. Aborting fetch.");
+    return;
   }
+
+  setState(() {
+    isLoading = true;
+    print("⏳ Fetching students for district: $selectedDistrict...");
+  });
+
+  try {
+    final url = Uri.parse("http://13.232.9.135:3000/getStudentsBySchool");
+    final body = json.encode({'school_name': selectedDistrict});
+
+    print("📡 Sending request to: $url");
+    print("📨 Request Body: $body");
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+    );
+
+    print("📬 Response Status Code: ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print("📥 Response Body: $data");
+
+      if (data['msg'] == "Students fetched successfully.") {
+        setState(() {
+          studentsList = (data['data'] as List)
+              .map((item) => {
+                    'emis': item['student_emis_id'].toString(),
+                    'name': item['student_name'].toString(),
+                  })
+              .toList();
+
+          print("✅ Successfully fetched ${studentsList.length} students.");
+          filterStudents();
+        });
+      } else {
+        print("⚠️ Fetch failed: ${data['message']}");
+      }
+    } else {
+      print("❌ Failed to fetch students. HTTP Status: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("🔥 Error fetching students: $e");
+  } finally {
+    setState(() {
+      isLoading = false;
+      print("✅ Fetch process completed.");
+    });
+  }
+}
+
 
   void filterStudents() {
     setState(() => isFiltering = true);
@@ -151,6 +175,20 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  void navigateToMarkVictimScreen(BuildContext context) {
+    
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MarkVictimScreen(
+            // studentName: selectedEmis!,
+            // emisId: selectedEmis!,
+          ),
+        ),
+      );
+   
+  }
+
 
   Widget _buildDropdownSection() {
     return Column(
@@ -254,6 +292,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 : Text("Search", style: TextStyle(fontSize: 16)),
           ),
         ),
+        const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: () => navigateToMarkVictimScreen(context),
+                  child: Text("Mark as Victim", style: TextStyle(fontSize: 16)),
+                ),
+              ),
       ],
     );
   }
