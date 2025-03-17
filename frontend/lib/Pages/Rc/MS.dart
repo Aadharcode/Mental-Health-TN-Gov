@@ -4,12 +4,12 @@ import 'Screens/setting.dart';
 import './component/bottom-nav.dart';
 import '../Teachers/Screens/victim_screen.dart';
 
-class MSScreen extends StatefulWidget {
+class RCScreen extends StatefulWidget {
   @override
   _MSState createState() => _MSState();
 }
 
-class _MSState extends State<MSScreen> {
+class _MSState extends State<RCScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [

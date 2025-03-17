@@ -12,10 +12,7 @@ import './Pages/SkipPage/skip.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Request necessary permissions
   await requestPermissions();
-
   runApp(MyApp());
 }
 

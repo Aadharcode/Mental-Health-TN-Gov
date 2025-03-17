@@ -5,6 +5,7 @@ import '../Component/Dashboardcard.dart';
 // import '../Component/RedFlagChart.dart';
 // import '../Component/MentalHealthChart.dart';
 import 'category_list_screen.dart';
+import 'victim_report_page.dart';
 // import 'student_list_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -81,7 +82,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: DashboardCard(title: "Rejected", value: dashboardData!["rejected"] ?? 0),
                   ),
                   GestureDetector(
-                    onTap: () => _navigateToCategoryList("Victims", dashboardData!["VimctimStudents"] ?? []),
+                    onTap: (){
+                      print( dashboardData!["VictimStudents"]);
+                      Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VictimReportScreen( victimsList:  dashboardData!["VictimStudents"] ?? []),
+      ),
+    );},
                     child: DashboardCard(title: "Victime", value: dashboardData!["victimCount"] ?? 0),
                   ),
                 ]),

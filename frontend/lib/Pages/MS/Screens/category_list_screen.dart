@@ -46,6 +46,7 @@ class CategoryListScreen extends StatelessWidget {
                 onPressed: () => _navigateToStudentList(context),
                 child: const Text("View Students"),
               ),
+              
               ElevatedButton(
                 onPressed: () => _navigateToGraphScreen(context),
                 child: const Text("View Graph"),

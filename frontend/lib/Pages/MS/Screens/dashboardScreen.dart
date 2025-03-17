@@ -80,10 +80,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     onTap: () => _navigateToCategoryList("Rejected", dashboardData!["rejectedStudents"] ?? []),
                     child: DashboardCard(title: "Rejected", value: dashboardData!["rejected"] ?? 0),
                   ),
-                  GestureDetector(
-                    onTap: () => _navigateToCategoryList("Victims", dashboardData!["VimctimStudents"] ?? []),
-                    child: DashboardCard(title: "Victime", value: dashboardData!["victimCount"] ?? 0),
-                  ),
+                  // GestureDetector(
+                  //   onTap: () => _navigateToCategoryList("Victims", dashboardData!["VimctimStudents"] ?? []),
+                  //   child: DashboardCard(title: "Victime", value: dashboardData!["victimCount"] ?? 0),
+                  // ),
                 ]),
     );
   }
