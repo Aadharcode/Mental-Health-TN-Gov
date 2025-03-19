@@ -4,7 +4,7 @@ const cured = async (req, res) => {
   try {
     const { 
       student_emis_id, 
-      case_status, 
+      Case_Status, 
       medicine_bool, 
       medicine, 
       referal_bool, 
@@ -14,10 +14,10 @@ const cured = async (req, res) => {
     console.log("Received request body:", req.body);
 
     // Validate required fields
-    if (!student_emis_id || !case_status) {
-      console.log("Validation failed: Missing student_emis_id or case_status");
+    if (!student_emis_id || !Case_Status) {
+      console.log("Validation failed: Missing student_emis_id or Case_Status");
       return res.status(400).json({
-        msg: "Please provide the student_emis_id and case_status.",
+        msg: "Please provide the student_emis_id and Case_Status.",
       });
     }
 
@@ -31,8 +31,8 @@ const cured = async (req, res) => {
 
     console.log("Student found:", student);
 
-    // Handle case_status logic
-    if (case_status.toLowerCase() === "completed") {
+    // Handle Case_Status logic
+    if (Case_Status.toLowerCase() === "completed") {
       console.log("Case status is 'completed'. Updating fields to false.");
       student.anxiety = false;
       student.depression = false;
@@ -49,14 +49,14 @@ const cured = async (req, res) => {
     }
 
     // Update common fields
-    student.case_status = case_status.toLowerCase();
+    student.Case_Status = Case_Status.toLowerCase();
     student.Medicine_bool = medicine_bool ?? student.medicine_bool; // Update if provided
     student.Medicine = medicine ?? student.medicine; // Update if provided
     student.referal_bool = referal_bool ?? student.referal_bool; // Update if provided
     student.referal = referal ?? student.referal; // Update if provided
 
     console.log("Updated student fields:", {
-      case_status: student.case_status,
+      Case_Status: student.Case_Status,
       Medicine_bool: student.Medicine_bool,
       Medicine: student.Medicine,
       referal_bool: student.referal_bool,
