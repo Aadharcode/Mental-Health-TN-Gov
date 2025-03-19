@@ -1,0 +1,83 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter doctor
+
+## exception
+
+_TypeError: Null check operator used on a null value
+
+```
+#0      MaterialFonts.updateInner (package:flutter_tools/src/flutter_cache.dart:152:49)
+#1      CachedArtifact.update (package:flutter_tools/src/cache.dart:894:11)
+#2      Cache.updateAll (package:flutter_tools/src/cache.dart:765:24)
+<asynchronous suspension>
+#3      FlutterCommand.verifyThenRunCommand (package:flutter_tools/src/runner/flutter_command.dart:1862:7)
+<asynchronous suspension>
+#4      FlutterCommand.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command.dart:1558:27)
+<asynchronous suspension>
+#5      AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#6      CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+<asynchronous suspension>
+#7      FlutterCommandRunner.runCommand.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:496:9)
+<asynchronous suspension>
+#8      AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#9      FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:431:5)
+<asynchronous suspension>
+#10     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:98:11)
+<asynchronous suspension>
+#11     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#12     main (package:flutter_tools/executable.dart:99:3)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[32m[✓][39m Flutter (Channel stable, 3.29.2, on Microsoft Windows [Version 10.0.22631.5039], locale en-IN) [221ms]
+    [32m•[39m Flutter version 3.29.2 on channel stable at E:\WebOps\SRC\flutter
+    [32m•[39m Upstream repository https://github.com/flutter/flutter.git
+    [32m•[39m Framework revision c236373904 (), 2025-03-13 16:17:06 -0400
+    [32m•[39m Engine revision 18b71d647a
+    [32m•[39m Dart version 3.7.2
+    [32m•[39m DevTools version 2.42.3
+
+[32m[✓][39m Windows Version (11 Home Single Language 64-bit, 23H2, 2009) [2.0s]
+
+[31m[✗][39m Android toolchain - develop for Android devices [30ms]
+    [32m•[39m Android SDK at C:\Users\KHATR\AppData\Local\Android\sdk
+    [31m✗[39m cmdline-tools component is missing
+      Run `path/to/sdkmanager --install "cmdline-tools;latest"`
+      See https://developer.android.com/studio/command-line for more details.
+
+[32m[✓][39m Chrome - develop for the web [16ms]
+    [32m•[39m Chrome at C:\Program Files\Google\Chrome\Application\chrome.exe
+
+[31m[✗][39m Visual Studio - develop Windows apps [15ms]
+    [31m✗[39m Visual Studio not installed; this is necessary to develop Windows apps.
+      Download at https://visualstudio.microsoft.com/downloads/.
+      Please install the "Desktop development with C++" workload, including all of its default components
+
+[32m[✓][39m Android Studio (version 2024.3) [13ms]
+    [32m•[39m Android Studio at C:\Program Files\Android\Android Studio
+    [32m•[39m Flutter plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/9212-flutter
+    [32m•[39m Dart plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/6351-dart
+    [32m•[39m Java version OpenJDK Runtime Environment (build 21.0.5+-12932927-b750.29)
+
+[32m[✓][39m Connected device (3 available) [108ms]
+    [32m•[39m Windows (desktop) • windows • windows-x64    • Microsoft Windows [Version 10.0.22631.5039]
+    [32m•[39m Chrome (web)      • chrome  • web-javascript • Google Chrome 134.0.6998.89
+    [32m•[39m Edge (web)        • edge    • web-javascript • Microsoft Edge 134.0.3124.72
+
+[32m[✓][39m Network resources [611ms]
+    [32m•[39m All expected network resources are available.
+
+[33m![39m Doctor found issues in 2 categories.
+```

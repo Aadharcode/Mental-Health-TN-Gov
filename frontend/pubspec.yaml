@@ -18,6 +18,7 @@ dependencies:
   geolocator: ^13.0.2
   permission_handler: ^11.3.1
   fl_chart: ^0.70.2
+  pie_chart: ^5.4.0
   google_fonts: ^6.2.1
   url_launcher: ^6.3.1
 
@@ -46,3 +47,6 @@ flutter:
   assets:
     - assets/Logo/logo_TNMS.png
     - assets/splashScreenImage.png
+    - assets/completed.png
+    - assets/onGoing.png
+    - assets/total_student.png

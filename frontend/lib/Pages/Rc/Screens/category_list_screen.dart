@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import './dashboardScreen.dart';
+import './graphScreen.dart';
+import './studentList.dart';
 
 class CategoryListScreen extends StatelessWidget {
   final String category;

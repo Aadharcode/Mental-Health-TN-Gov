@@ -54,153 +54,175 @@ class _RedflagScreenState extends State<RedflagScreen> {
     }
   }
 
-  Widget buildRow(String label, dynamic value) {
-    String displayValue = value != null ? value.toString() : 'N/A';
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
+  Widget buildStudentCard(Map<String, dynamic> student) {
+  return Card(
+    elevation: 3,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    child: Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '$label: ',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          // Student Name with Icon
+          Row(
+            children: [
+              const Icon(Icons.account_circle, color: Colors.blueAccent),
+              const SizedBox(width: 8),
+              Text(
+                student['student_name'] ?? 'Unknown',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.blueAccent,
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: Text(
-              displayValue,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-              style: const TextStyle(fontSize: 14, color: Colors.black),
+          const SizedBox(height: 8),
+
+          // EMIS ID
+          Row(
+            children: [
+              const Icon(Icons.badge, color: Colors.black54),
+              const SizedBox(width: 8),
+              Text("EMIS ID: ${student['student_emis_id'] ?? 'N/A'}"),
+            ],
+          ),
+          const SizedBox(height: 4),
+
+          // School Name
+          Row(
+              children: [
+                const Icon(Icons.school, color: Colors.black54),
+                const SizedBox(width: 8),
+                Expanded(  // Prevents text from overflowing
+                  child: Text(
+                    "School: ${student['school_name'] ?? 'N/A'}",
+                    // overflow: TextOverflow.ellipsis, // Adds "..." if text is too long
+                    maxLines: 2, // Ensures text remains on one line
+                    softWrap: true, // Prevents unwanted line breaks
+                  ),
+                ),
+              ],
+            ),
+
+          const SizedBox(height: 4),
+
+          // Red Flags
+          if (student['redflags'] != null && student['redflags'].isNotEmpty)
+            Row(
+              children: [
+                const Icon(Icons.flag, color: Colors.redAccent),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    "Red Flags: ${student['redflags'].join(', ')}",
+                    style: const TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(height: 12),
+
+          // Buttons Row (Approve & Decline)
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.check, color: Colors.white),
+                  label: const Text('Approve'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  onPressed: () {
+                    handleApproval(student['student_emis_id'], true);
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.cancel, color: Colors.white),
+                  label: const Text('Decline'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  onPressed: () async {
+                    final rejectReason = await showDeclineReasonForm(context);
+                    if (rejectReason != null && rejectReason.isNotEmpty) {
+                      handleApproval(student['student_emis_id'], false);
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // Emergency Button
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.local_hospital, color: Colors.white),
+              label: const Text('Refreals', style: TextStyle(fontSize: 16),),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+              ),
+              onPressed: () async {
+                final result = await showCuredForm(context, student['student_emis_id']);
+                if (result != null) {
+                  handleEmergency(student['student_emis_id'], result);
+                }
+              },
             ),
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Keep clean white background
       appBar: AppBar(
-        title: const Text(
-          'Red Flag Students',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Color.fromRGBO(105, 128, 136, 1.0)),
-        ),
-        backgroundColor: const Color.fromRGBO(1, 69, 68, 1.0),
-        leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        backgroundColor: Color(0xFFE3F2FD),
+        elevation: 1,
+        // automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            Image.asset('assets/Logo/logo_TNMS.png', height: 30),
+            const SizedBox(width: 10),
+            Text(
+              'TNMSS',
+              style: TextStyle(color: Color(0xFF014544), fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
-      body: SafeArea(
-        child: students.isEmpty
-            ? const Center(
-                child: Text(
-                  "No Red Flag Students Found",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
-                ),
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                itemCount: students.length,
-                itemBuilder: (context, index) {
-                  final student = students[index];
-                  return Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    margin: const EdgeInsets.only(bottom: 16),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          buildRow('Name', student['student_name']),
-                          buildRow('School', student['school_name']),
-                          buildRow('Gender', student['gender']),
-                          buildRow('EMIS No', student['student_emis_id']),
-                          buildRow('Red Flags', (student['redflags'] ?? []).join(', ')),
-
-                          const SizedBox(height: 12),
-                          // Buttons in a Row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  icon: const Icon(Icons.check, color: Colors.white),
-                                  label: const Text('Approve'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    handleApproval(student['student_emis_id'], true);
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  icon: const Icon(Icons.cancel, color: Colors.white),
-                                  label: const Text('Decline'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  onPressed: () async {
-                                    final rejectReason = await showDeclineReasonForm(context);
-                                    if (rejectReason != null && rejectReason.isNotEmpty) {
-                                      handleApproval(student['student_emis_id'], false);
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                         SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.9, // 90% of screen width
-                            height: 56, // Increased height for better tap area
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.local_hospital, color: Colors.white),
-                              label: const Text(
-                                'Emergency',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              onPressed: () async {
-                                final result = await showCuredForm(context, student['student_emis_id']);
-                                if (result != null) {
-                                  handleEmergency(student['student_emis_id'], result);
-                                }
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                },
+      body: students.isEmpty
+          ? const Center(
+              child: Text(
+                "No Red Flag Students Found",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
               ),
-      ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              itemCount: students.length,
+              itemBuilder: (context, index) {
+                return buildStudentCard(students[index]);
+              },
+            ),
     );
   }
 
@@ -246,8 +268,6 @@ class _RedflagScreenState extends State<RedflagScreen> {
       },
     );
   }
-
-
   Future<Map<String, dynamic>?> showCuredForm(BuildContext context, String emisId) async {
     final _formKey = GlobalKey<FormState>();
     String? caseStatus = "completed";
@@ -372,7 +392,41 @@ class _RedflagScreenState extends State<RedflagScreen> {
     );
   }
 
-   Future<void> handleEmergency(String emisId, Map<String, dynamic> formData) async {
+  //  Future<void> handleEmergency(String emisId, Map<String, dynamic> formData) async {
+  //   try {
+  //     final url = Uri.parse('http://13.232.9.135:3000/api/cured');
+  //     final response = await http.post(
+  //       url,
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: jsonEncode({
+  //         'student_emis_id': emisId,
+  //         ...formData,
+  //       }),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body);
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text(data['msg'])),
+  //       );
+
+  //       setState(() {
+  //         students.removeWhere((student) => student['student_emis_id'] == emisId);
+  //       });
+  //     } else {
+  //       final message = jsonDecode(response.body)['msg'];
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text(message ?? 'Failed to update emergency data')),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('An error occurred: $e')),
+  //     );
+  //   }
+  // }
+
+  Future<void> handleEmergency(String emisId, Map<String, dynamic> formData) async {
     try {
       final url = Uri.parse('http://13.232.9.135:3000/api/cured');
       final response = await http.post(
