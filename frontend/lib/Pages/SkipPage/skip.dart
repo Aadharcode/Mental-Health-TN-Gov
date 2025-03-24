@@ -1,68 +1,60 @@
 import 'package:flutter/material.dart';
+import '../Utils/appColor.dart'; // Import the AppColors class
 
 class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(1, 69, 68, 1.0), // Peach/coral color
+      backgroundColor: AppColors.primaryColor, // Use primary theme color
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0),
-              child: Column(
-                children: [
-                  Image.asset(
-                    'assets/splashScreenImage.png',
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    height: MediaQuery.of(context).size.width * 0.4,
-                    fit: BoxFit.contain,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Centers content vertically
+              children: [
+                Image.asset(
+                  'assets/splashScreenImage.png',
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  height: MediaQuery.of(context).size.width * 0.4,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'This application is intended for school academicians, educators, '
+                  'and teachers looking to enhance mental well-being in educational settings.',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors.whiteColor, // Use theme's text color
+                    height: 1.5,
+                    fontFamily: 'System',
                   ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'This application is intended for school academicians, educators, '
-                    'and teachers looking to enhance mental well-being in educational settings.',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      height: 1.5,
-                      fontFamily: 'System',
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-            Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0, bottom: 40.0),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: ElevatedButton(
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40), // Adjust spacing
+                ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/login');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white.withOpacity(0.8),
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    backgroundColor: AppColors.whiteColor.withOpacity(0.8), // Light white shade
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Skip',
                     style: TextStyle(
-                      color: Color.fromRGBO(1, 69, 68, 1.0),
+                      color: AppColors.primaryColor, // Primary color for text
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

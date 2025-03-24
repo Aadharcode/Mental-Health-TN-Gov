@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import './dashboardScreen.dart';
+import './graphScreen.dart';
+import './studentList.dart';
 
 class CategoryListScreen extends StatelessWidget {
   final String category;
@@ -46,6 +47,7 @@ class CategoryListScreen extends StatelessWidget {
                 onPressed: () => _navigateToStudentList(context),
                 child: const Text("View Students"),
               ),
+              
               ElevatedButton(
                 onPressed: () => _navigateToGraphScreen(context),
                 child: const Text("View Graph"),

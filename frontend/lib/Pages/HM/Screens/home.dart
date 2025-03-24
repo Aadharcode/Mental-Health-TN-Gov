@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'Redflag.dart';
 import '../../Teachers/Screens/victim_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../others/about.dart';
+import '../../others/terms.dart';
+import '../../Login/Login.dart'; 
 
 class HomeScreen extends StatefulWidget {
   final String? SCHOOL_NAME;
@@ -14,10 +18,18 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController schoolNameController = TextEditingController();
-  final TextEditingController districtController = TextEditingController();
+Future<void> _logout(context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Erase stored login data
 
+    // Navigate to Login Screen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
+
+class _HomeScreenState extends State<HomeScreen> {
   Future<void> searchStudents() async {
     try {
       final url = Uri.parse('http://13.232.9.135:3000/api/hsmsFetch');
@@ -25,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
         'school_name': widget.SCHOOL_NAME,
         'district': widget.District,
       });
-      print(body);
 
       final response = await http.post(
         url,
@@ -75,104 +86,133 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void navigateToMarkVictimScreen(BuildContext context) {
-    
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MarkVictimScreen(
-            // studentName: selectedEmis!,
-            // emisId: selectedEmis!,
-          ),
-        ),
-      );
-   
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MarkVictimScreen()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Keeping a clean background
-      
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+      appBar: AppBar(
+        backgroundColor: Color(0xFFE3F2FD),
+        elevation: 1,
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            Image.asset('assets/Logo/logo_TNMS.png', height: 30),
+            const SizedBox(width: 10),
+            Text(
+              'TNMSS',
+              style: TextStyle(color: Color(0xFF014544), fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'About') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutScreen()),
+                );
+              } else if (value == 'Terms') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TermsScreen()),
+                );
+              } else if (value == 'Logout') {
+                _logout(context);
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(value: 'About', child: Text('About')),
+              PopupMenuItem(value: 'Terms', child: Text('Terms and Conditions')),
+              PopupMenuItem(value: 'Logout', child: Text('Logout')),
+            ],
+          ),
+          SizedBox(width: 10),
+        ],
+      ),
+      backgroundColor: Color(0xFFF5F9FF),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        child: Column(
+          children: [
+            // Section Title
+            Row(
               children: [
+                Icon(Icons.flag, color: Color(0xFF1565C0)), // Dark blue flag icon
+                const SizedBox(width: 8),
                 Text(
                   'Red Flag Students',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(1, 69, 68, 1.0),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Centered Box
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(1, 69, 68, 1.0),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 6,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 8),
-                      Text(
-                        'View students flagged for mental health concerns',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.9),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: searchStudents,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white, // Button color
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                        ),
-                        child: Text(
-                          'See Red Flag Students',
-                          style: TextStyle(
-                            color: Color.fromRGBO(1, 69, 68, 1.0),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: () => navigateToMarkVictimScreen(context),
-                  child: Text("Mark as Victim", style: TextStyle(fontSize: 16)),
-                ),
-              ),
-                    ],
+                    color: Color(0xFF1565C0), // Darker blue
                   ),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 16),
+
+            // Information Card
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.remove_red_eye, color: Colors.black54, size: 30),
+                  const SizedBox(height: 10),
+                  Text(
+                    'View students flagged for mental health concerns',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Buttons
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF1565C0), // Vibrant blue
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: searchStudents,
+                child: Text('See Red Flag Students', style: TextStyle(fontSize: 16, color: Colors.white)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, // Strong red
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: () => navigateToMarkVictimScreen(context),
+                child: Text('Report Incident', style: TextStyle(fontSize: 16, color: Colors.white)),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -13,6 +13,10 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+	    <string>tel</string>
+	</array>
 	<string>TNMNS</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>

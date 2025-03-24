@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'redflag.dart';
 import 'victim_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../others/about.dart';
+import '../../others/terms.dart';
+import '../../Login/Login.dart'; 
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -10,10 +14,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? selectedDistrict;
+  String? selectedSchool;
   String studentNameQuery = "";
   String? selectedEmis;
-  List<String> districtList = [];
+  List<String> schoolList = [];
   List<Map<String, String>> studentsList = [];
   List<Map<String, String>> filteredStudents = [];
   bool isLoading = false;
@@ -22,103 +26,80 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    fetchDistricts();
+    fetchSchools();
+  }
+   Future<void> _logout(context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Erase stored login data
+
+    // Navigate to Login Screen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
   }
 
-  Future<void> fetchDistricts() async {
+  Future<void> fetchSchools() async {
     setState(() => isLoading = true);
     try {
       final uri = Uri.parse("http://13.232.9.135:3000/api/getSchool");
       final response = await http.get(uri);
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['data'] is List) {
           setState(() {
-            districtList = (data['data'] as List)
+            schoolList = (data['data'] as List)
                 .map((item) => item['SCHOOL_NAME'] as String)
                 .toList();
-            districtList.insert(0, "All");
           });
         }
       }
     } catch (e) {
-      print("Error fetching districts: $e");
+      print("Error fetching schools: $e");
     } finally {
       setState(() => isLoading = false);
     }
   }
 
- Future<void> fetchStudents() async {
-  if (selectedDistrict == null) {
-    print("⚠️ No district selected. Aborting fetch.");
-    return;
-  }
-
-  setState(() {
-    isLoading = true;
-    print("⏳ Fetching students for district: $selectedDistrict...");
-  });
-
-  try {
-    final url = Uri.parse("http://13.232.9.135:3000/getStudentsBySchool");
-    final body = json.encode({'school_name': selectedDistrict});
-
-    print("📡 Sending request to: $url");
-    print("📨 Request Body: $body");
-
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: body,
-    );
-
-    print("📬 Response Status Code: ${response.statusCode}");
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      print("📥 Response Body: $data");
-
-      if (data['msg'] == "Students fetched successfully.") {
-        setState(() {
-          studentsList = (data['data'] as List)
-              .map((item) => {
-                    'emis': item['student_emis_id'].toString(),
-                    'name': item['student_name'].toString(),
-                  })
-              .toList();
-
-          print("✅ Successfully fetched ${studentsList.length} students.");
-          filterStudents();
-        });
-      } else {
-        print("⚠️ Fetch failed: ${data['message']}");
+  Future<void> fetchStudents() async {
+    if (selectedSchool == null) return;
+    setState(() => isLoading = true);
+    try {
+      final url = Uri.parse("http://13.232.9.135:3000/getStudentsBySchool");
+      final body = json.encode({'school_name': selectedSchool});
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['msg'] == "Students fetched successfully.") {
+          setState(() {
+            studentsList = (data['data'] as List)
+                .map((item) => {
+                      'emis': item['student_emis_id'].toString(),
+                      'name': item['student_name'].toString(),
+                    })
+                .toList();
+            filterStudents();
+          });
+        }
       }
-    } else {
-      print("❌ Failed to fetch students. HTTP Status: ${response.statusCode}");
+    } catch (e) {
+      print("Error fetching students: $e");
+    } finally {
+      setState(() => isLoading = false);
     }
-  } catch (e) {
-    print("🔥 Error fetching students: $e");
-  } finally {
-    setState(() {
-      isLoading = false;
-      print("✅ Fetch process completed.");
-    });
   }
-}
-
 
   void filterStudents() {
-    setState(() => isFiltering = true);
-    Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        filteredStudents = studentsList
-            .where((student) => student['name']!
-                .toLowerCase()
-                .contains(studentNameQuery.toLowerCase()))
-            .toList();
-        isFiltering = false;
-      });
+    setState(() {
+      filteredStudents = studentsList
+          .where((student) => student['name']!
+              .toLowerCase()
+              .contains(studentNameQuery.toLowerCase()))
+          .toList();
     });
   }
 
@@ -127,17 +108,17 @@ class _HomeScreenState extends State<HomeScreen> {
       final response = await http.post(
         Uri.parse('http://13.232.9.135:3000/getStudent'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'student_emis_id': emisId}),
+        body: jsonEncode({'student_emis_id': selectedEmis}),
       );
-
+      print(response.body);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => RedflagScreen(
-              studentName: data['data']['student_name'],
-              emisId: data['data']['student_emis_id'],
+              studentName: data['data']['student']['student_name'],
+              emisId: data['data']['student']['student_emis_id'],
             ),
           ),
         );
@@ -154,20 +135,65 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
+        appBar: AppBar(
+        backgroundColor: Color(0xFFE3F2FD),
+        elevation: 1,
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            Image.asset('assets/Logo/logo_TNMS.png', height: 30),
+            const SizedBox(width: 10),
+            Text(
+              'TNMSS',
+              style: TextStyle(color: Color(0xFF014544), fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'About') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutScreen()),
+                );
+              } else if (value == 'Terms') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TermsScreen()),
+                );
+              } else if (value == 'Logout') {
+                _logout(context);
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(value: 'About', child: Text('About')),
+              PopupMenuItem(value: 'Terms', child: Text('Terms and Conditions')),
+              PopupMenuItem(value: 'Logout', child: Text('Logout')),
+            ],
+          ),
+          SizedBox(width: 10),
+        ],
+      ),
         body: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Red Flag Identification',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromRGBO(1, 69, 68, 1.0),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: Colors.blue),
+                  ),
                 ),
+                icon: Icon(Icons.flag, color: Colors.blue),
+                label: Text("Red Flag Identification", style: TextStyle(color: Colors.blue)),
+                onPressed: () {},
               ),
-              const SizedBox(height: 15),
+              SizedBox(height: 20),
               _buildDropdownSection(),
             ],
           ),
@@ -175,85 +201,94 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  void navigateToMarkVictimScreen(BuildContext context) {
-    
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MarkVictimScreen(
-            // studentName: selectedEmis!,
-            // emisId: selectedEmis!,
-          ),
-        ),
-      );
-   
-  }
-
 
   Widget _buildDropdownSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Select School",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+  return Expanded(
+    child: SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+              spreadRadius: 2,
+            ),
+          ],
         ),
-        const SizedBox(height: 6),
-        DropdownButtonFormField<String>(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-          ),
-          hint: Text("Choose a school"),
-          value: selectedDistrict,
-          isExpanded: true,
-          items: districtList.map((district) {
-            return DropdownMenuItem(
-              value: district,
-              child: Text(
-                district,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Select School Dropdown
+            Text(
+              "Select School",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 6),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
               ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              selectedDistrict = value;
-              studentNameQuery = "";
-              selectedEmis = null;
-              studentsList.clear();
-              filteredStudents.clear();
-            });
-            fetchStudents();
-          },
-        ),
-        const SizedBox(height: 15),
+              hint: Text("Choose a school"),
+              value: selectedSchool,
+              isExpanded: true,
+              items: schoolList.map((school) {
+                return DropdownMenuItem(
+                  value: school,
+                  child: Text(
+                    school,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedSchool = value;
+                  studentNameQuery = "";
+                  selectedEmis = null;
+                  studentsList.clear();
+                  filteredStudents.clear();
+                });
+                fetchStudents();
+              },
+            ),
+            SizedBox(height: 15),
 
-        Text(
-          "Search Student by Name",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          decoration: InputDecoration(
-            hintText: "Enter student's name",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-          ),
-          onChanged: (value) {
-            setState(() {
-              studentNameQuery = value;
-              filterStudents();
-            });
-          },
-        ),
-        const SizedBox(height: 15),
+            // Search Student by Name
+            Text(
+              "Search Student by Name",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 6),
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Enter student’s name",
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  studentNameQuery = value;
+                  filterStudents();
+                });
+              },
+            ),
+            SizedBox(height: 15),
 
-        isFiltering
-            ? Center(child: CircularProgressIndicator())
-            : filteredStudents.isEmpty
-                ? Text("No students found.", style: TextStyle(color: Colors.grey))
+            // EMIS ID Dropdown
+            Text(
+              "EMIS ID",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 6),
+            isFiltering
+                ? Center(child: CircularProgressIndicator())
                 : DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -275,37 +310,59 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
 
-        const SizedBox(height: 20),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromRGBO(1, 69, 68, 1.0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            SizedBox(height: 20),
+
+            // Search Button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade700,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: selectedEmis != null
+                    ? () => fetchStudentDetails(context, selectedEmis!)
+                    : null,
+                child: isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text("Search", style: TextStyle(fontSize: 16, color: Colors.white)),
+              ),
             ),
-            onPressed: selectedEmis != null
-                ? () => fetchStudentDetails(context, selectedEmis!)
-                : null,
-            child: isLoading
-                ? CircularProgressIndicator(color: Colors.white)
-                : Text("Search", style: TextStyle(fontSize: 16)),
+            SizedBox(height: 15),
+
+            // Report Incident Button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.shade700,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: () => navigateToMarkVictimScreen(context),
+                child: Text("Report Incident", style: TextStyle(fontSize: 16, color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+
+     void navigateToMarkVictimScreen(BuildContext context) {
+    
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MarkVictimScreen(
+            // studentName: selectedEmis!,
+            // emisId: selectedEmis!,
           ),
         ),
-        const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: () => navigateToMarkVictimScreen(context),
-                  child: Text("Mark as Victim", style: TextStyle(fontSize: 16)),
-                ),
-              ),
-      ],
-    );
+      );
+   
   }
 }

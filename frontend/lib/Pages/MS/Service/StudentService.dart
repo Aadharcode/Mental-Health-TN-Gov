@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../Rc/models/student.dart';
+// import '../../Rc/models/student.dart';
 
 class StudentService {
   static const String _baseUrl = "http://13.232.9.135:3000";

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const primaryColor = Color.fromRGBO(1, 69, 68, 1.0); // Right color
-  static const whiteColor = Color.fromRGBO(105, 128, 136, 1.0); // Left color
-  static const linkColor = Colors.blue;
-  static const textColor = Colors.black87;
+  static const Color primaryColor = Color(0xFF0052CC);
+  static const Color textColor = Color(0xFF333333);
+  static const Color hintColor = Color(0xFF888888);
+  static const Color iconColor = Color(0xFF666666);
+  static const Color whiteColor = Colors.white;
+  static const Color linkColor = Colors.blue;
 }

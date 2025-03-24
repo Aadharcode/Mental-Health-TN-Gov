@@ -12,10 +12,7 @@ import './Pages/SkipPage/skip.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Request necessary permissions
   await requestPermissions();
-
   runApp(MyApp());
 }
 
@@ -44,8 +41,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         // '/register': (context) => RegisterScreen(),
         '/admin': (context) => AdminScreen(),
-        '/teachers': (context) => TeacherScreen(),
-        '/hm': (context) => HMScreen(),
+        '/teacher': (context) => TeacherScreen(),
+        '/hs-ms': (context) => HMScreen(),
         '/ms': (context) => MSScreen(),
         '/rc': (context) => RCScreen(),
         '/psychiatrist': (context) => PsychiatristScreen(),

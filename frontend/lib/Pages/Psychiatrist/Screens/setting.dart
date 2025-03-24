@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
-import '../services/student_service.dart';
+import 'dart:convert';
+import '../../others/about.dart';
+import '../../others/terms.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -9,230 +10,153 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String? selectedSchool;
-  List<String> schools = [];
-  DateTime? selectedDateTime;
-  List<String> bookedDates = [];
-  final DateTime now = DateTime.now();
+  String? userEmail;
+  String? userRole;
+  String? district;
+  String? contact;
 
   @override
   void initState() {
     super.initState();
-    _loadSchools();
-    _loadBookedDates();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userJson = prefs.getString('user');
+
+    if (userJson != null) {
+      final user = Map<String, dynamic>.from(jsonDecode(userJson));
+
+      setState(() {
+        userEmail = user['DISTRICT_PSYCHIATRIST_NAME'] ?? "Not Available";
+        userRole = user['Role'] ?? "Unknown Role";
+        district = user['district'] ?? "No District";
+        contact = user['Mobile_number'] ?? "No School";
+      });
+    }
   }
 
   Future<void> _handleLogout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('role', "null");
+    await prefs.clear(); // 🔹 Clears all stored preferences
 
-    Navigator.pushReplacementNamed(context, '/login');
-  }
-
-  Future<void> _loadSchools() async {
-    try {
-      final response = await StudentService.fetchDistricts();
-      setState(() {
-        schools = response;
-      });
-    } catch (e) {
-      print("Error loading schools: $e");
-    }
-  }
-
-  Future<void> _loadBookedDates() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      bookedDates = prefs.getStringList('bookedDates') ?? [];
-    });
-  }
-
-  Future<void> _pickDateTime() async {
-    final now = DateTime.now();
-
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: now,
-      firstDate: now,
-      lastDate: DateTime(now.year + 1),
-      selectableDayPredicate: (DateTime date) {
-        final dateStr = "${date.year}-${date.month}-${date.day}";
-        return !bookedDates.contains(dateStr);
-      },
-    );
-
-    if (pickedDate != null) {
-      final TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-
-      if (pickedTime != null) {
-        final selectedDateTimeTemp = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
-          pickedTime.hour,
-          pickedTime.minute,
-        );
-
-        if (selectedDateTimeTemp.isAfter(now)) {
-          setState(() {
-            selectedDateTime = selectedDateTimeTemp;
-          });
-
-          final dateStr = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
-          bookedDates.add(dateStr);
-          await _storeBookedDate(dateStr);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Time slot booked for $dateStr")),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Please select a future date and time.")),
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _storeBookedDate(String date) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('bookedDates', bookedDates);
+    Navigator.pushReplacementNamed(context, '/login'); // Redirect to login
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Clean white background
       appBar: AppBar(
-        title: const Text(
-          'Settings',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: const Color.fromRGBO(1, 69, 68, 1.0),
+        title: Text('Profile', style: TextStyle(color: Colors.blue)),
+        backgroundColor: Colors.white,
+        elevation: 5, // Adds shadow to AppBar
+        automaticallyImplyLeading: false, 
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Profile Avatar
+            CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.blue[100],
+              child: Icon(Icons.person, size: 50, color: Colors.blue[800]),
+            ),
+            const SizedBox(height: 10),
 
-              // Profile Section
-              Column(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.grey[300],
-                    child: Icon(Icons.person, size: 60, color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 15),
-                  Text(
-                    'y*****@gmail.com',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.grey[700]),
-                  ),
+            // User Name & Role
+            Text(userEmail ?? "Loading...", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(userRole ?? "Loading...", style: TextStyle(color: Colors.grey[700])),
+
+            const SizedBox(height: 20),
+
+            // Basic Details Section
+            Container(
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(color: Colors.grey.withOpacity(0.2), blurRadius: 5, spreadRadius: 2),
                 ],
               ),
-
-              const SizedBox(height: 30),
-
-              // School Selection
-              Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Select School",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 6),
-                  DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                    ),
-                    hint: const Text("Choose a school"),
-                    value: selectedSchool,
-                    isExpanded: true,
-                    items: schools.map((school) {
-                      return DropdownMenuItem(
-                        value: school,
-                        child: Text(school, overflow: TextOverflow.ellipsis),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedSchool = value;
-                      });
-                    },
-                  ),
+                  Text("Basic Details", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
+                  const SizedBox(height: 10),
+                  _infoField("District", district),
+                  const SizedBox(height: 10),
+                  _infoField("Contact Details", contact),
                 ],
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              // Date & Time Picker
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.calendar_today, color: Colors.white),
-                  label: Text(
-                    selectedDateTime != null
-                        ? "Selected: ${DateFormat('dd/MM/yyyy hh:mm a').format(selectedDateTime!)}"
-                        : "Pick Date & Time",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(1, 69, 68, 1.0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: _pickDateTime,
-                ),
-              ),
+            // Navigation Buttons
+            _settingsButton(Icons.info_outline, "About", () {Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutScreen()),
+                );}),
+            _settingsButton(Icons.description_outlined, "Terms & Conditions", () {Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TermsScreen()),
+                );}),
+            _settingsButton(Icons.logout, "Logout", () => _handleLogout(context), isLogout: true),
 
-              const SizedBox(height: 20),
-
-              // Book Slot Button
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-                  label: const Text("Book Slot", style: TextStyle(fontSize: 16)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[700],
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: selectedSchool != null && selectedDateTime != null
-                      ? () => ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Slot booked successfully!")),
-                          )
-                      : null,
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Logout Button
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.logout, color: Colors.white),
-                  label: const Text("Logout", style: TextStyle(fontSize: 16)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[700],
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: () => _handleLogout(context),
-                ),
-              ),
-            ],
-          ),
+            const SizedBox(height: 20),
+            Text("TNMSS Version 1.0", style: TextStyle(color: Colors.grey[500])),
+          ],
         ),
       ),
+    );
+  }
+
+  // Helper method for info fields
+  Widget _infoField(String title, String? value) {
+  return SizedBox(
+    width: double.infinity, // Full width
+    // height:70, // Fixed height
+    child: Container(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.white, // Background color
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center, // Center align text
+        children: [
+          Text(
+            title,
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.blue),
+          ),
+          SizedBox(height: 5),
+          Text(
+            value ?? "Not Available",
+            style: TextStyle(fontSize: 16, color: Colors.black),
+            // overflow: TextOverflow.ellipsis, // Prevents text overflow issues
+            softWrap: true,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
+
+  // Helper method for navigation buttons
+  Widget _settingsButton(IconData icon, String text, VoidCallback onTap, {bool isLogout = false}) {
+    return ListTile(
+      leading: Icon(icon, color: isLogout ? Colors.red : Colors.blue),
+      title: Text(text, style: TextStyle(fontSize: 16, color: isLogout ? Colors.red : Colors.black)),
+      trailing: Icon(Icons.arrow_forward_ios, size: 16, color: isLogout ? Colors.red : Colors.black),
+      onTap: onTap,
     );
   }
 }

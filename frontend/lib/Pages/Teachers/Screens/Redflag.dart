@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../Utils/appColor.dart'; // Import the AppColors class
 
 class RedflagScreen extends StatefulWidget {
   final String studentName;
@@ -17,7 +18,6 @@ class RedflagScreen extends StatefulWidget {
 }
 
 class _RedflagScreenState extends State<RedflagScreen> {
-  // List of red flags
   final List<Map<String, dynamic>> redFlags = [
     {'name': 'Anxiety', 'key': 'anxiety', 'isChecked': false},
     {'name': 'Depression', 'key': 'depression', 'isChecked': false},
@@ -32,7 +32,6 @@ class _RedflagScreenState extends State<RedflagScreen> {
     {'name': 'Conduct & Delinquency', 'key': 'conduct_delinquency', 'isChecked': false},
   ];
 
-  // Function to handle form submission
   Future<void> handleSubmit() async {
     Map<String, bool> updates = {
       for (var flag in redFlags)
@@ -41,7 +40,7 @@ class _RedflagScreenState extends State<RedflagScreen> {
 
     if (updates.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select at least one red flag.')),
+        const SnackBar(content: Text('Please select at least one red flag.')),
       );
       return;
     }
@@ -60,7 +59,7 @@ class _RedflagScreenState extends State<RedflagScreen> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Red flags updated successfully!')),
+          const SnackBar(content: Text('Red flags updated successfully!')),
         );
         Navigator.pop(context);
       } else {
@@ -79,39 +78,38 @@ class _RedflagScreenState extends State<RedflagScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Clean background
+      backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
         title: const Text(
-          'Red Flag Details',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          'Red Flag Identification',
+          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.whiteColor),
         ),
-        backgroundColor: const Color.fromRGBO(1, 69, 68, 1.0),
+        backgroundColor: AppColors.primaryColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: const Icon(Icons.arrow_back, color: AppColors.whiteColor),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Student Name & EMIS ID
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color.fromRGBO(1, 69, 68, 0.1),
+                color: AppColors.hintColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 '${widget.studentName} - ${widget.emisId}',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Color.fromRGBO(1, 69, 68, 1.0),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textColor,
                 ),
               ),
             ),
@@ -121,20 +119,17 @@ class _RedflagScreenState extends State<RedflagScreen> {
             // Title
             const Text(
               'Select Red Flags:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textColor),
             ),
 
             const SizedBox(height: 8),
 
-            // Checkbox Container
+            // Scrollable List of Red Flags
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100], // Light background for separation
+                  color: AppColors.hintColor.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ListView(
@@ -143,9 +138,9 @@ class _RedflagScreenState extends State<RedflagScreen> {
                       contentPadding: EdgeInsets.zero,
                       title: Text(
                         flag['name'],
-                        style: const TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14, color: AppColors.textColor),
                       ),
-                      activeColor: const Color.fromRGBO(1, 69, 68, 1.0),
+                      activeColor: AppColors.primaryColor,
                       value: flag['isChecked'],
                       onChanged: (bool? value) {
                         setState(() {
@@ -167,14 +162,14 @@ class _RedflagScreenState extends State<RedflagScreen> {
               child: ElevatedButton(
                 onPressed: handleSubmit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(1, 69, 68, 1.0),
+                  backgroundColor: AppColors.primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: const Text(
                   'Submit',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.whiteColor),
                 ),
               ),
             ),

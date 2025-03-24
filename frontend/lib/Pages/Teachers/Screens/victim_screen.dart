@@ -1,4 +1,3 @@
-// mark_victim_screen.dart
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -7,21 +6,13 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 
 class MarkVictimScreen extends StatefulWidget {
-  // final String studentName;
-  // final String emisId;
-
-  MarkVictimScreen();
-
   @override
   _MarkVictimScreenState createState() => _MarkVictimScreenState();
 }
 
-
-
 class _MarkVictimScreenState extends State<MarkVictimScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _studentName;
-  String? _emisId;
   String? _incidentDate;
   String? _incidentTime;
   String? _incidentLocation;
@@ -30,7 +21,6 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
   String? _severityLevel;
   String? _victimAge;
   String? _victimSex;
-  // String? _victimPhone;
   String? _incidentDetails;
   bool _keepAnonymous = false;
   String? selectedDistrict;
@@ -47,22 +37,7 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
     super.initState();
     fetchDistricts();
   }
-  void alertPolice() async {
-  const String policeNumber = "+919626916789";
-  final Uri phoneUri = Uri.parse('tel:$policeNumber');
-  
-  if (await canLaunchUrl(phoneUri)) {
-    await launchUrl(phoneUri);
-  } else {
-    print("🚨 Could not launch $phoneUri");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error: Unable to make the call")),
-    );
-  }
-}
-
-
-  Future<void> createVictim() async {
+    Future<void> createVictim() async {
     final url = Uri.parse("http://13.232.9.135:3000/createVictim");
     print("$_studentName, $selectedEmis, $_incidentDate, $_incidentTime,$_victimAge, $_victimSex");
 
@@ -120,6 +95,19 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
     }
   }
 
+
+void alertPolice() async {
+  const String policeNumber = "+919626916789";
+  final Uri phoneUri = Uri.parse('tel:$policeNumber');
+
+  if (await canLaunchUrl(phoneUri)) {
+    await launchUrl(phoneUri, mode: LaunchMode.externalApplication);
+  } else {
+    debugPrint("Could not launch the dialer");
+  }
+}
+
+
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
       context: context,
@@ -146,267 +134,137 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
     }
   }
 
+  Widget _buildSectionHeader(String title, IconData icon) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.blue),
+          SizedBox(width: 10),
+          Text(
+            title,
+            style: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({String? label, String? hintText, IconData? icon, bool readOnly = false, VoidCallback? onTap}) {
+    return TextFormField(
+      readOnly: readOnly,
+      onTap: onTap,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hintText,
+        suffixIcon: icon != null ? Icon(icon) : null,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Report Incident")),
+      appBar: AppBar(
+        title: Text("Report Incident", style: GoogleFonts.roboto(fontSize: 18, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
+        elevation: 4,
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-          "Select School",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 6),
-        DropdownButtonFormField<String>(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-          ),
-          hint: Text("Choose a school"),
-          value: selectedDistrict,
-          isExpanded: true,
-          items: districtList.map((district) {
-            return DropdownMenuItem(
-              value: district,
-              child: Text(
-                district,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+        padding: EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionHeader("Basic Information", Icons.info),
+              SizedBox(height: 10),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Select School",
+                ),
+                value: selectedDistrict,
+                items: districtList.map((district) {
+                  return DropdownMenuItem(
+                    value: district,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.7, // Constrain width
+                      child: Text(
+                        district,
+                        softWrap: true, // Prevent text from overflowing
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) => setState(() { selectedDistrict = value; fetchStudents();} ),
               ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              selectedDistrict = value;
-              studentNameQuery = "";
-              selectedEmis = null;
-              studentsList.clear();
-              filteredStudents.clear();
-            });
-            fetchStudents();
-          },
-        ),
-        const SizedBox(height: 15),
+              SizedBox(height: 10),
+              _buildStudentSearchField(),
 
-        Text(
-          "Search Student by Name",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          decoration: InputDecoration(
-            hintText: _studentName?? "Enter student's name",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-          ),
-          onChanged: (value) {
-            setState(() {
-              studentNameQuery = value;
-              filterStudents();
-            });
-          },
-        ),
-        const SizedBox(height: 15),
+              SizedBox(height: 20),
+              _buildSectionHeader("Victim Details", Icons.person),
+              SizedBox(height: 10),
+              _buildTextField(label: "Age", hintText: "Enter Victim's Age"),
+              SizedBox(height: 10),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(border: OutlineInputBorder(), labelText: "Sex"),
+                items: ["Male", "Female", "Other"].map((value) => DropdownMenuItem(value: value, child: Text(value))).toList(),
+                onChanged: (value) => setState(() => _victimSex = value),
+              ),
 
-        isFiltering
-            ? Center(child: CircularProgressIndicator())
-            : filteredStudents.isEmpty
-                ? Text("No students found.", style: TextStyle(color: Colors.grey))
-                : DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    hint: Text("Select EMIS ID"),
-                    value: selectedEmis,
-                    isExpanded: true,
-                    items: filteredStudents.map((student) {
-                      return DropdownMenuItem(
-                        value: student['emis'],
-                        child: Text(
-                          '${student['name']} (${student['emis']})',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      );
-                    }).toList(),
-                   onChanged: (value) {
-                      setState(() {
-                        selectedEmis = value;
-                        _studentName = filteredStudents.firstWhere(
-                          (student) => student['emis'] == value,
-                          orElse: () => {'name': ''}, // Provide a default value to prevent errors
-                        )['name'];
-                      });
-                    },
-                  ),
-
-        const SizedBox(height: 20),
-        
-                SizedBox(height: 10),
-                Text("Incident Date"),
-                TextFormField(
-                  readOnly: true,
-                  controller: TextEditingController(text: _incidentDate),
-                  decoration: InputDecoration(
-                    hintText: "Select Date",
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.calendar_today),
-                      onPressed: () => _selectDate(context),
-                    ),
-                  ),
+              SizedBox(height: 20),
+              _buildSectionHeader("Incident Details", Icons.report),
+              SizedBox(height: 10),
+              _buildTextField(label: "Incident Date", hintText: "Select Date", icon: Icons.calendar_today, readOnly: true, onTap: () => _selectDate(context)),
+              SizedBox(height: 10),
+              _buildTextField(label: "Incident Time", hintText: "Select Time", icon: Icons.access_time, readOnly: true, onTap: () => _selectTime(context)),
+              SizedBox(height: 10),
+              _buildTextField(label: "Incident Location", hintText: "Location of incident"),
+              SizedBox(height: 10),
+              _buildTextField(label: "Describe the Incident", hintText: "Enter Description"),
+              
+              SizedBox(height: 10),
+              CheckboxListTile(
+                title: Text("Keep my identity anonymous"),
+                value: _keepAnonymous,
+                onChanged: (value) => setState(() => _keepAnonymous = value!),
+              ),
+              
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => print("Submit Report"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  minimumSize: Size(double.infinity, 50),
                 ),
-                SizedBox(height: 10),
-                Text("Incident Time"),
-                TextFormField(
-                  readOnly: true,
-                  controller: TextEditingController(text: _incidentTime),
-                  decoration: InputDecoration(
-                    hintText: "Select Time",
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.access_time),
-                      onPressed: () => _selectTime(context),
-                    ),
-                  ),
+                child: Text("Submit", style: TextStyle(color: Colors.white)),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: alertPolice,
+                icon: Icon(Icons.call, color: Colors.white),
+                label: Text("Alert Police"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  minimumSize: Size(double.infinity, 50),
                 ),
-                SizedBox(height: 10),
-                Text("Incident Location"),
-                TextFormField(
-                  decoration: InputDecoration(hintText: "Location of incident"),
-                  onChanged: (value) => _incidentLocation = value,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Victim Details",
-                  style: GoogleFonts.roboto(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                Text("Age"),
-                TextFormField(
-                  decoration: InputDecoration(hintText: "Enter Victim's Age"),
-                  onChanged: (value) => _victimAge = value,
-                ),
-                SizedBox(height: 10),
-                Text("Sex"),
-               DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    hintText: "Select Victim's Sex",
-                    border: OutlineInputBorder(), // Optional: Adds a border
-                  ),
-                  items: ["Male", "Female", "Other"].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) => _victimSex = value,
-                ),
-
-                SizedBox(height: 10),
-                
-                SizedBox(height: 10),
-                Text("Incident Details",
-                style: GoogleFonts.roboto(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                TextFormField(
-                  decoration: InputDecoration(hintText: "Describe the Incident"),
-                  
-                  onChanged: (value) => _incidentDetails = value,
-                ),
-                SizedBox(height: 10),
-                Text("Type of Sexual Abuse"),
-                DropdownButtonFormField(
-                  items: [
-                    "Inappropriate touching",
-                    "Sexual advances",
-                    "Physical abuse",
-                    "Online harassment",
-                    "Showing inappropriate content/Body parts",
-                    "Others (specify)"
-                  ]
-                      .map((type) => DropdownMenuItem(
-                            value: type,
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.75,
-                              child: Text(
-                                type,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _abuseType = value as String?;
-                      if (_abuseType != "Others (specify)") {
-                        _otherAbuseType = null;
-                      }
-                    });
-                  },
-                  decoration: InputDecoration(hintText: "Type of Sexual Abuse"),
-                ),
-                if (_abuseType == "Others (specify)") ...[
-                  SizedBox(height: 10),
-                  Text("Specify Other Type"),
-                  TextFormField(
-                    decoration: InputDecoration(hintText: "Enter details"),
-                    onChanged: (value) => _otherAbuseType = value,
-                  ),
-                ],
-                SizedBox(height: 10),
-                Text("Severity Level"),
-                DropdownButtonFormField(
-                  items: ["Emergency", "NON-Emergency"]
-                      .map((level) => DropdownMenuItem(
-                            value: level,
-                            child: Text(level),
-                          ))
-                      .toList(),
-                  onChanged: (value) => _severityLevel = value,
-                  decoration: InputDecoration(hintText: "Select severity level"),
-                ),
-                SizedBox(height: 10),
-                CheckboxListTile(
-                  title: Text("Keep my identity anonymous"),
-                  value: _keepAnonymous,
-                  onChanged: (value) => setState(() => _keepAnonymous = value!),
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                       createVictim();
-                    }
-                  },
-                  child: Text("Submit Report"),
-                ),
-                SizedBox(height: 10), // Space between buttons
-                ElevatedButton.icon(
-                  onPressed: alertPolice, // Call the police function
-                  icon: Icon(Icons.call, color: Colors.white),
-                  label: Text("Alert Police"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red, // Red for emergency
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-
-   Future<void> fetchDistricts() async {
+  Future<void> fetchDistricts() async {
     setState(() => isLoading = true);
     try {
       final uri = Uri.parse("http://13.232.9.135:3000/api/getSchool");
@@ -414,6 +272,7 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        print(data);
         if (data['data'] is List) {
           setState(() {
             districtList = (data['data'] as List)
@@ -423,6 +282,7 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
           });
         }
       }
+      // fetchStudents();
     } catch (e) {
       print("Error fetching districts: $e");
     } finally {
@@ -504,4 +364,61 @@ class _MarkVictimScreenState extends State<MarkVictimScreen> {
   }
 
   
+
+  TextEditingController _studentController = TextEditingController();
+
+Widget _buildStudentSearchField() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      TextFormField(
+        controller: _studentController, // Keeps text editable
+        onChanged: (value) {
+          setState(() {
+            studentNameQuery = value;
+            filterStudents();
+          });
+        },
+        decoration: InputDecoration(
+          labelText: "Search Student by Name",
+          hintText: "Enter student's name",
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      ),
+      if (filteredStudents.isNotEmpty) // Show dropdown only if students are available
+        Container(
+          height: 200,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: ListView.builder(
+            itemCount: filteredStudents.length,
+            itemBuilder: (context, index) {
+              final student = filteredStudents[index];
+              final displayText = "${student['name']} (${student['emis']})"; // Name + EMIS
+
+              return ListTile(
+                title: Text(displayText, softWrap: true, overflow: TextOverflow.ellipsis),
+                onTap: () {
+                  setState(() {
+                    _studentController.text = student['name']!; // Fill text field
+                    selectedEmis = student['emis']; // Store selected EMIS
+                    _studentController.selection = TextSelection.fromPosition(
+                      TextPosition(offset: _studentController.text.length),
+                    ); // Keep cursor at the end
+                    filteredStudents.clear(); // Hide dropdown after selection
+                  });
+                },
+              );
+            },
+          ),
+        ),
+    ],
+  );
 }
+
+}
+
+
+

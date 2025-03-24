@@ -609,7 +609,7 @@ const attendanceSchema = mongoose.Schema({
     default: Date.now,
   },
   entryExit: {
-    enum:["entry","exit"],
+    type: String,
     // required: true,
   },
 },{ versionKey: false });

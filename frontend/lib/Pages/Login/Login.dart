@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import './Components/LoginForm.dart';
-import '../OTP/home.dart';
+import '../utils/appStyle.dart';
+import '../utils/appColor.dart';
+import 'Components/LoginForm.dart';
+import 'Components/forgotPasswordForm.dart';
+// import './widgets/otpVerification.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -8,7 +11,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  int _currentIndex = 0; // 0: Login Form, 1: Forget Password Form
+  int _currentIndex = 0; // 0: Login Form, 1: Forgot Password Form
 
   void _switchToForgetPasswordForm() {
     setState(() {
@@ -22,6 +25,14 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  // void _showOtpVerification() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     builder: (context) => OtpVerificationPopup(),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,26 +44,29 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: 192,
-                  height: 192,
-                  child: Image.asset(
-                    "assets/Logo/logo_TNMS.png", // Replace with your asset path
-                    fit: BoxFit.contain,
-                  ),
+                  width: 120,
+                  height: 120,
+                  child: Image.asset("assets/Logo/logo_TNMS.png"),
                 ),
-                const SizedBox(height: 17.0),
-                Text(
-                  _currentIndex == 0 ? 'Login' : 'Forget Password',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
+                const SizedBox(height: 15.0),
+                Row(
+                  children: [
+                    Icon(Icons.lock, color: AppColors.primaryColor, size: 24),
+                    const SizedBox(width: 5),
+                    Text(
+                      _currentIndex == 0 ? 'Login' : 'Forgot Password',
+                      style: AppStyles.headerText,
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
-                if (_currentIndex == 0) 
+                if (_currentIndex == 0)
                   LoginForm(onForgetPasswordTap: _switchToForgetPasswordForm),
-                if (_currentIndex == 1) 
-                  ForgetPasswordForm(onBackToLoginTap: _switchToLoginForm),
+                if (_currentIndex == 1)
+                  ForgotPasswordForm(
+                    onBackToLogin: _switchToLoginForm,
+                    // onOtpSent: _showOtpVerification,
+                  ),
               ],
             ),
           ),
