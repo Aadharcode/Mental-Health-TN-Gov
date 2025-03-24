@@ -80,16 +80,12 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Select Role', style: AppStyles.labelText),
+        Text('Role', style: AppStyles.labelText),
+        const SizedBox(height: 5),
         DropdownButtonFormField<String>(
-          value: _selectedRole,
-          decoration: AppStyles.inputDecoration(hintText: 'Choose Role'),
-          items: _roles.map((role) {
-            return DropdownMenuItem(
-              value: role,
-              child: Text(role, style: AppStyles.labelText),
-            );
-          }).toList(),
+          value: _selectedRole.isEmpty ? null : _selectedRole,
+          decoration: AppStyles.inputDecoration(hintText: 'Select Role'),
+          items: _roles.map((role) => DropdownMenuItem(value: role, child: Text(role))).toList(),
           onChanged: (value) => setState(() => _selectedRole = value!),
         ),
         const SizedBox(height: 15),

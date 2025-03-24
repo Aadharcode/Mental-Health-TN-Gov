@@ -201,7 +201,7 @@ class _LoginFormState extends State<LoginForm> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Don't have an account? ", style: TextStyle(color: AppColors.textColor)),
+            Text("Don't have an account? ", style: AppStyles.linkText),
             GestureDetector(
               onTap: () => Navigator.pushNamed(context, '/register'),
               child: Text('Register', style: AppStyles.linkText),
